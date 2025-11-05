@@ -1,0 +1,15 @@
+<div class="container-fluid">
+    <div class="row">
+        <app-knowledge-base-top-data></app-knowledge-base-top-data>
+
+        <div class="col-sm-12">
+            <app-browse-article-category></app-browse-article-category>
+        </div>       
+        <div class="col-lg-12">
+            <app-common-featured-tutorials [details]="featuredTutorialDetails" [headerTitle]="'Featured Tutorials'"></app-common-featured-tutorials>
+        </div>
+        <div class="col-lg-12">
+            <app-common-article-video [details]="articlesAndVideosDetails" [headerTitle]="'Latest Articles and Videos'"></app-common-article-video>
+        </div>
+    </div>
+</div>

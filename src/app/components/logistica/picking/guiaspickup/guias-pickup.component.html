@@ -1,0 +1,515 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Lista de Facturas por ingresar guias'" [cardClass]="'mb-4'">
+                <div class="row mb-2">
+                    <!-- <div class="col-md-3 mb-2">
+                        <label for="fechaInicio" class="form-label mb-0">Fecha inicial:</label>
+                        <input id="fechaInicio" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaInicio" name="fechaPersonalizadaInicio">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="fechaFin" class="form-label mb-0">Fecha final:</label>
+                        <input id="fechaFin" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaFin" name="fechaPersonalizadaFin">
+                    </div> -->
+                </div>
+                <div class="customer-order-report table-responsive custom-scrollbar">
+
+                    <div class="recent-table">
+                        <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
+                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
+                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                            (customAction)="onCustomAction($event)">
+                        </app-table>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+
+
+    <div *ngIf="showPrepararModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog modal-xl" style="max-width: 80vw;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles Factura - {{ facturaActual?.Secuencia }}</h5>
+                    <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Indicador Factura Multibodega -->
+                    <div class="row mb-3" *ngIf="bodegas.length > 1">
+                        <div class="col-12">
+                            <div class="alert alert-success border-success py-2 mb-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-warehouse text-primary me-2 fs-5"></i>
+                                    <div>
+                                        <strong class="text-primary">FACTURA MULTIBODEGA</strong>
+                                        <small class="d-block text-dark fw-bold">
+                                            Esta factura contiene productos de {{ bodegas.length }} bodegas diferentes
+                                        </small>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <span class="badge bg-primary fs-6">{{ bodegas.length }} Bodegas</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Datos de la Cabecera -->
+                    <div class="row" *ngIf="facturaActual">
+                        <div class="col-12 mb-1">
+
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa fa-file-invoice text-primary me-2"></i>
+                                <h6 class="text-primary mb-0">Información de la Factura</h6>
+                            </div>
+                        </div>
+                        <!-- Primera columna -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light py-2">
+                                    <small class="fw-bold text-muted">
+                                        <i class="fa fa-info-circle me-1"></i>Datos Principales
+                                    </small>
+                                </div>
+                                <div class="card-body py-2">
+                                    <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                        <tbody>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                    <i class="fa fa-warehouse text-info me-1"></i>Bodega:
+                                                </td>
+                                                <td class="py-1">
+                                                    <!-- <span class="badge bg-info bg-opacity-10 text-light fw-bold">
+                                                        {{ detalleFactura[0]["Código"] }}
+                                                    </span> -->
+                                                    <span class="fw-bold text-primary fs-5">
+                                                        {{ detalleFactura[0]["CodigosBodega"] }}
+                                                    </span>
+                                                    <!-- {{ facturaActual.Bodeganame }} -->
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-hashtag text-primary me-1"></i>Secuencia:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="fw-bold text-primary">{{ facturaActual.Secuencia
+                                                        }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-file-alt text-secondary me-1"></i>Número:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Numero }}</td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-user text-success me-1"></i>Cliente:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Nombre }}</td>
+                                            </tr>
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-id-card text-warning me-1"></i>RUC:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="font-monospace">{{ facturaActual.Ruc }}</span>
+                                                </td>
+                                            </tr> -->
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-calendar text-danger me-1"></i>Fecha:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-light text-dark">
+                                                        {{ facturaActual.Fecha | date:'dd/MM/yyyy HH:mm' }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Segunda columna -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light py-2">
+                                    <small class="fw-bold text-muted">
+                                        <i class="fa fa-address-book me-1"></i>Información de Contacto
+                                    </small>
+                                </div>
+                                <div class="card-body py-2">
+                                    <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                        <tbody>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                    <i class="fa fa-map-marker-alt text-danger me-1"></i>Dirección:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Direccion }}</td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-city text-info me-1"></i>Ciudad:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-info bg-opacity-10 text-light fw-bold">
+                                                        {{ facturaActual.Ciudad }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-phone text-success me-1"></i>Teléfono:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="font-monospace">{{ facturaActual.Telefono?.trim() ||
+                                                        'N/A' }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-envelope text-primary me-1"></i>Email:
+                                                </td>
+                                                <td class="py-1">
+                                                    <small class="text-primary">{{ facturaActual.Email }}</small>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-user-tie text-secondary me-1"></i>Vendedor:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Vendedor }}</td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-shopping-cart text-warning me-1"></i>Tipo Pedido:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-primary bg-opacity-10 text-light fw-bold">
+                                                        {{ facturaActual.TipoP }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-credit-card text-success me-1"></i>Forma Pago:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-success bg-opacity-10 text-light fw-bold">
+                                                        {{ facturaActual.FPago }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla Unificada del Detalle -->
+                    <div class="row">
+                        <!-- Tabla única de productos -->
+                        <div class="col-12" *ngIf="detalleFactura.length > 0">
+                            <div class="card border-primary">
+                                <div class="card-header bg-opacity-10">
+                                    <h6 class="text-primary mb-0">
+                                        <i class="fa fa-list me-1"></i>Detalle de Productos
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover table-sm mb-0">
+                                            <thead class="table-primary">
+                                                <tr>
+                                                    <!-- <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-tag me-1"></i>Tipo
+                                                    </th> -->
+                                                    <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-warehouse me-1"></i>Bodega
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 12%;">
+                                                        <i class="fa fa-barcode me-1"></i>Código
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 8%;">
+                                                        Cant.
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 30%;">
+                                                        <i class="fa fa-info-circle me-1"></i>Descripción
+                                                    </th>
+                                                    <!-- <th class="text-center py-2" style="width: 20%;">
+                                                        <i class="fa fa-list-ol me-1"></i>Series/Cantidad Ingresadas
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-shield-alt me-1"></i>Estado
+                                                    </th> -->
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let item of detalleFactura; let i = index" class="align-middle">
+                                                    <!-- Columna Tipo -->
+                                                    <!-- <td class="text-center py-1">
+                                                        <span *ngIf="item.RegistaSerie === '0'" 
+                                                              class="badge bg-secondary fs-6">
+                                                            <i class="fa fa-calculator me-1"></i>Cantidad
+                                                        </span>
+                                                        <span *ngIf="item.RegistaSerie === '1' && item.registroserieEntrada === '0'" 
+                                                              class="badge bg-warning text-dark fs-6">
+                                                            <i class="fa fa-tag me-1"></i>Serie Libre
+                                                        </span>
+                                                        <span *ngIf="item.RegistaSerie === '1' && item.registroserieEntrada === '1'" 
+                                                              class="badge bg-info fs-6">
+                                                            <i class="fa fa-shield-alt me-1"></i>Serie Obligatoria
+                                                        </span>
+                                                    </td> -->
+                                                    <!-- Columna Bodega -->
+                                                    <td class="text-center fw-bold py-1">
+                                                        {{ item["CodigosBodega"] }}
+                                                    </td>
+                                                    <!-- Columna Código Producto -->
+                                                    <td class="text-center fw-bold py-1">
+                                                        {{ item.CopProducto }}
+                                                    </td>
+                                                    <!-- Columna Cantidad -->
+                                                    <td class="text-center fw-bold text-primary py-1 fs-6">
+                                                        {{ item.Cantidad }}
+                                                    </td>
+                                                    <!-- Columna Descripción -->
+                                                    <td class="small text-muted py-1">{{ item.Detalle }}</td>
+                                                    <!-- Columna Series/Cantidad Ingresadas -->
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 my-3">
+                            <!-- Información de bodegas -->
+                            <div class="row mb-2" *ngIf="bodegas.length > 1">
+                                <div class="col-12">
+                                    <div class="alert alert-primary py-2">
+                                        <i class="fa fa-info-circle me-1"></i>
+                                        <strong>Factura Multibodega:</strong> Un solo número de guía se aplicará a todas las bodegas ({{ bodegas.length }} bodegas)
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Alerta de consolidación -->
+                            <div class="row mb-2" *ngIf="consolidar">
+                                <div class="col-12">
+                                    <div class="alert alert-warning py-2">
+                                        <i class="fa fa-boxes me-1"></i>
+                                        <strong>Consolidación Activada:</strong> Se ha activado la consolidación para este envío
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Alerta para centro consolidado -->
+                            <div class="row mb-2" *ngIf="facturaRowData?.CENTRO_CONSOLIDADO == 1">
+                                <div class="col-12">
+                                    <div class="alert alert-info py-2">
+                                        <i class="fa fa-info-circle me-1"></i>
+                                        <strong>Centro Consolidado:</strong> Esta factura pertenece a un centro consolidado, no requiere consolidación adicional
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-light py-2">
+                                            <small class="fw-bold text-muted">
+                                                <i class="fa fa-info-circle me-1"></i>Datos de envio
+                                            </small>
+                                        </div>
+                                        <div class="card-body py-2">
+                                            <table class="table table-sm table-borderless mb-0"
+                                                style="line-height: 1.2;">
+                                                <tbody>
+                                                    <!-- Checkbox Consolidar (solo para multibodega con consolidación y no centro consolidado) -->
+                                                    <tr *ngIf="facturaRowData?.MULTIBODEGA == 'SI' && facturaRowData?.CONSOLIDAR_FACTURA == 1 && facturaRowData?.CENTRO_CONSOLIDADO == '0'" style="height: 28px;">
+                                                        <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                            <i class="fa fa-boxes text-warning me-1"></i>Consolidar:
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" 
+                                                                    type="checkbox" 
+                                                                    [(ngModel)]="consolidar"
+                                                                    name="consolidar"
+                                                                    id="checkConsolidar"
+                                                                    [disabled]="true">
+                                                                <label class="form-check-label text-muted" for="checkConsolidar">
+                                                                    Consolidación obligatoria (no se puede cambiar)
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                    <!-- Tipo de Consolidación (oculto por el momento) -->
+                                                    <!-- <tr *ngIf="consolidar && false" style="height: 28px;">
+                                                        <td class="fw-bold text-muted py-1">
+                                                            <i class="fa fa-list text-warning me-1"></i>Tipo:
+                                                            <span class="text-danger">*</span>
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <select [(ngModel)]="tipoConsolidacion" 
+                                                                name="tipoConsolidacion"
+                                                                class="form-select form-select-sm">
+                                                                <option value="">Seleccione tipo de consolidación</option>
+                                                                <option *ngFor="let opcion of opcionesConsolidacion" 
+                                                                        [value]="opcion.id">
+                                                                    {{ opcion.nombre }}
+                                                                </option>
+                                                            </select>
+                                                        </td>
+                                                    </tr> -->
+                                                    
+                                                    <!-- Guía de Consolidación (solo visible si consolidar está activado) -->
+                                                    <tr *ngIf="consolidar" style="height: 28px;">
+                                                        <td class="fw-bold text-muted py-1">
+                                                            <i class="fa fa-barcode text-warning me-1"></i>Guía Consol.:
+                                                            <span class="text-danger">*</span>
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <input type="text" 
+                                                                [(ngModel)]="guiaConsolidacion"
+                                                                name="guiaConsolidacion"
+                                                                class="form-control form-control-sm"
+                                                                placeholder="Número de guía de consolidación">
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                    <tr style="height: 28px;">
+                                                        <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                            <i class="fa fa-shopping-cart text-info me-1"></i>Transporte:
+                                                            <span class="text-danger">*</span>
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <select [(ngModel)]="transporteSeleccionado" 
+                                                                name="transporte"
+                                                                class="form-select form-select-solid form-select-sm"
+                                                                [disabled]="cargandoTransportes">
+                                                                <option value="" *ngIf="!cargandoTransportes">Seleccione transporte</option>
+                                                                <option value="" *ngIf="cargandoTransportes">Cargando transportes...</option>
+                                                                <option *ngFor="let transporte of listaTransportes" 
+                                                                        [value]="transporte.id">
+                                                                    {{ transporte.Codigo }}
+                                                                </option>
+                                                            </select>
+                                                            <small class="text-muted" *ngIf="cargandoTransportes">
+                                                                <i class="fa fa-spinner fa-spin me-1"></i>Cargando lista de transportes...
+                                                            </small>
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Input único de guía -->
+                                                    <tr style="height: 28px;" *ngIf="consolidar == false">
+                                                        <td class="fw-bold text-muted py-1">
+                                                            <i class="fa fa-file text-primary me-1"></i>
+                                                            Número de Guía:
+                                                            <span class="text-danger">*</span>
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <input type="text" 
+                                                                [(ngModel)]="numeroGuia"
+                                                                name="numeroGuia"
+                                                                class="form-control form-control-sm"
+                                                                placeholder="Ingrese el número de guía">
+                                                            <small class="text-muted" *ngIf="bodegas.length > 1">
+                                                                Este número de guía se aplicará a todas las bodegas ({{ bodegas.length }} bodegas)
+                                                            </small>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="height: 28px;">
+                                                        <td class="fw-bold text-muted py-1">
+                                                            <i class="fa fa-box-open text-secondary me-1"></i>Bultos:
+                                                            <span class="text-danger">*</span>
+                                                        </td>
+                                                        <td class="py-1">
+                                                            <input type="number" 
+                                                                [(ngModel)]="numeroBultos"
+                                                                name="numeroBultos"
+                                                                class="form-control form-control-sm"
+                                                                placeholder="Número de bultos"
+                                                                min="1">
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-header bg-light py-2">
+                                            <small class="fw-bold text-muted">
+                                                <i class="fa fa-info-circle me-1"></i>
+                                            </small>
+                                        </div>
+                                        <div class="card-body py-2">
+                                            <table class="table table-sm table-borderless mb-0"
+                                                style="line-height: 1.2;">
+                                                <tbody>
+                                                    <tr style="height: 28px;">
+                                                        <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                            <i
+                                                                class="fa fa-warehouse text-info me-1"></i>Peso:
+                                                        </td>
+                                                        <td class="py-1">
+                                                           <input type="text" 
+                                                               [(ngModel)]="pesoEnvio"
+                                                               name="pesoEnvio"
+                                                               class="form-control form-control-sm"
+                                                               placeholder="Peso del paquete (kg)">
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="height: 28px;">
+                                                        <td class="fw-bold text-muted py-1">
+                                                            <i class="fa fa-address-book text-primary me-1"></i>Comentarios:
+                                                        </td>
+                                                        <td class="py-1">
+                                                          <textarea [(ngModel)]="comentariosEnvio" 
+                                                              name="comentarios" 
+                                                              class="form-control form-control-sm"
+                                                              rows="2"
+                                                              placeholder="Comentarios sobre el envío"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                 
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje cuando no hay productos -->
+                        <div class="col-12" *ngIf="detalleFactura.length === 0">
+                            <div class="text-center text-muted py-4">
+                                <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
+                                No hay productos en el detalle
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+                    <button type="button" class="btn btn-primary" (click)="guardarCambios()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

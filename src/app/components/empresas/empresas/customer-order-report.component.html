@@ -1,0 +1,101 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Empresas'">
+                <div class="row mb-2">
+                    <!-- <div class="col-md-3 mb-2">
+                        <label for="fechaInicio" class="form-label mb-0">Fecha inicial:</label>
+                        <input id="fechaInicio" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaInicio" name="fechaPersonalizadaInicio">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="fechaFin" class="form-label mb-0">Fecha final:</label>
+                        <input id="fechaFin" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaFin" name="fechaPersonalizadaFin">
+                    </div> -->
+                </div>
+                <div class="customer-order-report table-responsive custom-scrollbar">
+
+                    <div class="recent-table">
+
+                        <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
+                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
+                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                            (customAction)="onCustomAction($event)">
+                        </app-table>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+
+
+    <div *ngIf="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear empresa</h5>
+                    <button type="button" class="btn-close" (click)="showCreateModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <form autocomplete="off">
+                        <div class="mb-2">
+                            <label class="form-label">Nombre Comercial</label>
+                            <input type="text" class="form-control" [(ngModel)]="empresaNuevo.nombre_comercial"
+                                name="empresaNuevo_nombre_comercial" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Razón Social</label>
+                            <input type="text" class="form-control" [(ngModel)]="empresaNuevo.razon_social"
+                                name="empresaNuevo_razon_social" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">RUC</label>
+                            <input type="text" class="form-control" [(ngModel)]="empresaNuevo.ruc"
+                                name="empresaNuevo_ruc" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" [(ngModel)]="empresaNuevo.direccion"
+                                name="empresaNuevo_direccion" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">País</label>
+                            <select class="form-select" [(ngModel)]="empresaNuevo.pais" name="empresaNuevo_pais"
+                                required>
+                                <option value="">Seleccione un país</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Bolivia">Bolivia</option>
+                                <option value="Brasil">Brasil</option>
+                                <option value="Chile">Chile</option>
+                                <option value="Colombia">Colombia</option>
+                                <option value="Costa Rica">Costa Rica</option>
+                                <option value="Cuba">Cuba</option>
+                                <option value="Ecuador">Ecuador</option>
+                                <option value="El Salvador">El Salvador</option>
+                                <option value="España">España</option>
+                                <option value="Guatemala">Guatemala</option>
+                                <option value="Honduras">Honduras</option>
+                                <option value="México">México</option>
+                                <option value="Nicaragua">Nicaragua</option>
+                                <option value="Panamá">Panamá</option>
+                                <option value="Paraguay">Paraguay</option>
+                                <option value="Perú">Perú</option>
+                                <option value="Puerto Rico">Puerto Rico</option>
+                                <option value="República Dominicana">República Dominicana</option>
+                                <option value="Uruguay">Uruguay</option>
+                                <option value="Venezuela">Venezuela</option>
+                            </select>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="showCreateModal = false">Cerrar</button>
+                    <button type="button" class="btn btn-primary" (click)="guardarNuevo()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

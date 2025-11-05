@@ -1,0 +1,469 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Lista de Facturas por verificar'" [cardClass]="'mb-4'">
+                <div class="row mb-2">
+                    <!-- <div class="col-md-3 mb-2">
+                        <label for="fechaInicio" class="form-label mb-0">Fecha inicial:</label>
+                        <input id="fechaInicio" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaInicio" name="fechaPersonalizadaInicio">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="fechaFin" class="form-label mb-0">Fecha final:</label>
+                        <input id="fechaFin" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaFin" name="fechaPersonalizadaFin">
+                    </div> -->
+                </div>
+                <div class="customer-order-report table-responsive custom-scrollbar">
+
+                    <div class="recent-table">
+                        <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
+                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
+                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                            (customAction)="onCustomAction($event)">
+                        </app-table>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+
+
+    <div *ngIf="showPrepararModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog modal-xl" style="max-width: 80vw;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verificar Factura - {{ facturaActual?.Secuencia }}</h5>
+                    <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Datos de la Cabecera -->
+                    <div class="row" *ngIf="facturaActual">
+                        <div class="col-12 mb-1">
+                            <h5 class="text-danger fw-bold">No cerrar esta ventana si esta realizando el proceso de
+                                Verificación</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa fa-file-invoice text-primary me-2"></i>
+                                <h6 class="text-primary mb-0">Información de la Factura</h6>
+                            </div>
+                        </div>
+                        <!-- Primera columna -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light py-2">
+                                    <small class="fw-bold text-muted">
+                                        <i class="fa fa-info-circle me-1"></i>Datos Principales
+                                    </small>
+                                </div>
+                                <div class="card-body py-2">
+                                    <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                        <tbody>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                    <i class="fa fa-warehouse text-info me-1"></i>Bodega:
+                                                </td>
+                                                <td class="py-1">
+                                                    <!-- <span class="badge bg-info bg-opacity-10 text-light fw-bold">
+                                                        {{ detalleFactura[0]["Código"] }}
+                                                    </span> -->
+                                                    <span class="fw-bold text-primary fs-5">
+                                                        {{ detalleFactura[0]["CodigosBodega"] }}
+                                                    </span>
+                                                    <!-- {{ facturaActual.Bodeganame }} -->
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-hashtag text-primary me-1"></i>Secuencia:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="fw-bold text-primary">{{ facturaActual.Secuencia
+                                                        }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-file-alt text-secondary me-1"></i>Número:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Numero }}</td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-user text-success me-1"></i>Cliente:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Nombre }}</td>
+                                            </tr>
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-id-card text-warning me-1"></i>RUC:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="font-monospace">{{ facturaActual.Ruc }}</span>
+                                                </td>
+                                            </tr> -->
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-calendar text-danger me-1"></i>Fecha:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-light text-dark">
+                                                        {{ facturaActual.Fecha | date:'dd/MM/yyyy HH:mm' }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Segunda columna -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light py-2">
+                                    <small class="fw-bold text-muted">
+                                        <i class="fa fa-address-book me-1"></i>Información de Contacto
+                                    </small>
+                                </div>
+                                <div class="card-body py-2">
+                                    <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                        <tbody>
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                    <i class="fa fa-map-marker-alt text-danger me-1"></i>Dirección:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Direccion }}</td>
+                                            </tr> -->
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-city text-info me-1"></i>Ciudad:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-info bg-opacity-10 text-light fw-bold">
+                                                        {{ facturaActual.Ciudad }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-phone text-success me-1"></i>Teléfono:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="font-monospace">{{ facturaActual.Telefono?.trim() || 'N/A' }}</span>
+                                                </td>
+                                            </tr> -->
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-envelope text-primary me-1"></i>Email:
+                                                </td>
+                                                <td class="py-1">
+                                                    <small class="text-primary">{{ facturaActual.Email }}</small>
+                                                </td>
+                                            </tr> -->
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-user-tie text-secondary me-1"></i>Vendedor:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Vendedor }}</td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-shopping-cart text-warning me-1"></i>Tipo Pedido:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-primary bg-opacity-10 text-light fw-bold">
+                                                        {{ facturaActual.TipoP }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-credit-card text-success me-1"></i>Forma Pago:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-success bg-opacity-10 text-light fw-bold">
+                                                        {{ facturaActual.FPago }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla Unificada del Detalle -->
+                    <div class="row">
+                        <!-- Contadores -->
+                        <div class="col-12" *ngIf="detalleFactura.length > 0">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="alert d-flex align-items-center ">
+                                        <i class="fa fa-info-circle me-2"></i>
+                                        <strong>Total de productos: {{ detalleFactura.length }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="alert d-flex align-items-center ">
+                                        <i class="fa fa-check-circle me-2"></i>
+                                        <strong>Productos verificados: {{ productosVerificados }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inputs de Captura -->
+                        <div class="col-12" *ngIf="detalleFactura.length > 0">
+                            <div class="card border-warning">
+                               
+                                <div class="card-body bg-light">
+                                    <div class="row justify-content-center ">
+                                        <!-- Input Código Producto -->
+                                        <div class="col-md-6 ">
+                                            <div class="text-center">
+                                                <label class="form-label mb-1">
+                                                    <i class="fa fa-search me-1"></i>Código Producto:
+                                                </label>
+                                                <input #inputCodigo
+                                                       id="inputCodigo"
+                                                       type="text" 
+                                                       class="form-control form-control-lg text-center"
+                                                       [(ngModel)]="codigoProductoActual"
+                                                       (keypress)="onCodigoProductoEnter($event)"
+                                                       placeholder="Escanear código del producto..."
+                                                       [class.is-valid]="productoActual"
+                                                       [class.is-invalid]="codigoProductoActual && !productoActual">
+                                                <div *ngIf="productoActual" class="valid-feedback">
+                                                    Producto: {{ productoActual.Detalle }}
+                                                </div>
+                                                <div *ngIf="codigoProductoActual && !productoActual" class="invalid-feedback">
+                                                    Código no encontrado en la factura
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Input Serie/Cantidad (dinámico según tipo) -->
+                                        <div class="col-md-6">
+                                            <!-- Para productos que requieren series -->
+                                            <div *ngIf="productoActual && (productoActual.RegistaSerie === '1')">
+                                                <label class="form-label mb-1">
+                                                    <i class="fa fa-tag me-1"></i>Serie:
+                                                    <span class="badge ms-1" 
+                                                          [ngClass]="{
+                                                              'bg-warning': productoActual.registroserieEntrada === '0',
+                                                              'bg-info': productoActual.registroserieEntrada === '1'
+                                                          }">
+                                                        {{ productoActual.registroserieEntrada === '1' ? 'Controlada' : 'Libre' }}
+                                                    </span>
+                                                </label>
+                                                <input #inputSerie
+                                                       id="inputSerie"
+                                                       type="text" 
+                                                       class="form-control form-control-lg"
+                                                       [(ngModel)]="serieActual"
+                                                       (keypress)="onSerieEnter($event)"
+                                                       placeholder="Escanear serie del producto..."
+                                                       [disabled]="!productoActual">
+                                            </div>
+
+                                            <!-- Para productos que solo requieren cantidad -->
+                                            <div *ngIf="productoActual && (productoActual.RegistaSerie === '0')">
+                                                <label class="form-label mb-1">
+                                                    <i class="fa fa-calculator me-1"></i>Cantidad:
+                                                    <span class="badge bg-secondary ms-1">Solo Cantidad</span>
+                                                </label>
+                                                <input #inputCantidad
+                                                       id="inputCantidad"
+                                                       type="number" 
+                                                       class="form-control form-control-lg"
+                                                       [(ngModel)]="cantidadActual"
+                                                       (keypress)="onCantidadEnter($event)"
+                                                       [placeholder]="'Confirmar cantidad (máx: ' + productoActual.Cantidad + ')'"
+                                                       [disabled]="!productoActual"
+                                                       [max]="productoActual.Cantidad"
+                                                       min="1">
+                                            </div>
+
+                                            <!-- Mensaje cuando no hay producto seleccionado -->
+                                            <div *ngIf="!productoActual" class="text-muted">
+                                                <i class="fa fa-arrow-left me-1"></i>
+                                                Primero escanee un código de producto
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Información del producto actual -->
+                                    <div *ngIf="productoActual" class="alert alert-light">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <strong>{{ productoActual.CopProducto }}</strong> - {{ productoActual.Detalle }}
+                                            </div>
+                                            <div class="col-md-4 text-end">
+                                                <span class="badge bg-primary me-1">Cantidad: {{ productoActual.Cantidad }}</span>
+                                                <span class="badge" 
+                                                      [ngClass]="{
+                                                          'bg-success': productoActual.cantidadVerificada === productoActual.Cantidad,
+                                                          'bg-warning': productoActual.cantidadVerificada > 0 && productoActual.cantidadVerificada < productoActual.Cantidad,
+                                                          'bg-secondary': productoActual.cantidadVerificada === 0
+                                                      }">
+                                                    Verificado: {{ productoActual.cantidadVerificada || 0 }}/{{ productoActual.Cantidad }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla única de productos -->
+                        <div class="col-12" *ngIf="detalleFactura.length > 0">
+                            <div class="card border-primary">
+                                <div class="card-header bg-opacity-10">
+                                    <h6 class="text-primary mb-0">
+                                        <i class="fa fa-list me-1"></i>Detalle de Productos
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover table-sm mb-0">
+                                            <thead class="table-primary">
+                                                <tr>
+                                                    <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-tag me-1"></i>Tipo
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-warehouse me-1"></i>Bodega
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 12%;">
+                                                        <i class="fa fa-barcode me-1"></i>Código
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 8%;">
+                                                        Cant.
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 30%;">
+                                                        <i class="fa fa-info-circle me-1"></i>Descripción
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 20%;">
+                                                        <i class="fa fa-list-ol me-1"></i>Series/Cantidad Ingresadas
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-shield-alt me-1"></i>Estado
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let item of detalleFactura; let i = index"
+                                                    class="align-middle" 
+                                                    [ngClass]="{
+                                                        'table-success': item.seriesCompletas,
+                                                        'table-warning': item.cantidadVerificada > 0 && !item.seriesCompletas
+                                                    }">
+                                                    <!-- Columna Tipo -->
+                                                    <td class="text-center py-1">
+                                                        <span *ngIf="item.RegistaSerie === '0'" 
+                                                              class="badge bg-secondary fs-6">
+                                                            <i class="fa fa-calculator me-1"></i>Cantidad
+                                                        </span>
+                                                        <span *ngIf="item.RegistaSerie === '1' && item.registroserieEntrada === '0'" 
+                                                              class="badge bg-warning text-dark fs-6">
+                                                            <i class="fa fa-tag me-1"></i>Serie Libre
+                                                        </span>
+                                                        <span *ngIf="item.RegistaSerie === '1' && item.registroserieEntrada === '1'" 
+                                                              class="badge bg-info fs-6">
+                                                            <i class="fa fa-shield-alt me-1"></i>Serie Obligatoria
+                                                        </span>
+                                                    </td>
+                                                    <!-- Columna Bodega -->
+                                                    <td class="text-center fw-bold py-1">
+                                                        {{ item["CodigosBodega"] }}
+                                                    </td>
+                                                    <!-- Columna Código Producto -->
+                                                    <td class="text-center fw-bold py-1">
+                                                        {{ item.CopProducto }}
+                                                    </td>
+                                                    <!-- Columna Cantidad -->
+                                                    <td class="text-center fw-bold text-primary py-1 fs-6">
+                                                        {{ item.Cantidad }}
+                                                    </td>
+                                                    <!-- Columna Descripción -->
+                                                    <td class="small text-muted py-1">{{ item.Detalle }}</td>
+                                                    <!-- Columna Series/Cantidad Ingresadas -->
+                                                    <td class="py-1">
+                                                        <!-- Para productos con series -->
+                                                        <div *ngIf="item.RegistaSerie === '1'">
+                                                            <div *ngIf="item.seriesIngresadas && item.seriesIngresadas.length > 0" 
+                                                                 class="series-container">
+                                                                <div class="mb-1">
+                                                                    <span class="badge bg-info fs-6">
+                                                                        {{ item.seriesIngresadas.length }}/{{ item.Cantidad }} series
+                                                                    </span>
+                                                                </div>
+                                                                <div class="series-list" style="max-height: 80px; overflow-y: auto;">
+                                                                    <small *ngFor="let serie of item.seriesIngresadas; let last = last" 
+                                                                           class="d-block text-muted">
+                                                                        <i class="fa fa-tag me-1"></i>{{ serie }}
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                            <div *ngIf="!item.seriesIngresadas || item.seriesIngresadas.length === 0" 
+                                                                 class="text-center text-muted">
+                                                                <small>Sin series ingresadas</small>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <!-- Para productos solo cantidad -->
+                                                        <div *ngIf="item.RegistaSerie === '0'">
+                                                            <div *ngIf="item.cantidadVerificada > 0" class="text-center">
+                                                                <span class="badge bg-success">
+                                                                    <i class="fa fa-check me-1"></i>{{ item.cantidadVerificada }} confirmados
+                                                                </span>
+                                                            </div>
+                                                            <div *ngIf="!item.cantidadVerificada || item.cantidadVerificada === 0" 
+                                                                 class="text-center text-muted">
+                                                                <small>Cantidad pendiente</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <!-- Columna Estado -->
+                                                    <td class="text-center py-1">
+                                                        <span *ngIf="item.seriesCompletas" 
+                                                              class="badge bg-success fs-6">
+                                                            <i class="fa fa-check me-1"></i>Completo
+                                                        </span>
+                                                        <span *ngIf="!item.seriesCompletas && (item.cantidadVerificada > 0)" 
+                                                              class="badge bg-warning text-dark fs-6">
+                                                            <i class="fa fa-clock me-1"></i>Parcial
+                                                        </span>
+                                                        <span *ngIf="!item.seriesCompletas && (!item.cantidadVerificada || item.cantidadVerificada === 0)" 
+                                                              class="badge bg-secondary fs-6">
+                                                            <i class="fa fa-minus me-1"></i>Pendiente
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje cuando no hay productos -->
+                        <div class="col-12" *ngIf="detalleFactura.length === 0">
+                            <div class="text-center text-muted py-4">
+                                <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
+                                No hay productos en el detalle
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+                    <button type="button" class="btn btn-primary" (click)="guardarVerificacion()">
+                        <i class="fa fa-check me-1"></i>Guardar Verificación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

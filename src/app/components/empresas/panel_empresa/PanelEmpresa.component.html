@@ -1,0 +1,211 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Datos de la empresa'" [cardClass]="'pb-0'">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <ul class="list-group">
+                            <li class="list-group-item"><b>Razón social:</b> {{ empresaNuevo.razon_social }}</li>
+                            <li class="list-group-item"><b>Nombre comercial:</b> {{ empresaNuevo.nombre_comercial }}
+                            </li>
+                            <li class="list-group-item"><b>RUC:</b> {{ empresaNuevo.ruc }}</li>
+                            <li class="list-group-item"><b>País:</b> {{ empresaNuevo.pais }}</li>
+                            <li class="list-group-item"><b>Plan:</b> {{ empresaNuevo.plan_nombre }}</li>
+                            <li class="list-group-item"><b>Fecha creación:</b> {{ empresaNuevo.fecha_creacion }}</li>
+                            <li class="list-group-item"><b>Estado:</b> {{ empresaNuevo.estado }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 d-flex flex-column align-items-end">
+                        <button class="btn btn-primary mb-2" (click)="abrirModalAgregarPlan()">Agregar/Modificar
+                            plan</button>
+                        <button class="btn btn-success" (click)="abrirModalAgregarContacto()">Agregar contacto</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" ngbNav #nav="ngbNav" [(activeId)]="activeTab">
+                            <li [ngbNavItem]="'home'">
+                                <a class="nav-link txt-secondary" ngbNavLink><i
+                                        class="icofont icofont-ui-home"></i>Historial</a>
+                                <ng-template ngbNavContent>
+                                    <div class="mt-3">
+                                        <h5 class="text-muted fw-bold">Historial de pagos</h5>
+                                    </div>
+                                    <table class="table table-bordered table-striped mt-3">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Plan</th>
+                                                <th>Fecha inicio</th>
+                                                <th>Fecha fin</th>
+                                                <th>Estado</th>
+                                                <th>Creado por</th>
+                                                <th>Fecha creación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let pago of historialPagos">
+                                                <td>{{ pago.id_emp_plan }}</td>
+                                                <td>{{ pago.plan_id }}</td>
+                                                <td>{{ pago.fecha_inicio }}</td>
+                                                <td>{{ pago.fecha_fin }}</td>
+                                                <td>{{ pago.estado }}</td>
+                                                <td>{{ pago.creado_por }}</td>
+                                                <td>{{ pago.fecha_creacion }}</td>
+                                            </tr>
+                                            <tr *ngIf="historialPagos.length === 0">
+                                                <td colspan="7" class="text-center">No hay historial de
+                                                    pagos/suscripción.
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </ng-template>
+                            </li>
+                            <li [ngbNavItem]="'contact'">
+                                <a class="nav-link txt-secondary" ngbNavLink><i
+                                        class="icofont icofont-contacts"></i>Contact</a>
+                                <ng-template ngbNavContent>
+                                    <div class="mt-3">
+                                        <h5 class="text-muted fw-bold">Contactos de la empresa</h5>
+                                        <table class="table table-bordered table-striped mt-3">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Email</th>
+                                                    <th>Teléfono</th>
+                                                    <th>Rol</th>
+                                                    <th>Estado</th>
+                                                    <th>Fecha creación</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let contacto of contactos">
+                                                    <td>{{ contacto.nombre }}</td>
+                                                    <td>{{ contacto.email }}</td>
+                                                    <td>{{ contacto.telefono }}</td>
+                                                    <td>{{ contacto.rol_contacto }}</td>
+                                                    <td>{{ contacto.estado }}</td>
+                                                    <td>{{ contacto.fecha_creacion }}</td>
+                                                </tr>
+                                                <tr *ngIf="contactos.length === 0">
+                                                    <td colspan="6" class="text-center">No hay contactos registrados.
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </ng-template>
+                            </li>
+                        </ul>
+                        <div [ngbNavOutlet]="nav"></div>
+                        <ul class="nav nav-tabs mb-3" id="empresaTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="contactos-tab" data-bs-toggle="tab"
+                                    data-bs-target="#contactos" type="button" role="tab" aria-controls="contactos"
+                                    aria-selected="true">Contactos</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="historial-tab" data-bs-toggle="tab"
+                                    data-bs-target="#historial" type="button" role="tab" aria-controls="historial"
+                                    aria-selected="false">Historial de pagos / suscripción</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="empresaTabsContent">
+                            <div class="tab-pane fade show active" id="contactos" role="tabpanel"
+                                aria-labelledby="contactos-tab">
+
+                            </div>
+                            <div class="tab-pane fade" id="historial" role="tabpanel" aria-labelledby="historial-tab">
+                                <h5>Historial de pagos / suscripción</h5>
+                                <div class="alert alert-info" *ngIf="historialPagos && historialPagos.length === 0">
+                                    <span>Debug: historialPagos está vacío.</span>
+                                </div>
+                                <div class="alert alert-success" *ngIf="historialPagos && historialPagos.length > 0">
+                                    <span>Debug: historialPagos tiene {{ historialPagos.length }} registros.</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+
+
+
+
+    <!-- Modal agregar contacto -->
+    <div *ngIf="showAddContactModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar contacto</h5>
+                    <button type="button" class="btn-close" (click)="showAddContactModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <form (ngSubmit)="guardarNuevoContacto()">
+                        <div class="mb-2">
+                            <label>Nombre</label>
+                            <input type="text" class="form-control" [(ngModel)]="contactoNuevo.nombre" name="nombre"
+                                required>
+                        </div>
+                        <div class="mb-2">
+                            <label>Email</label>
+                            <input type="email" class="form-control" [(ngModel)]="contactoNuevo.email" name="email"
+                                required>
+                        </div>
+                        <div class="mb-2">
+                            <label>Teléfono</label>
+                            <input type="text" class="form-control" [(ngModel)]="contactoNuevo.telefono" name="telefono"
+                                required>
+                        </div>
+                        <div class="mb-2">
+                            <label>Rol</label>
+                            <input type="text" class="form-control" [(ngModel)]="contactoNuevo.rol_contacto"
+                                name="rol_contacto" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal agregar plan -->
+    <div *ngIf="showAddPlanModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar/Modificar plan</h5>
+                    <button type="button" class="btn-close" (click)="showAddPlanModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Selecciona el plan</label>
+                    <select class="form-control mb-3" (change)="onPlanSelect($any($event.target).value)">
+                        <option value="">Seleccione...</option>
+                        <option *ngFor="let plan of planesDisponibles" [value]="plan.plan_id">{{ plan.nombre }}</option>
+                    </select>
+                    <label *ngIf="planSeleccionado">Selecciona el periodo</label>
+                    <select *ngIf="planSeleccionado" class="form-control mb-3" [(ngModel)]="periodoSeleccionado"
+                    (change)="onPeriodoSelect($any($event.target).value)"
+                        name="periodo">
+                        <option value="">Seleccione periodo...</option>
+                        <option *ngFor="let periodo of periodosDisponibles" [value]="periodo.id_periodo">{{ periodo.nombre }}</option>
+                    </select>
+                    <div *ngIf="planSeleccionado && periodoSeleccionado" class="mt-3">
+                        <div><b>Descripción:</b> {{ planSeleccionado.descripcion }}</div>
+                        <div><b>Precio:</b> ${{ precioSeleccionado }}</div>
+                        <div><b>Máx. usuarios:</b> {{ planSeleccionado.max_usuarios }}</div>
+                        <div><b>Máx. documentos:</b> {{ planSeleccionado.max_documentos }}</div>
+                        <div><b>Máx. almacenamiento:</b> {{ planSeleccionado.max_almacenamiento }} GB</div>
+                        <button *ngIf="planSeleccionado && periodoSeleccionado" class="btn btn-primary mt-3"
+                            (click)="guardarNuevoPlan(planSeleccionado.plan_id, periodoSeleccionado)">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

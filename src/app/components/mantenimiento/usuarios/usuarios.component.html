@@ -1,0 +1,157 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Lista de Usuarios'" [cardClass]="'mb-4'">
+                <div class="row mb-2">
+                    <!-- <div class="col-md-3 mb-2">
+                        <label for="fechaInicio" class="form-label mb-0">Fecha inicial:</label>
+                        <input id="fechaInicio" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaInicio" name="fechaPersonalizadaInicio">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="fechaFin" class="form-label mb-0">Fecha final:</label>
+                        <input id="fechaFin" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaFin" name="fechaPersonalizadaFin">
+                    </div> -->
+                    
+                </div>
+                <div class="row mb-2">
+                    <label class="form-label fw-bold">Empresa:</label>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="empresa" id="cartimex" value="CARTIMEX"
+                                checked [(ngModel)]="selectedEmpresa" (change)="onEmpresaChange()">
+                            <label class="form-check-label" for="cartimex">Cartimex</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="empresa" id="computron" value="COMPUTRONSA"
+                                [(ngModel)]="selectedEmpresa" (change)="onEmpresaChange()">
+                            <label class="form-check-label" for="computron">Computron</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="customer-order-report table-responsive custom-scrollbar">
+
+                    <div class="recent-table">
+                        <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
+                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
+                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                            (customAction)="onCustomAction($event)">
+                        </app-table>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+
+
+    <div *ngIf="ShowCreateModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ isEditing ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
+                    <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="userForm" (ngSubmit)="GuardarUsuario()">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="usuario">Usuario *</label>
+                                    <input type="text" class="form-control" id="usuario" formControlName="usuario"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre *</label>
+                                    <input type="text" class="form-control" id="nombre" formControlName="nombre"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="clave">Contraseña *</label>
+                                    <input type="password" class="form-control" id="clave" formControlName="clave"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="Departamento">Departamento *</label>
+                                    <input type="text" class="form-control" id="Departamento"
+                                        formControlName="Departamento" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="email">Email *</label>
+                                    <input type="email" class="form-control" id="email" formControlName="email"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="departamento_id">Departamento Logístico</label>
+                                    <select class="form-control" id="departamento_id" formControlName="departamento_id">
+                                        <option value="">Seleccionar departamento</option>
+                                        <option *ngFor="let dep of ListaDepartamentosLogistica"
+                                            [value]="dep.departamento_id">
+                                            {{ dep.departamento_nombre }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input" id="isgerencia"
+                                        formControlName="isgerencia">
+                                    <label class="form-check-label" for="isgerencia">¿Es Gerencia?</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input" id="is_admin"
+                                        formControlName="is_admin">
+                                    <label class="form-check-label" for="is_admin">¿Es Administrador?</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="estado">Estado *</label>
+                                    <select class="form-control" id="estado" formControlName="estado" required>
+                                        <option value="0">Activo</option>
+                                        <option value="1">Inactivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+                    <button type="button" class="btn btn-primary" (click)="GuardarUsuario()">
+                        <i class="fa fa-save me-1"></i>{{ isEditing ? 'Actualizar' : 'Guardar' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

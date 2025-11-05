@@ -1,0 +1,214 @@
+<div class="container-fluid customer-order-wrapper">
+    <!-- Modal de creación de plan -->
+    <div *ngIf="showCreatePlanModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear plan</h5>
+                    <button type="button" class="btn-close" (click)="showCreatePlanModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <form autocomplete="off">
+                        <div class="mb-2">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" [(ngModel)]="planNuevo.nombre" name="planNuevo_nombre" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Descripción</label>
+                            <input type="text" class="form-control" [(ngModel)]="planNuevo.descripcion" name="planNuevo_descripcion" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Máx. Documentos</label>
+                            <input type="number" class="form-control" [(ngModel)]="planNuevo.max_documentos" name="planNuevo_max_documentos" min="0" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="showCreatePlanModal = false">Cerrar</button>
+                    <button type="button" class="btn btn-primary" (click)="guardarNuevoPlan()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Planes'">
+
+                <div class="customer-order-report table-responsive custom-scrollbar">
+
+                    <div class="recent-table">
+
+                        <app-table [hasCheckbox]="false" [tableConfig]="tablePlanesConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="false" [downloadReports]="true"
+                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
+                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                            (customAction)="onCustomAction($event)">
+                        </app-table>
+                    </div>
+                </div>
+
+
+                
+            </app-card>
+        </div>
+    </div>
+    <!-- Modal de edición de usuario -->
+    <div *ngIf="showEditModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar usuario</h5>
+                    <button type="button" class="btn-close" (click)="showEditModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <form autocomplete="off">
+                        <div class="mb-2">
+                            <label class="form-label">Usuario</label>
+                            <input disabled type="text" class="form-control" [(ngModel)]="usuarioEditando.usuario"
+                                name="usuarioEditando_usuario">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" [(ngModel)]="usuarioEditando.nombre"
+                                name="usuarioEditando_nombre">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" class="form-control" [(ngModel)]="usuarioEditando.apellido"
+                                name="usuarioEditando_apellido">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" [(ngModel)]="usuarioEditando.email"
+                                name="usuarioEditando_email">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" [(ngModel)]="usuarioEditando.estado"
+                                name="usuarioEditando_estado">
+                                <option value="A">Activo</option>
+                                <option value="I">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Empresa</label>
+                            <input type="number" class="form-control" [(ngModel)]="usuarioEditando.empresa"
+                                name="usuarioEditando_empresa">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Rol</label>
+                            <input type="number" class="form-control" [(ngModel)]="usuarioEditando.rol"
+                                name="usuarioEditando_rol">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="showEditModal = false">Cerrar</button>
+                    <!-- <button type="button" class="btn btn-primary" (click)="guardarEdicionUsuario()">Guardar</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal de creación de usuario -->
+    <div *ngIf="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear usuario</h5>
+                    <button type="button" class="btn-close" (click)="showCreateModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <form autocomplete="off">
+                        <div class="mb-2">
+                            <label class="form-label">Usuario</label>
+                            <input type="text" class="form-control" [(ngModel)]="usuarioNuevo.usuario"
+                                name="usuarioNuevo_usuario">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" [(ngModel)]="usuarioNuevo.nombre"
+                                name="usuarioNuevo_nombre">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" class="form-control" [(ngModel)]="usuarioNuevo.apellido"
+                                name="usuarioNuevo_apellido">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" [(ngModel)]="usuarioNuevo.telefono"
+                                name="usuarioNuevo_telefono">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" [(ngModel)]="usuarioNuevo.email"
+                                name="usuarioNuevo_email">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" [(ngModel)]="usuarioNuevo.password"
+                                name="usuarioNuevo_password">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Confirmar contraseña</label>
+                            <input type="password" class="form-control" [(ngModel)]="usuarioNuevo.password_confirmation"
+                                name="usuarioNuevo_password_confirmation">
+                        </div>
+                        <!-- <div class="mb-2">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" [(ngModel)]="usuarioNuevo.estado" name="usuarioNuevo_estado">
+                                <option value="A">Activo</option>
+                                <option value="I">Inactivo</option>
+                            </select>
+                        </div> -->
+                        <!-- <div class="mb-2">
+            <label class="form-label">Empresa</label>
+            <input type="number" class="form-control" [(ngModel)]="usuarioNuevo.empresa" name="usuarioNuevo_empresa">
+          </div> -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="showCreateModal = false">Cerrar</button>
+                    <!-- <button type="button" class="btn btn-primary" (click)="guardarNuevoUsuario()">Guardar</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <app-card [headerTitle]="'Become a member'" [border]="true" [padding]="false">
+                <div class="row g-3 pricing-block">
+                    @for(details of datos_planes;track details){
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="pricingtable">
+                            <div class="pricingtable-header">
+                                <h3 class="title">{{ details.plan_nombre }}</h3>
+                            </div>
+                            <div class="price-value">
+                                <span class="currency">$</span>
+                                <span class="amount fs-3">{{ details.precio }}</span><br>
+                                <span class="duration">mes</span>
+                            </div>
+                            <ul class="pricing-content">
+                                <!-- @for(item of details.details;track item){ -->
+                                <li>Usuario: {{ details.max_usuarios }}</li>
+                                <li>Almacenamiento: {{ details.max_almacenamiento }}</li>
+                                <li>Soporte: {{ details.soporte }}</li>
+                                <li>Integraciones: {{ details.integraciones }}</li>
+                                <li>Informes: {{ details.informes }}</li>
+                                <!-- } -->
+                            </ul>
+                            <div class="pricingtable-signup">
+                                <a class="btn btn-primary btn-lg" href="javascript:void(0)">Sign Up</a>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

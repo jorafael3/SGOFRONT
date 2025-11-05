@@ -1,0 +1,32 @@
+<div class="d-flex profile-media">
+    <div class="avatar-wrapper">
+      <img class="b-r-10" src="assets/images/dashboard/profile.png" alt="profile">
+      <!-- Fallback: mostrar iniciales si no hay imagen -->
+      <div class="avatar-initials b-r-10" *ngIf="false">
+        {{ getUserInitials() }}
+      </div>
+    </div>
+    <div class="flex-grow-1">
+        <span>{{ getCurrentUserName() }}</span>
+      <p class="mb-0">
+        {{ getUserRole() }}
+         <i class="middle fa-solid fa-angle-down"></i>
+        </p>
+    </div>
+  </div>
+  <ul class="profile-dropdown onhover-show-div">
+    @for(item of profile; track item) {
+        <li>
+            <a href="javascript:void(0)" [routerLink]="item.path">
+                <app-feather-icon [icon]="item.icon"></app-feather-icon>
+                <span>{{ item.title }}</span>
+            </a>
+        </li>
+    }
+    <li>
+        <a href="javascript:void(0)">
+            <app-feather-icon [icon]="'log-in'"></app-feather-icon>
+            <span (click)="logOut()">Log out</span>
+        </a>
+    </li>
+  </ul>

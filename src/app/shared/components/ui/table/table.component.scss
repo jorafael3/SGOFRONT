@@ -1,0 +1,55 @@
+/* Estilos para botones personalizados */
+.btn-separator {
+  border-left: 1px solid #dee2e6;
+  height: 32px;
+  align-self: center;
+}
+
+.dt-buttons .btn {
+  margin-right: 5px;
+  
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+/* Estilos para la sección de botones entre filtros y tabla */
+.table-actions-section {
+  display: flex;
+  justify-content: flex-start; // Alineado a la izquierda
+  padding: 15px 0;
+  border-bottom: 1px solid #e9ecef; // Línea separadora debajo
+  background-color: #f8f9fa; // Fondo gris claro
+  border-radius: 5px;
+  
+  .dt-buttons {
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    margin-bottom: 5px; // Espacio para cuando se envuelven en pantallas pequeñas
+  }
+}
+
+/* Responsive design para botones */
+@media (max-width: 768px) {
+  .table-actions-section {
+    justify-content: center; // Centrado en móviles
+    
+    .dt-buttons {
+      flex-direction: column;
+      align-items: center;
+      
+      .btn {
+        margin: 2px 0;
+        width: 100%;
+        max-width: 200px;
+      }
+      
+      .btn-separator {
+        display: none; // Ocultar separador en móviles
+      }
+    }
+  }
+}

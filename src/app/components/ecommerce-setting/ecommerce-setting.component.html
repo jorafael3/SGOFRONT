@@ -1,0 +1,82 @@
+<div class="container-fluid main-setting">
+  <div class="row">
+    <div class="col-12">
+      <app-card [headerTitle]="'E-commerce Settings'" [border]="true" [padding]="false">
+        <div class="row g-lg-3 g-4">
+          <div class="col-lg-3 col-12">
+            <div ngbNav #nav="ngbNav" [(activeId)]="active" class="nav flex-lg-column nav-pills nav-primary" orientation="vertical">
+              <ng-container ngbNavItem="general">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'general-setting'"></app-svg-icon>General
+                </a>
+                <ng-template ngbNavContent>
+                  <app-general></app-general>
+                </ng-template>
+              </ng-container>
+              <ng-container ngbNavItem="activation">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'activation-setting'"></app-svg-icon>Activation
+                </a>
+                <ng-template ngbNavContent>
+                  <app-activation></app-activation>
+                </ng-template>
+              </ng-container>
+              <ng-container ngbNavItem="wallet-point">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'wallet-point'"></app-svg-icon>Wallet Points
+                </a>
+                <ng-template ngbNavContent>
+                  <app-wallet-points></app-wallet-points>
+                </ng-template>
+              </ng-container>
+              <ng-container ngbNavItem="seller-commission">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'seller-commission'"></app-svg-icon>Seller Commissions
+                </a>
+                <ng-template ngbNavContent>
+                  <app-seller-commission></app-seller-commission>
+                </ng-template>
+              </ng-container>
+              <ng-container ngbNavItem="refund">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'setting-refund'"></app-svg-icon>Refund
+                </a>
+                <ng-template ngbNavContent>
+                  <app-refund></app-refund>
+                </ng-template>
+              </ng-container>
+              <ng-container ngbNavItem="delivery">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'complete-deliver'"></app-svg-icon>Delivery
+                </a>
+                <ng-template ngbNavContent>
+                  <app-delivery></app-delivery>
+                </ng-template>
+              </ng-container>
+              <ng-container ngbNavItem="payment-method">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'setting-payment'"></app-svg-icon>Payment Method
+                </a>
+                <ng-template ngbNavContent>
+                  <app-payment-method></app-payment-method>
+                </ng-template>
+              </ng-container>
+              <ng-container ngbNavItem="analytics">
+                <a ngbNavLink>
+                  <app-svg-icon [icon]="'setting-analytics'"></app-svg-icon>Analytics
+                </a>
+                <ng-template ngbNavContent>
+                  <app-analytics></app-analytics>
+                </ng-template>
+              </ng-container>
+            </div>
+          </div>
+          <div class="col-lg-9 col-12">
+            <div [ngbNavOutlet]="nav"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary ms-auto d-block">Save</button>
+      </app-card>
+    </div>
+  </div>
+</div>

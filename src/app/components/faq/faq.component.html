@@ -1,0 +1,18 @@
+<div class="container-fluid">
+    <div class="faq-wrap">
+        <div class="row">
+            
+            <app-common-faq-details [details]="faqDetails"></app-common-faq-details>
+
+            <div class="col-lg-12">
+                <app-faq-question-answer></app-faq-question-answer>
+            </div>
+            <div class="col-lg-12">
+                <app-common-featured-tutorials [details]="faqFeaturedTutorial" [headerTitle]="'Featured Tutorials'"></app-common-featured-tutorials>
+            </div>
+            <div class="col-lg-12">
+                <app-common-article-video [details]="faqArticlesAndVideos" [headerTitle]="'Latest Articles and Videos'" [faqClass]="'faq-wrapper'"></app-common-article-video>
+            </div>
+        </div>
+    </div>
+</div>

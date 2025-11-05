@@ -1,0 +1,411 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Lista de Facturas por Preparar'" [cardClass]="'mb-4'">
+                <div class="row mb-2">
+                    <!-- <div class="col-md-3 mb-2">
+                        <label for="fechaInicio" class="form-label mb-0">Fecha inicial:</label>
+                        <input id="fechaInicio" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaInicio" name="fechaPersonalizadaInicio">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="fechaFin" class="form-label mb-0">Fecha final:</label>
+                        <input id="fechaFin" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaFin" name="fechaPersonalizadaFin">
+                    </div> -->
+                </div>
+                <div class="customer-order-report table-responsive custom-scrollbar">
+
+                    <div class="recent-table">
+                        <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
+                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
+                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                            (customAction)="onCustomAction($event)">
+                        </app-table>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+
+
+    <div *ngIf="showPrepararModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog modal-xl" style="max-width: 80vw;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Preparar Factura - {{ facturaActual?.Secuencia }}</h5>
+                    <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Datos de la Cabecera -->
+                    <div class="row" *ngIf="facturaActual">
+                        <div class="col-12 mb-1">
+                            <h5 class="text-danger fw-bold">No cerrar esta ventana si esta realizando el proceso de
+                                preparación</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fa fa-file-invoice text-primary me-2"></i>
+                                <h6 class="text-primary mb-0">Información de la Factura</h6>
+                            </div>
+                        </div>
+                        <!-- Primera columna -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light py-2">
+                                    <small class="fw-bold text-muted">
+                                        <i class="fa fa-info-circle me-1"></i>Datos Principales
+                                    </small>
+                                </div>
+                                <div class="card-body py-2">
+                                    <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                        <tbody>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                    <i class="fa fa-warehouse text-info me-1"></i>Bodega:
+                                                </td>
+                                                <td class="py-1">
+                                                    <!-- <span class="badge bg-info bg-opacity-10 text-light fw-bold">
+                                                        {{ detalleFactura[0]["Código"] }}
+                                                    </span> -->
+                                                    <span class="fw-bold text-primary fs-5">
+                                                        {{ detalleFactura[0]["CodigosBodega"] }}
+                                                    </span>
+                                                    <!-- {{ facturaActual.Bodeganame }} -->
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-hashtag text-primary me-1"></i>Secuencia:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="fw-bold text-primary">{{ facturaActual.Secuencia
+                                                        }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-file-alt text-secondary me-1"></i>Número:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Numero }}</td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-user text-success me-1"></i>Cliente:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Nombre }}</td>
+                                            </tr>
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-id-card text-warning me-1"></i>RUC:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="font-monospace">{{ facturaActual.Ruc }}</span>
+                                                </td>
+                                            </tr> -->
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-calendar text-danger me-1"></i>Fecha:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-light text-dark fs-6">
+                                                        {{ facturaActual.Fecha | date:'dd/MM/yyyy HH:mm' }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Segunda columna -->
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-light py-2">
+                                    <small class="fw-bold text-muted">
+                                        <i class="fa fa-address-book me-1"></i>Información de Contacto
+                                    </small>
+                                </div>
+                                <div class="card-body py-2">
+                                    <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                        <tbody>
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                    <i class="fa fa-map-marker-alt text-danger me-1"></i>Dirección:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Direccion }}</td>
+                                            </tr> -->
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-city text-info me-1"></i>Ciudad:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-info bg-opacity-10 text-light fw-bold fs-6">
+                                                        {{ facturaActual.Ciudad }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-phone text-success me-1"></i>Teléfono:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="font-monospace">{{ facturaActual.Telefono?.trim() || 'N/A' }}</span>
+                                                </td>
+                                            </tr> -->
+                                            <!-- <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-envelope text-primary me-1"></i>Email:
+                                                </td>
+                                                <td class="py-1">
+                                                    <small class="text-primary">{{ facturaActual.Email }}</small>
+                                                </td>
+                                            </tr> -->
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-user-tie text-secondary me-1"></i>Vendedor:
+                                                </td>
+                                                <td class="py-1">{{ facturaActual.Vendedor }}</td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-shopping-cart text-warning me-1"></i>Tipo Pedido:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-primary bg-opacity-10 text-light fw-bold fs-6">
+                                                        {{ facturaActual.TipoP }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 28px;">
+                                                <td class="fw-bold text-muted py-1">
+                                                    <i class="fa fa-credit-card text-success me-1"></i>Forma Pago:
+                                                </td>
+                                                <td class="py-1">
+                                                    <span class="badge bg-success bg-opacity-10 text-light fw-bold">
+                                                        {{ facturaActual.FPago }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tablas del Detalle Separadas por JAULA -->
+                    <div class="row">
+
+                        <!-- Productos NO JAULA -->
+                        <div class="col-12" *ngIf="productosNoJaula.length > 0">
+                            <div class="card border-success">
+                                <div class="card-header bg-opacity-10">
+                                    <h6 class="text-success mb-0">
+                                        <i class="fa fa-box-open me-1"></i>Productos Libres ({{ productosNoJaula.length
+                                        }})
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover table-sm mb-0">
+                                            <thead class="table-success">
+                                                <tr>
+                                                    <th class="text-center py-2" style="width: 12%;">
+                                                        <i class="fa fa-barcode me-1"></i>Código
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 6%;">
+                                                        Cant.
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 30%;">
+                                                        <i class="fa fa-info-circle me-1"></i>Descripción
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-map-marker-alt me-1"></i>Ubicación
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 8%;">
+                                                        <i class="fa fa-check-circle me-1"></i>Validar
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 8%;">
+                                                        <i class="fa fa-shield-alt me-1"></i>Estado
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 26%;">
+                                                        <i class="fa fa-qrcode me-1"></i>Código de barras
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let item of productosNoJaula; let i = index"
+                                                    class="align-middle" style="height: 45px;">
+                                                    <td class="text-center fw-bold py-1">
+                                                        {{ item.CopProducto }}
+                                                    </td>
+                                                    <td class="text-center fw-bold text-primary py-1">
+                                                        {{ item.Cantidad }}
+                                                    </td>
+                                                    <td class="small text-muted py-1">{{ item.Detalle }}</td>
+                                                    <td class="text-center small py-1 fw-bold">
+                                                        <div>
+                                                            {{ item.ubi1 }}
+                                                            <div *ngIf="item.ubi2 && item.ubi2 !== 'N/A'" class="mt-1">
+                                                                <small class="text-muted">{{ item.ubi2 }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center py-1">
+                                                        <span *ngIf="item.necesitaValidacion"
+                                                            class="badge bg-warning text-dark fs-6">
+                                                            <i class="fa fa-exclamation-triangle me-1"></i>Requerido
+                                                        </span>
+                                                        <span *ngIf="!item.necesitaValidacion"
+                                                            class="badge bg-secondary fs-6">
+                                                            <i class="fa fa-minus me-1"></i>N/A
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center py-1">
+                                                        <span *ngIf="item.validado" class="badge bg-success fs-6">
+                                                            <i class="fa fa-check me-1"></i>Validado
+                                                        </span>
+                                                        <span *ngIf="!item.validado && item.necesitaValidacion"
+                                                            class="badge bg-danger fs-6">
+                                                            <i class="fa fa-times me-1"></i>Pendiente
+                                                        </span>
+                                                        <span *ngIf="!item.validado && !item.necesitaValidacion"
+                                                            class="badge bg-light text-dark fs-6">
+                                                            <i class="fa fa-check me-1"></i>OK
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-1">
+                                                        <div class="input-group input-group-sm"
+                                                            *ngIf="item.necesitaValidacion">
+                                                            <span class="input-group-text bg-success bg-opacity-25">
+                                                                <i class="fa fa-qrcode text-success"></i>
+                                                            </span>
+                                                            <input type="text" class="form-control"
+                                                                [(ngModel)]="inputValues[item.input_field]"
+                                                                (keypress)="onInputKeyPress($event, item, item.input_field)"
+                                                                placeholder="Escanear código de barras o código producto..."
+                                                                [attr.data-product]="item.CopProducto"
+                                                                [disabled]="item.validado">
+                                                        </div>
+                                                        <div *ngIf="!item.necesitaValidacion"
+                                                            class="text-center text-muted small">
+                                                            Sin código de barras
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Productos en JAULA -->
+                        <div class="col-12" *ngIf="productosJaula.length > 0">
+                            <div class="card border-warning">
+                                <div class="card-header bg-opacity-10">
+                                    <h6 class="text-warning mb-0">
+                                        <i class="fa fa-lock me-1"></i>Productos en JAULA ({{ productosJaula.length }})
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover table-sm mb-0">
+                                            <thead class="table-warning">
+                                                <tr>
+                                                    <th class="text-center py-2" style="width: 12%;">
+                                                        <i class="fa fa-barcode me-1"></i>Código
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 6%;">
+                                                        Cant.
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 30%;">
+                                                        <i class="fa fa-info-circle me-1"></i>Descripción
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 10%;">
+                                                        <i class="fa fa-map-marker-alt me-1"></i>Ubicación
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 8%;">
+                                                        <i class="fa fa-check-circle me-1"></i>Validar
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 8%;">
+                                                        <i class="fa fa-shield-alt me-1"></i>Estado
+                                                    </th>
+                                                    <th class="text-center py-2" style="width: 26%;">
+                                                        <i class="fa fa-qrcode me-1"></i>Código de barras
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let item of productosJaula; let i = index"
+                                                    class="align-middle" style="height: 45px;">
+                                                    <td class="text-center fw-bold py-1">
+                                                        {{ item.CopProducto }}
+                                                    </td>
+                                                    <td class="text-center fw-bold text-primary py-1">
+                                                        {{ item.Cantidad }}
+                                                    </td>
+                                                    <td class="small text-muted py-1">{{ item.Detalle }}</td>
+                                                    <td class="text-center small py-1">
+                                                        <div>
+                                                            {{ item.ubi1 }}
+                                                            <div *ngIf="item.ubi2 && item.ubi2 !== 'N/A'" class="mt-1">
+                                                                <small class="text-muted">{{ item.ubi2 }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center py-1">
+                                                        <span class="badge bg-warning text-dark">
+                                                            <i class="fa fa-exclamation-triangle me-1"></i>Requerido
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center py-1">
+                                                        <span *ngIf="item.validado" class="badge bg-success">
+                                                            <i class="fa fa-check me-1"></i>Validado
+                                                        </span>
+                                                        <span *ngIf="!item.validado" class="badge bg-danger">
+                                                            <i class="fa fa-times me-1"></i>Pendiente
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-1">
+                                                        <div class="input-group input-group-sm">
+                                                            <span class="input-group-text bg-warning bg-opacity-25">
+                                                                <i class="fa fa-lock text-warning"></i>
+                                                            </span>
+                                                            <input type="text" class="form-control"
+                                                                [(ngModel)]="inputValues[item.input_field]"
+                                                                (keypress)="onInputKeyPress($event, item, item.input_field)"
+                                                                placeholder="Escanear código de barras o código producto..."
+                                                                [attr.data-product]="item.CopProducto"
+                                                                [disabled]="item.validado">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Mensaje cuando no hay productos -->
+                        <div class="col-12" *ngIf="productosJaula.length === 0 && productosNoJaula.length === 0">
+                            <div class="text-center text-muted py-4">
+                                <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
+                                No hay productos en el detalle
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+                    <button type="button" class="btn btn-primary" (click)="guardarPreparacion()">
+                        <i class="fa fa-save me-1"></i>Guardar Preparación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

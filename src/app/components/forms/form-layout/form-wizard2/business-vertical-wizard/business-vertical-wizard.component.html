@@ -1,0 +1,45 @@
+<app-card [headerTitle]="title" [border]="true" [padding]="false">
+  <div class="horizontal-wizard-wrapper vertical-variations" [ngClass]="{'vertical-options': type ? '': 'horizontal'}">
+    <div class="row g-3">
+      <div class="col-12 main-horizontal-header" [ngClass]="{'col-xl-3': type ? '': 'horizontal'}">
+        <div ngbNav #nav="ngbNav" [(activeId)]="active" class="nav nav-pills horizontal-options">
+          @for(tab of businessVerticalWizard;track tab; let i = $index){
+          <div [ngbNavItem]="i + 1">
+            <a class="nav-link " ngbNavLink>
+              <div class="horizontal-wizard">
+                <div class="stroke-icon-wizard">
+                  <span>{{ tab.id }}</span></div>
+                <div class="horizontal-wizard-content"> 
+                  <h6>{{ tab.title }}</h6>
+                </div>
+              </div>
+            </a>
+            <ng-template ngbNavContent>
+              @if(tab.value == 'choose account'){
+                <app-choose-account [active]="active" (changeTab)="changeTab($event)"></app-choose-account>
+              }
+              @if(tab.value == 'business settings'){
+                <app-business-setting [active]="active" (changeTab)="changeTab($event)"></app-business-setting>
+              }
+              @if(tab.value == 'contact details'){
+                <app-contact-details [active]="active" (changeTab)="changeTab($event)"></app-contact-details>
+              }
+              @if(tab.value == 'pay details'){
+                <app-pay-details [active]="active" (changeTab)="changeTab($event)"></app-pay-details>
+                }
+              @if(tab.value == 'completed'){
+                <app-completed></app-completed>
+              }
+            </ng-template>
+          </div>
+          }
+        </div>
+      </div>
+      <div class="col-12" [ngClass]="{'col-xl-9 ': type ? '': 'horizontal'}">
+        <div class="dark-field">
+          <div [ngbNavOutlet]="nav"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>
