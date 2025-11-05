@@ -26,6 +26,14 @@ export const content: Routes = [
             breadcrumb: "Logística"
         }
     },
+    {
+        path: 'oym',
+        loadChildren: () => import('../../components/oym/oym.routes').then(r => r.oymRoutes),
+        data: {
+            title: "OyM",
+            breadcrumb: "OyM"
+        }
+    },
 
     {
         path: 'mantenimiento',

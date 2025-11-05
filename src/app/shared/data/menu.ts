@@ -82,13 +82,29 @@ export const menuItems: Menu[] = [
     ],
   },
   {
-    title: 'Importaciones',
-    id: 'importaciones',
+    title: 'OyM',
+    id: 'oym',
     icon: 'file',
-    type: 'link',
-    path: '/ventas',
+    type: 'sub',
+    path: '/OyM',
     bookmark: true,
     level: 1,
+    badge: true,
+    badge_value: "3",
+    badge_color: 'primary',
+    children: [
+      {
+        title: 'MPPs',
+        id: 'MPPs',
+        type: 'sub',
+        children: [
+          { path: 'oym/mpps/prepararfacturas', title: 'Manuales de Funciones', type: 'link' },
+          { path: 'oym/mpps/prepararfacturas', title: 'Procedimientos', type: 'link' },
+          { path: 'oym/mpps/prepararfacturas', title: 'Políticas', type: 'link' },
+        ]
+      },
+
+    ],
   },
   {
     title: 'Proveeduria',
@@ -108,7 +124,7 @@ export const menuItems: Menu[] = [
     bookmark: true,
     level: 1,
   },
-   {
+  {
     title: 'Financiero',
     id: 'financiero',
     icon: 'file',
@@ -117,7 +133,7 @@ export const menuItems: Menu[] = [
     bookmark: true,
     level: 1,
   },
-   {
+  {
     title: 'Financiero',
     id: 'financiero',
     icon: 'file',
@@ -126,7 +142,7 @@ export const menuItems: Menu[] = [
     bookmark: true,
     level: 1,
   },
-   {
+  {
     title: 'Financiero',
     id: 'financiero',
     icon: 'file',
@@ -135,7 +151,7 @@ export const menuItems: Menu[] = [
     bookmark: true,
     level: 1,
   },
-   {
+  {
     title: 'Financiero',
     id: 'financiero',
     icon: 'file',
@@ -144,7 +160,7 @@ export const menuItems: Menu[] = [
     bookmark: true,
     level: 1,
   },
-   {
+  {
     title: 'Financiero',
     id: 'financiero',
     icon: 'file',
@@ -153,7 +169,7 @@ export const menuItems: Menu[] = [
     bookmark: true,
     level: 1,
   },
-  
+
   {
     title: 'Ventas',
     id: 'ventas',
