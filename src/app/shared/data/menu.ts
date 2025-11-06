@@ -56,6 +56,12 @@ export const menuItems: Menu[] = [
         path: 'logistica/opciones',
       },
       {
+        title: 'Trackings',
+        id: 'Trackings',
+        type: 'link',
+        path: 'logistica/tracking',
+      },
+      {
         title: 'Preparar',
         id: 'Preparar',
         type: 'sub',
@@ -77,6 +83,14 @@ export const menuItems: Menu[] = [
         type: 'sub',
         children: [
           { path: '/logistica/picking/guiaspickup', title: 'Guias Pickup', type: 'link' },
+        ]
+      },
+      {
+        title: 'Confirmar Envios/Entregas',
+        id: 'ConfirmarEnvios',
+        type: 'sub',
+        children: [
+          { path: '/logistica/picking/despachar', title: 'Facturas por despachar', type: 'link' },
         ]
       },
     ],
