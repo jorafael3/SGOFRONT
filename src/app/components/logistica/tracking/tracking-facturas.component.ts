@@ -23,6 +23,9 @@ export class TrackingFacturasComponent {
   // Datos de la factura
   facturaActual: any = null;
   detalleFactura: any[] = [];
+  seriesData: any[] = [];
+  isLoadingSeries: boolean = false;
+  showModalSeries: boolean = false;
 
   fechaPersonalizadaInicio: string = '';
   fechaPersonalizadaFin: string = '';
@@ -253,5 +256,50 @@ export class TrackingFacturasComponent {
 
     // Convertir el objeto a array
     return Object.values(agrupado);
+  }
+
+  verSeries() {
+    if (!this.facturaActual || !this.facturaActual.Id) {
+      Swal.fire("Error!", "No hay factura seleccionada", "warning");
+      return;
+    }
+
+    this.isLoadingSeries = true;
+    this.seriesData = [];
+    this.showModalSeries = true;
+
+    const param = {
+      factura_id: this.facturaActual.Id
+    };
+    console.log('param: ', param);
+
+    this.FacturacionService.GetFacturasSeries(param).subscribe({
+      next: (response: any) => {
+        console.log('response: ', response);
+        this.isLoadingSeries = false;
+        
+        if (response.success && response.data && response.data.length > 0) {
+          // Procesar los datos para separar las series
+          this.seriesData = response.data.map((item: any) => ({
+            ...item,
+            series_array: item.series ? item.series.split('/') : []
+          }));
+        } else {
+          this.seriesData = [];
+        }
+      },
+      error: (error: any) => {
+        console.log('error: ', error);
+        this.isLoadingSeries = false;
+        this.seriesData = [];
+        Swal.fire("Error!", "Ocurrió un error al buscar las series", "error");
+      }
+    });
+  }
+
+  cerrarModalSeries() {
+    this.showModalSeries = false;
+    this.seriesData = [];
+    this.isLoadingSeries = false;
   }
 }

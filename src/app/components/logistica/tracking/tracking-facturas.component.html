@@ -39,7 +39,6 @@
                                 <i class="fa fa-file-invoice text-primary me-2"></i>
                                 <h6 class="text-primary mb-0">Información de la Factura</h6>
                             </div>
-
                         </div>
                     </div>
                     <!-- Primera columna -->
@@ -98,6 +97,27 @@
                                                 <span class="badge bg-light text-dark fs-6">
                                                     {{ facturaActual?.Fecha | date:'dd/MM/yyyy HH:mm' }}
                                                 </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;" *ngIf="facturaActual?.SRI_LNK">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-file-pdf text-danger me-1"></i>PDF Factura:
+                                            </td>
+                                            <td class="py-1">
+                                                <a [href]="'http://' + facturaActual?.SRI_LNK" target="_blank"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa fa-external-link-alt me-1"></i>Ver PDF
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-file-pdf text-danger me-1"></i>Series:
+                                            </td>
+                                            <td class="py-1">
+                                                <button (click)="verSeries()" class="btn btn-sm btn-outline-success">
+                                                    <i class="fa fa-external-link-alt me-1"></i>Ver series
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -345,7 +365,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="customer-order-report table-responsive custom-scrollbar" *ngIf="!MostrarDetalleFactura">
+                <!-- <div class="customer-order-report table-responsive custom-scrollbar" *ngIf="!MostrarDetalleFactura">
                     <div class="recent-table">
                         <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
                             [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
@@ -354,8 +374,74 @@
                             (customAction)="onCustomAction($event)">
                         </app-table>
                     </div>
-                </div>
+                </div> -->
             </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Series -->
+<div *ngIf="showModalSeries" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalSeriesLabel">
+                    <i class="fa fa-barcode me-2"></i>Series de Productos - Factura {{ facturaActual?.Secuencia }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="cerrarModalSeries()"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="isLoadingSeries" class="text-center py-4">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando series...</p>
+                </div>
+
+                <div *ngIf="!isLoadingSeries && seriesData.length > 0" class="table-responsive">
+                    <table class="table table-striped table-hover nowrap">
+                        <thead class="table-info">
+                            <tr>
+                                <th class="" style="width: 20%;">
+                                    <i class="fa fa-barcode me-1"></i>Código
+                                </th>
+                                <th class="text-center" style="width: 40%;">
+                                    <i class="fa fa-info-circle me-1"></i>Producto
+                                </th>
+                                <th class="text-center" style="width: 40%;">
+                                    <i class="fa fa-list me-1"></i>Series
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of seriesData" class="align-middle">
+                                <td class="fw-bold">
+                                    {{ item.codigo }}
+                                </td>
+                                <td class="px-3">
+                                    <small>{{ item.producto_nombre }}</small>
+                                </td>
+                                <td class="px-3">
+                                    <div *ngFor="let serie of item.series_array" class="mb-1">
+                                        <span class="badge bg-dark fs-6">{{ serie }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div *ngIf="!isLoadingSeries && seriesData.length === 0" class="text-center py-4">
+                    <i class="fa fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                    <p class="mt-2 text-muted">No se encontraron series para esta factura</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalSeries()">
+                    <i class="fa fa-times me-1"></i>Cerrar
+                </button>
+            </div>
         </div>
     </div>
 </div>

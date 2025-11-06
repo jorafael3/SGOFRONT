@@ -94,10 +94,10 @@ export class FacturacionService extends BaseApiService {
         return this.http.post<any>(this.endpointguiaspickup + "GetTransporteGuiasPickup", data, { headers: this.headers });
     }
 
-        FinalizarGuiasPickup(data: any): Observable<any> {
-            data.userdata = this.getUserSessionData();
-            return this.http.post<any>(this.endpointguiaspickup + "GuardarGuiasPickup", data, { headers: this.headers });
-        }
+    FinalizarGuiasPickup(data: any): Observable<any> {
+        data.userdata = this.getUserSessionData();
+        return this.http.post<any>(this.endpointguiaspickup + "GuardarGuiasPickup", data, { headers: this.headers });
+    }
 
     GuardarCambioTipoPedido(data: any): Observable<any> {
         // Implementar la lógica para guardar el cambio de tipo de pedido
@@ -109,6 +109,10 @@ export class FacturacionService extends BaseApiService {
 
     GetFacturasTracking(data: any): Observable<any> {
         return this.http.post<any>(this.endpointtracking + "GetFacturasTracking", data, { headers: this.headers });
+    }
+
+    GetFacturasSeries(data: any): Observable<any> {
+        return this.http.post<any>(this.endpointtracking + "GetFacturasSeries", data, { headers: this.headers });
     }
 
 }
