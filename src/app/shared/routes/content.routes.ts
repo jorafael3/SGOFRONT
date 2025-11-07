@@ -30,8 +30,8 @@ export const content: Routes = [
         path: 'oym',
         loadChildren: () => import('../../components/oym/oym.routes').then(r => r.oymRoutes),
         data: {
-            title: "OyM",
-            breadcrumb: "OyM"
+            title: "O&M",
+            breadcrumb: "O&M"
         }
     },
 

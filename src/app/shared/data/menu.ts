@@ -82,11 +82,11 @@ export const menuItems: Menu[] = [
     ],
   },
   {
-    title: 'OyM',
-    id: 'oym',
+    title: 'O&M',
+    id: 'o&m',
     icon: 'file',
     type: 'sub',
-    path: '/OyM',
+    path: '/oym',
     bookmark: true,
     level: 1,
     badge: true,
@@ -98,9 +98,9 @@ export const menuItems: Menu[] = [
         id: 'MPPs',
         type: 'sub',
         children: [
-          { path: 'oym/mpps/prepararfacturas', title: 'Manuales de Funciones', type: 'link' },
-          { path: 'oym/mpps/prepararfacturas', title: 'Procedimientos', type: 'link' },
-          { path: 'oym/mpps/prepararfacturas', title: 'Políticas', type: 'link' },
+          { path: 'oym/mpps/manuales_de_funciones', title: 'Manuales de Funciones', type: 'link' },
+          { path: 'oym/mpps/procedimientos', title: 'Procedimientos', type: 'link' },
+          { path: 'oym/mpps/politicas', title: 'Políticas', type: 'link' },
         ]
       },
 

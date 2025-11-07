@@ -28,7 +28,7 @@ function getApiUrl(): string {
   }
 
   // Por defecto, usar el hostname actual
-  return `http://${hostname}:8080/SGOBACK`;
+  return `http://${hostname}/SGOBACK`;
 }
 
 export const environment = {
