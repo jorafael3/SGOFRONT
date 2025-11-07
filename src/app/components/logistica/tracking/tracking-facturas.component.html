@@ -1,0 +1,447 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Buscar Tracking de Facturas'" [cardClass]="'mb-4'">
+                <div class="row mb-2">
+                    <!-- <div class="col-md-3 mb-2">
+                        <label                         </div>
+                    </div>
+                </div>
+                <div class="customer-order-report table-responsive custom-scrollbar" *ngIf="!MostrarDetalleFactura">io" class="form-label mb-0">Fecha inicial:</label>
+                        <input id="fechaInicio" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaInicio" name="fechaPersonalizadaInicio">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="fechaFin" class="form-label mb-0">Fecha final:</label>
+                        <input id="fechaFin" type="date" class="form-control form-control-sm"
+                            [(ngModel)]="fechaPersonalizadaFin" name="fechaPersonalizadaFin">
+                    </div> -->
+                </div>
+                <div class="row mb-2">
+                    <div class="col-xl-4 col-md-6 mb-2">
+                        <label class="form-label fw-bold">Secuencia Factura:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-solid" placeholder="001-001-000000123"
+                                [(ngModel)]="secuenciafactura" name="secuenciafactura">
+                            <button class="btn btn-primary" (click)="onbuscarFactura()">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" *ngIf="MostrarDetalleFactura">
+                    <div class="col-12 mb-1">
+                        <div *ngIf="isMultibodega()" class="mb-2">
+                            <span class="badge bg-warning text-dark fs-6">
+                                <i class="fa fa-exclamation-triangle me-1"></i>FACTURA MULTIBODEGA
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-file-invoice text-primary me-2"></i>
+                                <h6 class="text-primary mb-0">Información de la Factura</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Primera columna -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-light py-2">
+                                <small class="fw-bold text-muted">
+                                    <i class="fa fa-info-circle me-1"></i>Datos Principales
+                                </small>
+                            </div>
+                            <div class="card-body py-2">
+                                <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                    <tbody>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                <i class="fa fa-warehouse text-info me-1"></i>Bodega(s):
+                                            </td>
+                                            <td class="py-1">
+                                                <span *ngFor="let codigo of getBodegasUnicas(); let i = index"
+                                                    class="badge bg-info me-1 fs-6">
+                                                    {{ codigo }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-hashtag text-primary me-1"></i>Secuencia:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="fw-bold text-primary">
+                                                    {{ facturaActual?.Secuencia }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-file-alt text-secondary me-1"></i>Número:
+                                            </td>
+                                            <td class="py-1">
+                                                {{ facturaActual?.Numero }}
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-user text-success me-1"></i>Cliente:
+                                            </td>
+                                            <td class="py-1">
+                                                {{ facturaActual?.Nombre?.trim() }}
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-calendar text-danger me-1"></i>Fecha:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-light text-dark fs-6">
+                                                    {{ facturaActual?.Fecha | date:'dd/MM/yyyy HH:mm' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;" *ngIf="facturaActual?.SRI_LNK">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-file-pdf text-danger me-1"></i>PDF Factura:
+                                            </td>
+                                            <td class="py-1">
+                                                <a [href]="'http://' + facturaActual?.SRI_LNK" target="_blank"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa fa-external-link-alt me-1"></i>Ver PDF
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-file-pdf text-danger me-1"></i>Series:
+                                            </td>
+                                            <td class="py-1">
+                                                <button (click)="verSeries()" class="btn btn-sm btn-outline-success">
+                                                    <i class="fa fa-external-link-alt me-1"></i>Ver series
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Segunda columna -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-light py-2">
+                                <small class="fw-bold text-muted">
+                                    <i class="fa fa-address-book me-1"></i>Información de Contacto
+                                </small>
+                            </div>
+                            <div class="card-body py-2">
+                                <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                    <tbody>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-city text-info me-1"></i>Ciudad:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-info bg-opacity-10 text-light fw-bold fs-6">
+                                                    {{ facturaActual?.Ciudad?.trim() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-user-tie text-secondary me-1"></i>Vendedor:
+                                            </td>
+                                            <td class="py-1">{{ facturaActual?.Vendedor?.trim() }}</td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-shopping-cart text-warning me-1"></i>Tipo Pedido:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-primary bg-opacity-10 text-light fw-bold fs-6">
+                                                    {{ facturaActual?.TipoP?.trim() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-credit-card text-success me-1"></i>Forma Pago:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-success bg-opacity-10 text-light fw-bold">
+                                                    {{ facturaActual?.FPago?.trim() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;" *ngIf="facturaActual?.Ruc">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-id-card text-warning me-1"></i>RUC:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="font-monospace">{{ facturaActual?.Ruc?.trim() }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tablas de Detalle -->
+                <div class="row mt-3" *ngIf="MostrarDetalleFactura && detalleFactura.length > 0">
+                    <!-- Tabla de Productos -->
+                    <div class="col-12 mb-3">
+                        <div class="card border-success">
+                            <div class="card-header">
+                                <h6 class="text-success mb-0">
+                                    <i class="fa fa-box-open me-1"></i>Detalle de Productos ({{ detalleFactura.length
+                                    }})
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover table-sm mb-0">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th class="text-center py-2" style="width: 8%;">
+                                                    <i class="fa fa-warehouse me-1"></i>Bodega
+                                                </th>
+                                                <th class="text-center py-2" style="width: 12%;">
+                                                    <i class="fa fa-barcode me-1"></i>Código
+                                                </th>
+                                                <th class="text-center py-2" style="width: 35%;">
+                                                    <i class="fa fa-info-circle me-1"></i>Descripción
+                                                </th>
+                                                <th class="text-center py-2" style="width: 8%;">
+                                                    Cantidad
+                                                </th>
+                                                <th class="text-center py-2" style="width: 10%;">
+                                                    Subtotal
+                                                </th>
+                                                <th class="text-center py-2" style="width: 10%;">
+                                                    IVA
+                                                </th>
+                                                <th class="text-center py-2" style="width: 10%;">
+                                                    Total
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of detalleFactura; let i = index" class="align-middle">
+                                                <td class="text-center py-2">
+                                                    <span class="badge bg-dark fs-6" [title]="item.bodega_nombre"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top">
+                                                        {{ item.bodega_codigo }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-center fw-bold py-2">
+                                                    {{ item.producto_codigo }}
+                                                </td>
+                                                <td class="py-2">
+                                                    <small>{{ item.producto_nombre }}</small>
+                                                </td>
+                                                <td class="text-center fw-bold text-primary py-2">
+                                                    {{ item.factura_cantidad }}
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <small class="text-muted">${{ item.factura_subtoal | number:'1.2-2'
+                                                        }}</small>
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <small class="text-muted">${{ item.factura_iva | number:'1.2-2'
+                                                        }}</small>
+                                                </td>
+                                                <td class="text-center fw-bold py-2">
+                                                    <span class="text-success">${{ item.factura_total | number:'1.2-2'
+                                                        }}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Estados de Tracking -->
+                    <div class="col-12">
+                        <div class="card border-info">
+                            <div class="card-header">
+                                <h6 class="text-info mb-0">
+                                    <i class="fa fa-route me-1"></i>Estado de Tracking por Bodega
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover table-sm mb-0">
+                                        <thead class="table-info">
+                                            <tr>
+                                                <th class="text-center py-2" style="width: 12%;">Bodega</th>
+                                                <th class="text-center py-2" style="width: 8%;">Productos</th>
+                                                <th class="text-center py-2" style="width: 12%;">Estado</th>
+                                                <th class="text-center py-2" style="width: 17%;">Preparado</th>
+                                                <th class="text-center py-2" style="width: 17%;">Verificado</th>
+                                                <th class="text-center py-2" style="width: 17%;">Guía Consolidado</th>
+                                                <th class="text-center py-2" style="width: 17%;">Guía Despacho</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of getDetalleAgrupadoPorBodega(); let i = index"
+                                                class="align-middle">
+                                                <td class="text-center py-2">
+                                                    <span class="badge bg-dark fs-6" [title]="item.bodega_nombre"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top">
+                                                        {{ item.bodega_codigo }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-center fw-bold py-2">
+                                                    {{ item.productos_count }}
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <span class="badge fs-6" [ngClass]="{
+                                                            'bg-success': item.fl_estado === 'INGRESADAGUIA',
+                                                            'bg-warning text-dark': item.fl_estado === 'PREPARADA',
+                                                            'bg-info': item.fl_estado === 'VERIFICADA',
+                                                            'bg-secondary': item.fl_estado === '-' || !item.fl_estado
+                                                          }">
+                                                        {{ item.fl_estado === '-' ? 'Pendiente' : (item.fl_estado ||
+                                                        'Pendiente') }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <div *ngIf="item.fl_preparadapor && item.fl_preparadapor !== '-'">
+                                                        <small class="fw-bold text-success">{{ item.fl_preparadapor
+                                                            }}</small><br>
+                                                        <small class="text-muted">{{ item.fl_preparadafecha |
+                                                            date:'dd/MM/yyyy HH:mm' }}</small>
+                                                    </div>
+                                                    <span *ngIf="!item.fl_preparadapor || item.fl_preparadapor === '-'"
+                                                        class="text-muted">-</span>
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <div *ngIf="item.fl_verificadapor && item.fl_verificadapor !== '-'">
+                                                        <small class="fw-bold text-primary">{{ item.fl_verificadapor
+                                                            }}</small><br>
+                                                        <small class="text-muted">{{ item.fl_verificadafecha |
+                                                            date:'dd/MM/yyyy HH:mm' }}</small>
+                                                    </div>
+                                                    <span
+                                                        *ngIf="!item.fl_verificadapor || item.fl_verificadapor === '-'"
+                                                        class="text-muted">-</span>
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <div
+                                                        *ngIf="item.fl_guiaconsolidadopor && item.fl_guiaconsolidadopor !== ''">
+                                                        <small class="fw-bold text-warning">{{ item.fl_guiaconsolidado
+                                                            }}</small><br>
+                                                        <small class="fw-bold text-info">{{ item.fl_guiaconsolidadopor
+                                                            }}</small><br>
+                                                        <small class="text-muted">{{ item.fl_guiaconsolidadofecha |
+                                                            date:'dd/MM/yyyy HH:mm' }}</small>
+                                                    </div>
+                                                    <span
+                                                        *ngIf="!item.fl_guiaconsolidadopor || item.fl_guiaconsolidadopor === ''"
+                                                        class="text-muted">-</span>
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <div
+                                                        *ngIf="item.fl_guiadespachofinalpor && item.fl_guiadespachofinalpor !== '-'">
+                                                        <small class="fw-bold text-danger">{{ item.fl_guiadespachofinal
+                                                            }}</small><br>
+                                                        <small class="fw-bold text-success">{{
+                                                            item.fl_guiadespachofinalpor }}</small><br>
+                                                        <small class="text-muted">{{ item.fl_guiadespachofinalfecha |
+                                                            date:'dd/MM/yyyy HH:mm' }}</small>
+                                                    </div>
+                                                    <span
+                                                        *ngIf="!item.fl_guiadespachofinalpor || item.fl_guiadespachofinalpor === '-'"
+                                                        class="text-muted">-</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="customer-order-report table-responsive custom-scrollbar" *ngIf="!MostrarDetalleFactura">
+                    <div class="recent-table">
+                        <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
+                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
+                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                            (customAction)="onCustomAction($event)">
+                        </app-table>
+                    </div>
+                </div> -->
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Series -->
+<div *ngIf="showModalSeries" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalSeriesLabel">
+                    <i class="fa fa-barcode me-2"></i>Series de Productos - Factura {{ facturaActual?.Secuencia }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="cerrarModalSeries()"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="isLoadingSeries" class="text-center py-4">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Cargando series...</p>
+                </div>
+
+                <div *ngIf="!isLoadingSeries && seriesData.length > 0" class="table-responsive">
+                    <table class="table table-striped table-hover nowrap">
+                        <thead class="table-info">
+                            <tr>
+                                <th class="" style="width: 20%;">
+                                    <i class="fa fa-barcode me-1"></i>Código
+                                </th>
+                                <th class="text-center" style="width: 40%;">
+                                    <i class="fa fa-info-circle me-1"></i>Producto
+                                </th>
+                                <th class="text-center" style="width: 40%;">
+                                    <i class="fa fa-list me-1"></i>Series
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of seriesData" class="align-middle">
+                                <td class="fw-bold">
+                                    {{ item.codigo }}
+                                </td>
+                                <td class="px-3">
+                                    <small>{{ item.producto_nombre }}</small>
+                                </td>
+                                <td class="px-3">
+                                    <div *ngFor="let serie of item.series_array" class="mb-1">
+                                        <span class="badge bg-dark fs-6">{{ serie }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div *ngIf="!isLoadingSeries && seriesData.length === 0" class="text-center py-4">
+                    <i class="fa fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                    <p class="mt-2 text-muted">No se encontraron series para esta factura</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalSeries()">
+                    <i class="fa fa-times me-1"></i>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

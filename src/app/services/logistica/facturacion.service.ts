@@ -20,6 +20,7 @@ export class FacturacionService extends BaseApiService {
     private readonly endpoint = environment.apiUrl + '/logistica/facturacion/prepararfacturas/';
     private readonly endpointverificar = environment.apiUrl + '/logistica/facturacion/verificarfacturas/';
     private readonly endpointguiaspickup = environment.apiUrl + '/logistica/facturacion/guiaspickup/';
+    private readonly endpointtracking = environment.apiUrl + '/logistica/facturacion/tracking/';
 
     constructor(http: HttpClient) {
         super(http);
@@ -102,6 +103,16 @@ export class FacturacionService extends BaseApiService {
         // Implementar la lógica para guardar el cambio de tipo de pedido
         data.userdata = this.getUserSessionData();
         return this.http.post<any>(this.endpointguiaspickup + "GuardarCambioTipoPedido", data, { headers: this.headers });
+    }
+
+    //** TRACKING  */
+
+    GetFacturasTracking(data: any): Observable<any> {
+        return this.http.post<any>(this.endpointtracking + "GetFacturasTracking", data, { headers: this.headers });
+    }
+
+    GetFacturasSeries(data: any): Observable<any> {
+        return this.http.post<any>(this.endpointtracking + "GetFacturasSeries", data, { headers: this.headers });
     }
 
 }

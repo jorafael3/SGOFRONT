@@ -4,6 +4,9 @@ import { PrepararFacturasComponent } from "./picking/prepararfacturas/preparar-f
 import { VerificarFacturasComponent } from "./picking/verificarfacturas/verificar-facturas.component";
 import { GuiasPickupComponent } from "./picking/guiaspickup/guias-pickup.component";
 import { OpcionesComponent } from "./opciones/opciones.component";
+import { DespacharFacturasComponent } from "./picking/despachar/despachar-facturas.component";
+import { TrackingFacturasComponent } from "./tracking/tracking-facturas.component";
+
 export const LogisticaRoutes: Routes = [
     {
         path: 'picking/prepararfacturas',
@@ -35,6 +38,22 @@ export const LogisticaRoutes: Routes = [
         data: {
             title: 'Opciones',
             breadcrumb: 'Opciones'
+        }
+    },
+    {
+        path: 'picking/despachar',
+        component: DespacharFacturasComponent,
+        data: {
+            title: 'Facturas por despachar',
+            breadcrumb: 'Facturas por despachar'
+        }
+    },
+    {
+        path: 'tracking',
+        component: TrackingFacturasComponent,
+        data: {
+            title: 'Tracking Facturas',
+            breadcrumb: 'Facturas por rastrear'
         }
     },
     // {
