@@ -2,223 +2,123 @@ import { BehaviorSubject } from "rxjs";
 import { Menu } from "../interface/menu";
 
 export const menuItems: Menu[] = [
-  {
-    main_title: 'General'
-  },
-  {
-    title: 'Dashboards',
-    id: 'dashboards',
-    icon: 'home',
-    type: 'sub',
-    active: true,
-    level: 1,
-    badge: true,
-    badge_value: "13",
-    badge_color: 'primary',
-    children: [
-      {
-        path: '/dashboard/default', title: 'default', type: 'link'
-        // , children: [
-        // { path: '/dashboard/e-commerce', title: 'Overview', type: 'link' },
-        // { path: '/dashboard/crypto', title: 'Statistics', type: 'link' },
-        // { path: '/dashboard/pos', title: 'POS', type: 'link' },
-        // ]
-      },
-      // { path: '/dashboard/e-commerce', title: 'Ecommerce', type: 'link' },
-      // { path: '/dashboard/online-course', title: 'Online course', type: 'link' },
-      // { path: '/dashboard/crypto', title: 'Crypto', type: 'link' },
-      // { path: '/dashboard/social', title: 'Social', type: 'link' },
-      // { path: '/dashboard/nft', title: 'NFT', type: 'link' },
-      // { path: '/dashboard/school-management', title: 'School management', type: 'link' },
-      // { path: '/dashboard/pos', title: 'POS', type: 'link' },
-      // { path: '/dashboard/crm', title: 'CRM', type: 'link', badge: true, badge_color: 'success', badge_value: "New" },
-      // { path: '/dashboard/analytics', title: 'Analytics', type: 'link', badge: true, badge_color: 'success', badge_value: "New" },
-      // { path: '/dashboard/hr', title: 'HR', type: 'link', badge: true, badge_color: 'success', badge_value: "New" },
-      // { path: '/dashboard/projects', title: 'Projects', type: 'link', badge: true, badge_color: 'success', badge_value: "New" },
-      // { path: '/dashboard/logistics', title: 'Logistics', type: 'link', badge: true, badge_color: 'success', badge_value: "New" },
-    ],
-  },
-  {
-    title: 'Logistica',
-    id: 'logistica',
-    icon: 'user',
-    type: 'sub',
-    active: true,
-    level: 1,
-    badge: true,
-    badge_value: "3",
-    badge_color: 'primary',
-    children: [
-      {
-        title: 'Opciones',
-        id: 'Opciones',
-        type: 'link',
-        path: 'logistica/opciones',
-      },
-      {
-        title: 'Trackings',
-        id: 'Trackings',
-        type: 'link',
-        path: 'logistica/tracking',
-      },
-      {
-        title: 'Preparar',
-        id: 'Preparar',
-        type: 'sub',
-        children: [
-          { path: 'logistica/picking/prepararfacturas', title: 'Preparar Facturas', type: 'link' },
-        ]
-      },
-      {
-        title: 'Verificacion y Series',
-        id: 'Verificacion',
-        type: 'sub',
-        children: [
-          { path: '/logistica/picking/verificarfacturas', title: 'Verificar Facturas', type: 'link' },
-        ]
-      },
-      {
-        title: 'Guias Pickup',
-        id: 'GuiasPickup',
-        type: 'sub',
-        children: [
-          { path: '/logistica/picking/guiaspickup', title: 'Guias Pickup', type: 'link' },
-        ]
-      },
-      {
-        title: 'Confirmar Envios/Entregas',
-        id: 'ConfirmarEnvios',
-        type: 'sub',
-        children: [
-          { path: '/logistica/picking/despachar', title: 'Facturas por despachar', type: 'link' },
-        ]
-      },
-    ],
-  },
-  {
-    title: 'OyM',
-    id: 'oym',
-    icon: 'file',
-    type: 'sub',
-    path: '/OyM',
-    bookmark: true,
-    level: 1,
-    badge: true,
-    badge_value: "3",
-    badge_color: 'primary',
-    children: [
-      {
-        title: 'MPPs',
-        id: 'MPPs',
-        type: 'sub',
-        children: [
-          { path: 'oym/mpps/prepararfacturas', title: 'Manuales de Funciones', type: 'link' },
-          { path: 'oym/mpps/prepararfacturas', title: 'Procedimientos', type: 'link' },
-          { path: 'oym/mpps/prepararfacturas', title: 'Políticas', type: 'link' },
-        ]
-      },
+  // {
+  //   main_title: 'General'
+  // },
+  // {
+  //   title: 'Dashboards',
+  //   id: 'dashboards',
+  //   icon: 'home',
+  //   type: 'sub',
+  //   active: true,
+  //   level: 1,
+  //   badge: true,
+  //   badge_value: "13",
+  //   badge_color: 'primary',
+  //   children: [
+  //     {
+  //       path: '/dashboard/default', title: 'default', type: 'link'
+  //     },],
+  // },
+  // {
+  //   title: 'Logistica',
+  //   id: 'logistica',
+  //   icon: 'user',
+  //   type: 'sub',
+  //   active: true,
+  //   level: 1,
+  //   badge: true,
+  //   badge_value: "3",
+  //   badge_color: 'primary',
+  //   children: [
+  //     {
+  //       title: 'Opciones',
+  //       id: 'Opciones',
+  //       type: 'link',
+  //       path: 'logistica/opciones',
+  //     },
+  //     {
+  //       title: 'Trackings',
+  //       id: 'Trackings',
+  //       type: 'link',
+  //       path: 'logistica/tracking',
+  //     },
+  //     {
+  //       title: 'Preparar Facturas',
+  //       id: 'PrepararFacturas',
+  //       type: 'sub',
+  //       children: [
+  //         { path: 'logistica/picking/prepararfacturas', title: 'Preparar Facturas', type: 'link' },
+  //       ]
+  //     },
+  //     {
+  //       title: 'Verificacion y Series',
+  //       id: 'Verificacion',
+  //       type: 'sub',
+  //       children: [
+  //         { path: '/logistica/picking/verificarfacturas', title: 'Verificar Facturas', type: 'link' },
+  //       ]
+  //     },
+  //     {
+  //       title: 'Guias Pickup',
+  //       id: 'GuiasPickup',
+  //       type: 'sub',
+  //       children: [
+  //         { path: '/logistica/picking/guiaspickup', title: 'Guias Pickup', type: 'link' },
+  //       ]
+  //     },
+  //     {
+  //       title: 'Confirmar Envios/Entregas',
+  //       id: 'ConfirmarEnvios',
+  //       type: 'sub',
+  //       children: [
+  //         { path: '/logistica/picking/despachar', title: 'Facturas por despachar', type: 'link' },
+  //       ]
+  //     },
+  //   ],
+  // },
+  // {
+  //   title: 'OyM',
+  //   id: 'oym',
+  //   icon: 'file',
+  //   type: 'sub',
+  //   path: '/OyM',
+  //   bookmark: true,
+  //   level: 1,
+  //   badge: true,
+  //   badge_value: "3",
+  //   badge_color: 'primary',
+  //   children: [
+  //     {
+  //       title: 'MPPs',
+  //       id: 'MPPs',
+  //       type: 'sub',
+  //       children: [
+  //         { path: 'oym/mpps/manualfunciones', title: 'Manuales de Funciones', type: 'link' },
+  //         { path: 'oym/mpps/procedimientos', title: 'Procedimientos', type: 'link' },
+  //         { path: 'oym/mpps/politicas', title: 'Políticas', type: 'link' },
+  //       ]
+  //     },
 
-    ],
-  },
-  {
-    title: 'Proveeduria',
-    id: 'proveeduria',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    title: 'Financiero',
-    id: 'financiero',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    title: 'Financiero',
-    id: 'financiero',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    title: 'Financiero',
-    id: 'financiero',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    title: 'Financiero',
-    id: 'financiero',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    title: 'Financiero',
-    id: 'financiero',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    title: 'Financiero',
-    id: 'financiero',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-
-  {
-    title: 'Ventas',
-    id: 'ventas',
-    icon: 'file',
-    type: 'link',
-    path: '/ventas',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    title: 'Recursos Humanos',
-    id: 'recursos-humanos',
-    icon: 'file',
-    type: 'link',
-    path: '/recursos-humanos',
-    bookmark: true,
-    level: 1,
-  },
-  {
-    main_title: "Mantenimiento"
-  },
-  {
-    title: 'Sistema',
-    id: 'sistema',
-    icon: 'widget',
-    type: 'sub',
-    active: true,
-    level: 1,
-    badge: true,
-    badge_value: "1",
-    badge_color: 'primary',
-    children: [
-      { path: '/mantenimiento/usuarios', title: 'Usuarios', type: 'link' },
-    ],
-  },
+  //   ],
+  // },
+  // {
+  //   main_title: "Mantenimiento"
+  // },
+  // {
+  //   title: 'Sistema',
+  //   id: 'sistema',
+  //   icon: 'widget',
+  //   type: 'sub',
+  //   active: true,
+  //   level: 1,
+  //   badge: true,
+  //   badge_value: "1",
+  //   badge_color: 'primary',
+  //   children: [
+  //     { path: '/mantenimiento/usuarios', title: 'Usuarios', type: 'link' },
+  //   ],
+  // },
   // {
   //   title: 'Empresas',
   //   id: 'empresas',
