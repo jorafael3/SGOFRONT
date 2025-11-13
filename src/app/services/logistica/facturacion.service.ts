@@ -81,6 +81,7 @@ export class FacturacionService extends BaseApiService {
     }
 
     FinalizarVerificacion(data: any): Observable<any> {
+        data.userdata = this.getUserSessionData();
         return this.http.post<any>(this.endpointverificar + "FinalizarVerificacion", data, { headers: this.headers });
     }
 

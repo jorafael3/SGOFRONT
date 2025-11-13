@@ -34,7 +34,8 @@ export class SidebarComponent {
   CargarMenus() {
     this.UsuariosService.GetUserMenu({}).subscribe({
       next: (response: any) => {
-        console.log('menuuuuuuuuuuuuuuuuu: ', response);
+        console.log('response: ', response);
+        
         
         if (response.success && response.data) {
           // Inicializar las propiedades pined y active correctamente
@@ -46,7 +47,7 @@ export class SidebarComponent {
         }
       },
       error: (error: any) => {
-        console.log('error: ', error);
+        
         this.menuItems = [];
         this.items = [];
       }
@@ -184,7 +185,7 @@ export class SidebarComponent {
   }
 
   pined(item: any) {
-    console.log('Pined called for item:', item.title, 'Current pined state:', item.pined);
+    
     
     if (!item.pined) {
       // Marcar como pineado
@@ -192,7 +193,7 @@ export class SidebarComponent {
       if (!this.pinedItem.includes(item)) {
         this.pinedItem.push(item);
       }
-      console.log('Item pined:', item.title);
+      
     } else {
       // Desmarcar como pineado
       item.pined = false;
@@ -200,10 +201,10 @@ export class SidebarComponent {
       if (index > -1) {
         this.pinedItem.splice(index, 1);
       }
-      console.log('Item unpined:', item.title);
+      
     }
 
-    console.log('Current pinedItem array:', this.pinedItem.map(i => i.title));
+    
     this.scroll(item);
   }
 

@@ -63,6 +63,7 @@ export class PrepararFacturasComponent {
       { title: 'Factura', field_value: 'FACTURA_SECUENCIA_TEXTO', sort: true },
       { title: 'Fecha', field_value: 'FACTURA_FECHA', sort: true },
       { title: 'Tipo Pedido', field_value: 'ORDEN_TIPO_PEDIDO', sort: true },
+      { title: 'Sucursal', field_value: 'departamento_nombre', sort: true },
       { title: 'Multibodega', field_value: 'MULTIBODEGA', sort: true },
     ],
     row_action: [
@@ -147,7 +148,6 @@ export class PrepararFacturasComponent {
   }
 
   OnFillTableAction() {
-
     this.Usuarios_Datos.map(function (x) {
       x.FACTURA_SUCURSAL = `<span class="fw-bold badge badge-secondary fs-6">${x.FACTURA_SUCURSAL}</span>`;
       x.MULTIBODEGA = `<span class="fs-6 badge bg-${x.MULTIBODEGA === 'SI' ? 'primary' : 'secondary'} fw-bold">${x.MULTIBODEGA}</span>`;
@@ -156,10 +156,9 @@ export class PrepararFacturasComponent {
       x.CLIENTE_NOMBRE_TEXTO = `<span class="fw-bold">${x.CLIENTE_NOMBRE}</span>`;
       x.FACTURA_FECHA = `<span class="fw-bold">${x.FACTURA_FECHA}</span>`;
       x.ORDEN_TIPO_PEDIDO = `<span class="badge badge-info fs-6 fw-bold">${x.ORDEN_TIPO_PEDIDO}</span>`;
+      x.departamento_nombre = `<span class="fw-bold">${x.departamento_nombre}</span>`;
     });
-
     this.tableConfig = { ...this.tableConfig, data: this.Usuarios_Datos };
-
   }
 
 

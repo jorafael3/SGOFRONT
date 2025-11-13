@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { UsuariosComponent } from "./usuarios/usuarios.component";
+import { MenusComponent } from "./menus/menus.component";
 
 export const mantenimientoRoutes: Routes = [
     {
@@ -9,5 +10,12 @@ export const mantenimientoRoutes: Routes = [
             title: 'Usuarios',
             breadcrumb: 'Usuarios'
         }
-    },
+    }, {
+        path: 'menus',
+        component: MenusComponent,
+        data: {
+            title: 'Menús',
+            breadcrumb: 'Menús'
+        }
+    }
 ];

@@ -1,0 +1,207 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Gestión de Menús'" [cardClass]="'mb-4'">
+                <!-- Selector de Empresa -->
+                <div class="row mb-3 pb-3 border-bottom">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Empresa:</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="radio" 
+                                    name="empresa" 
+                                    id="cartimex" 
+                                    value="CARTIMEX"
+                                    [(ngModel)]="selectedEmpresa" 
+                                    (change)="onEmpresaChange()">
+                                <label class="form-check-label" for="cartimex">CARTIMEX</label>
+                            </div>
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input" 
+                                    type="radio" 
+                                    name="empresa" 
+                                    id="computron"
+                                    value="COMPUTRONSA" 
+                                    [(ngModel)]="selectedEmpresa" 
+                                    (change)="onEmpresaChange()">
+                                <label class="form-check-label" for="computron">COMPUTRONSA</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Menús -->
+                <div class="table-responsive custom-scrollbar">
+                    <app-table 
+                        [hasCheckbox]="false" 
+                        [tableConfig]="tableConfig" 
+                        [pageSize]="15"
+                        [paginateDetails]="true" 
+                        [selectedRows]="true" 
+                        [downloadReports]="false"
+                        [customButtons]="customButtons"
+                        [exportButtons]="Buttons_Export"
+                        (action)="onTableAction($event)"
+                        (customAction)="onCustomAction($event)">
+                    </app-table>
+                </div>
+            </app-card>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar menú -->
+    <div *ngIf="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa me-2" [ngClass]="isEditing ? 'fa-edit' : 'fa-plus'"></i>
+                        {{ isEditing ? 'Editar Menú' : 'Crear Nuevo Menú' }}
+                    </h5>
+                    <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form [formGroup]="menuForm" (ngSubmit)="guardarMenu()">
+                        <!-- Tipo de Menú -->
+                        <div class="mb-3">
+                            <label for="type" class="form-label fw-bold">Tipo de Menú *</label>
+                            <select 
+                                class="form-control" 
+                                id="type" 
+                                formControlName="Type"
+                                (change)="onTypeChange()">
+                                <option *ngFor="let tipo of menuTypes" [value]="tipo.value">
+                                    {{ tipo.label }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Menú Padre (condicional) -->
+                        <div class="mb-3" *ngIf="menuForm.get('Type')?.value !== 'main_title'">
+                            <label for="padreId" class="form-label fw-bold">
+                                Menú Padre ID 
+                                <span *ngIf="menuForm.get('Type')?.value !== 'main_title'">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                id="padreId"
+                                formControlName="PadreId" 
+                                placeholder="Ingresa el ID del menú padre (ej: 2)"
+                                min="1">
+                            <small class="text-muted">Ingresa el ID del menú principal o submenú bajo el cual aparecerá este menú.</small>
+                        </div>
+
+                        <!-- Título -->
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label fw-bold">Título *</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="titulo"
+                                formControlName="Titulo" 
+                                placeholder="Nombre del menú"
+                                required>
+                        </div>
+
+                        <!-- Path (solo para links) -->
+                        <div class="mb-3" *ngIf="menuForm.get('Type')?.value === 'link'">
+                            <label for="path" class="form-label fw-bold">Ruta (Path)</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="path"
+                                formControlName="Path" 
+                                placeholder="ej: /logistica/tracking">
+                        </div>
+
+                        <!-- Ícono -->
+                        <div class="mb-3">
+                            <label for="icono" class="form-label fw-bold">Ícono</label>
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="icono"
+                                    formControlName="Icono" 
+                                    placeholder="ej: fa-user, fa-cog">
+                                <span class="input-group-text" *ngIf="menuForm.get('Icono')?.value">
+                                    <i [class]="'fa ' + menuForm.get('Icono')?.value"></i>
+                                </span>
+                            </div>
+                            <small class="text-muted">Usa clases de Font Awesome (ej: user, cog, building, etc)</small>
+                        </div>
+
+                        <!-- Orden -->
+                        <div class="mb-3">
+                            <label for="orden" class="form-label fw-bold">Orden *</label>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                id="orden"
+                                formControlName="Orden" 
+                                min="1"
+                                required>
+                        </div>
+
+                        <!-- Badge -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="badge" class="form-label fw-bold">Mostrar Badge</label>
+                                <select class="form-control" id="badge" formControlName="Badge">
+                                    <option [value]="0">No</option>
+                                    <option [value]="1">Sí</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="badgeValue" class="form-label fw-bold">Valor del Badge</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="badgeValue"
+                                    formControlName="BadgeValue" 
+                                    placeholder="ej: 5">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="badgeColor" class="form-label fw-bold">Color Badge</label>
+                                <select class="form-control" id="badgeColor" formControlName="BadgeColor">
+                                    <option value="">-- Seleccionar --</option>
+                                    <option value="primary">Azul</option>
+                                    <option value="danger">Rojo</option>
+                                    <option value="success">Verde</option>
+                                    <option value="warning">Amarillo</option>
+                                    <option value="info">Celeste</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Activo -->
+                        <div class="mb-3">
+                            <label for="activo" class="form-label fw-bold">Estado</label>
+                            <select class="form-control" id="activo" formControlName="Activo" required>
+                                <option [value]="1">Activo</option>
+                                <option [value]="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+                        <i class="fa fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" (click)="guardarMenu()">
+                        <i class="fa fa-save me-1"></i>{{ isEditing ? 'Actualizar' : 'Guardar' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay del modal -->
+    <div *ngIf="showCreateModal" class="modal-backdrop fade show"></div>
+</div>

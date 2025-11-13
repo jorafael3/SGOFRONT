@@ -1560,7 +1560,7 @@
               .sidebar-links {
                 >li {
                   max-width: 86px;
-                  margin: 0;
+                  margin: 0px;
                   transition: all 0.3s ease;
 
                   .sidebar-submenu {
@@ -1570,8 +1570,8 @@
                   }
 
                   a {
-                    text-align: center;
-                    padding: 12px 14px;
+                    // text-align: center;
+                    // padding: 8px 14px;
                     transition: all 0.3s ease;
                   }
 
@@ -1650,7 +1650,7 @@
                     }
 
                     >a {
-                      padding: 12px 20px;
+                      padding: 8px 20px;
                       transition: all 0.3s ease;
 
                       span {

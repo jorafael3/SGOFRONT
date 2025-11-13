@@ -63,9 +63,15 @@ export class UsuariosService extends BaseApiService {
     }
 
     GetUserMenu(data: any): Observable<any> {
-        // data.sessionData = this.getUserSessionData();
+        data.sessionData = this.getUserSessionData();
         return this.http.post<any>(this.endpoint + "GetMenuUsuario", data, { headers: this.headers });
     }
+
+    GetUserMenuAsignacion(data: any): Observable<any> {
+        // data.sessionData = this.getUserSessionData();
+        return this.http.post<any>(this.endpoint + "GetMenuUsuarioAsignacion", data, { headers: this.headers });
+    }
+
 
     // /**
     //  * Obtener usuario por ID
