@@ -27,6 +27,14 @@ export const content: Routes = [
         }
     },
     {
+        path: 'financiero',
+        loadChildren: () => import('../../components/financiero/financiero.routes').then(r => r.FinancieroRoutes),
+        data: {
+            title: "Financiero",
+            breadcrumb: "Financiero"
+        }
+    },
+    {
         path: 'oym',
         loadChildren: () => import('../../components/oym/oym.routes').then(r => r.oymRoutes),
         data: {

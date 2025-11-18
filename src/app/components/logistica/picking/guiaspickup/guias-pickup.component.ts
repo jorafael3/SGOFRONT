@@ -19,6 +19,7 @@ import { count } from 'rxjs';
 })
 export class GuiasPickupComponent {
   showPrepararModal: boolean = false;
+  showDetalleguiaComputronModal: boolean = false;
   public sessionData: any = null; // Datos de sesión del usuario actual
 
   public Usuarios_Datos: any[] = [];
@@ -49,6 +50,7 @@ export class GuiasPickupComponent {
   // Lista de transportes disponibles
   listaTransportes: any[] = [];
   cargandoTransportes: boolean = false;
+  empresa: string = '';
 
   // Mapa para almacenar los valores seleccionados en el select de transporte
   transportesSeleccionados: { [key: string]: string } = {};
@@ -90,17 +92,50 @@ export class GuiasPickupComponent {
         field_value: 'ORDEN_TIPO_PEDIDO',
         type: 'select',
         options: [
-          { label: 'MOSTRADOR-GYE', value: 'MOSTRADOR-GYE' },
-          { label: 'MOSTRADOR-UIO', value: 'MOSTRADOR-UIO' },
-          { label: 'CUIDAD-GYE', value: 'CUIDAD-GYE' },
-          { label: 'CUIDAD-UIO', value: 'CUIDAD-UIO' },
-          { label: 'PROVINCIA', value: 'PROVINCIA' },
+          // { label: 'MOSTRADOR-GYE', value: 'MOSTRADOR-GYE' },
+          // { label: 'MOSTRADOR-UIO', value: 'MOSTRADOR-UIO' },
+          // { label: 'CUIDAD-GYE', value: 'CUIDAD-GYE' },
+          // { label: 'CUIDAD-UIO', value: 'CUIDAD-UIO' },
+          // { label: 'PROVINCIA', value: 'PROVINCIA' },
           // // Agregar más opciones si vienen otros valores de la BD
           // { label: 'OTRO', value: 'OTRO' }
         ],
         sort: false
       },
       { title: 'Estado', field_value: 'FACTURA_BLOQUEADA_TEXTO', sort: true },
+    ],
+    row_action: [
+      {
+        label: '',
+        action_to_perform: 'detalle_factura',
+        icon: 'eye',
+        type: 'button',
+        class: 'btn btn-light btn-sm',
+        tooltip: 'Ingresar Guia'
+      }
+    ],
+    data: []
+  };
+
+  public tableConfigCComputron: TableConfigs = {
+    columns: [
+      { title: 'Sucursal', field_value: 'FACTURA_SUCURSAL', sort: true },
+      { title: 'Bodega Facturación', field_value: 'CODIGOS_BODEGA_TEXTO', sort: true },
+      { title: 'Cliente', field_value: 'CLIENTE_NOMBRE_TEXTO', sort: true },
+      { title: 'Factura', field_value: 'FACTURA_SECUENCIA_TEXTO', sort: true },
+      { title: 'Fecha Factura', field_value: 'FACTURA_FECHA', sort: true },
+      { title: 'Multibodega', field_value: 'MULTIBODEGA_TEXTO', sort: true },
+      // { title: 'Consolidar', field_value: 'CONSOLIDAR_FACTURA_TEXTO', sort: true },
+      {
+        title: 'Tipo Pedido',
+        field_value: 'ORDEN_TIPO_PEDIDO',
+        sort: false
+      },
+      { title: 'Factura Total', field_value: 'FACTURA_TOTAL_TEXTO', sort: true },
+      { title: 'Factura Saldo', field_value: 'FACTURA_SALDO_TEXTO', sort: true },
+      { title: 'Bodega de Retiro', field_value: 'FACTURA_BODEGA_RETIRO_TEXTO', sort: true },
+      { title: 'Comentario', field_value: 'FACTURA_COMENTARIO', sort: true },
+      { title: 'Estado', field_value: 'FACTURA_ESTADO_TEXTO', sort: true },
     ],
     row_action: [
       {
@@ -130,8 +165,8 @@ export class GuiasPickupComponent {
 
   loadSessionData(): void {
     this.sessionData = this.FacturacionService.getUserSessionData();
-
-
+    this.empresa = this.sessionData ? this.sessionData.empleado_empresa : '';
+    console.log('this.sessionData: ', this.sessionData);
   }
 
   private loadTableData() {
@@ -167,73 +202,101 @@ export class GuiasPickupComponent {
     });
   }
 
+
   OnFillTableAction() {
     // Crear opciones dinámicas basadas en los valores únicos de la BD
     this.actualizarOpcionesSelect();
 
-    this.Usuarios_Datos.map(function (x) {
-      // let IDS_BODEGA = x.IDS_BODEGA.split(',');
-      // let ID_PREPARADAS = x.IDS_PREPARADAS.split(',');
-      let CODIGOS_VERIFICADAS = x.CODIGOS_VERIFICADAS.split(',');
-      let CODIGOS_CONSOLIDADAS = x.CODIGOS_CONSOLIDADAS.split(',');
-      let BODEGAS_ENFACTURA = x.BODEGAS_ENFACTURA.split(',');
-      let TEXTO_BODEGAS = "";
-      for (let i = 0; i < CODIGOS_VERIFICADAS.length; i++) {
-        if (CODIGOS_VERIFICADAS[i] && CODIGOS_VERIFICADAS[i] != '') {
-          TEXTO_BODEGAS += `<span class="fw-bold">${CODIGOS_VERIFICADAS[i]}</span><br>`
-        }
-      }
-      for (let i = 0; i < CODIGOS_CONSOLIDADAS.length; i++) {
-        if (CODIGOS_CONSOLIDADAS[i] && CODIGOS_CONSOLIDADAS[i] != '') {
-          TEXTO_BODEGAS += `<span class="fw-bold">${CODIGOS_CONSOLIDADAS[i]}</span><br>`
-        }
-      }
 
-      // Mantener el valor original que viene de la base de datos
-      // Si no hay valor en la BD, usar un valor por defecto
-      if (!x.ORDEN_TIPO_PEDIDO || x.ORDEN_TIPO_PEDIDO === '' || x.ORDEN_TIPO_PEDIDO === null) {
-        x.ORDEN_TIPO_PEDIDO = 'MOSTRADOR-GYE'; // Solo si está vacío
-      }
-      // Si tiene valor, lo mantiene tal como viene de la BD
+    if (this.empresa === 'COMPUTRON') {
+      this.Usuarios_Datos.map(function (x) {
+        // x.ORDEN_TIPO_PEDIDO = `<span class="badge badge-info fs-6 fw-bold">${x.ORDEN_TIPO_PEDIDO}</span>`;
+        x.FACTURA_SUCURSAL = `<span class="fw-bold badge badge-secondary fs-6">${x.FACTURA_SUCURSAL}</span>`;
+        x.CODIGOS_BODEGA_TEXTO = `<span title="${x.BODEGA_CODIGO}-${x.BODEGA_NOMBRE}" class="fw-bold">${x.BODEGA_CODIGO}</span><br><span class="fw-bold text-muted">${x.BODEGA_NOMBRE}</span>`;
+        x.CLIENTE_NOMBRE_TEXTO = `<span class="fw-bold">${x.CLIENTE_NOMBRE}</span>`;
+        x.FACTURA_SECUENCIA_TEXTO = `<span class="badge bg-dark fs-6 fw-bold">${x.FACTURA_SECUENCIA}</span>`;
+        x.FACTURA_FECHA = `<span class="fw-bold">${x.FACTURA_FECHA}</span>`;
+        x.MULTIBODEGA_TEXTO = `<span class="fs-6 badge bg-${x.MULTIBODEGA === 'SI' ? 'primary' : 'secondary'} fw-bold">${x.MULTIBODEGA}</span>`;
+        x.ORDEN_TIPO_PEDIDO = `<span class="badge badge-info fs-6 fw-bold">${x.ORDEN_TIPO_PEDIDO}</span>`;
+        x.FACTURA_TOTAL_TEXTO = `<span class="fw-bold ` + (x.FACTURA_SALDO > 0 ? 'text-danger' : '') + ` fs-6">${new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' }).format(x.FACTURA_TOTAL)
+          }</span>`;
+        x.FACTURA_SALDO_TEXTO = `<span class="fw-bold ` + (x.FACTURA_SALDO > 0 ? 'text-danger' : '') + ` fs-6">${new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD' }).format(x.FACTURA_SALDO)
+          }</span>`;
+        x.FACTURA_BODEGA_RETIRO_TEXTO = `<span class="fw-bold">${x.SISCO_BODEGA_RETIRO}</span>`;
+        x.FACTURA_COMENTARIO = x.SISCO_COMENTARIO;
+        x.FACTURA_ESTADO_TEXTO = `<span class="fw-bold ` + (x.ACTIVAR_LINK == 1 ? 'text-success' : 'text-danger') + `">` + x.FACTURA_ESTADO + `</span>`;
+      });
+      this.tableConfig = { ...this.tableConfigCComputron, data: this.Usuarios_Datos };
+    }
 
-
-
-      // x.ORDEN_TIPO_PEDIDO = `<span class="badge badge-info fs-6 fw-bold">${x.ORDEN_TIPO_PEDIDO}</span>`;
-      x.FACTURA_SUCURSAL = `<span class="fw-bold badge badge-secondary fs-6">${x.FACTURA_SUCURSAL}</span>`;
-      x.CONSOLIDAR_FACTURA_TEXTO = `<span class="fs-6 badge bg-${x.CONSOLIDAR_FACTURA == 1 ? 'danger' : 'secondary'} fw-bold">${x.CONSOLIDAR_FACTURA == 1 ? 'SI' : 'NO'}</span>`;
-      x.CODIGOS_BODEGA_TEXTO = `<span title="${x.BODEGAS_ENFACTURA}" class="fw-bold">${TEXTO_BODEGAS}</span>`;
-      x.FACTURA_SECUENCIA_TEXTO = `<span class="badge bg-dark fs-6 fw-bold">${x.FACTURA_SECUENCIA}</span>`;
-      x.MULTIBODEGA_TEXTO = `<span class="fs-6 badge bg-${x.MULTIBODEGA === 'SI' ? 'primary' : 'secondary'} fw-bold">${x.MULTIBODEGA}</span>`;
-      x.CLIENTE_NOMBRE_TEXTO = `<span class="fw-bold">${x.CLIENTE_NOMBRE}</span>`;
-      x.FACTURA_FECHA = `<span class="fw-bold">${x.FACTURA_FECHA}</span>`;
-      // x.FACTURA_BLOQUEADA_TEXTO = `<span class="fs-6 badge bg-${x.FACTURA_BLOQUEADA == '0' ? 'success' : 'danger'} fw-bold">${x.FACTURA_BLOQUEADA == 1 ? 'Bloqueada' : 'Desbloqueada'}</span>`;
-      x.FACTURA_BLOQUEADA_TEXTO = (
-        x.FACTURA_BLOQUEADA == 1
-          ? () => `<span class="fs-6 badge bg-danger fw-bold">Bloqueada</span>`
-          : () => {
-            if (x.CENTRO_CONSOLIDADO == 1 && x.CONSOLIDAR_FACTURA == 1 && (CODIGOS_VERIFICADAS.length + CODIGOS_CONSOLIDADAS.length) != BODEGAS_ENFACTURA.length) {
-              return `<span class="fs-6 badge bg-danger fw-bold">Espera Consolidación</span>`;
-            } else if (x.CENTRO_CONSOLIDADO == 1 && x.CONSOLIDAR_FACTURA == 1 && (CODIGOS_VERIFICADAS.length + CODIGOS_CONSOLIDADAS.length) == BODEGAS_ENFACTURA.length) {
-              return `<span class="fs-6 badge bg-primary fw-bold">consolidacion completa</span>`;
-            } else if (x.CENTRO_CONSOLIDADO == 0 && x.CONSOLIDAR_FACTURA == 1 && x.FACTURA_LISTA_ESTADO == '0') {
-              return `<span class="fs-6 badge bg-danger fw-bold">Por consolidar</span>`;
-            } else if (x.FACTURA_LISTA_ESTADO == '1') {
-              return `<span class="fs-6 badge bg-success fw-bold">Consolidada</span>`;
-            } else {
-              return `<span class="fs-6 badge bg-success fw-bold">Desbloqueada</span>`;
-            }
+    if (this.empresa === 'CARTIMEX') {
+      this.Usuarios_Datos.map(function (x) {
+        // let IDS_BODEGA = x.IDS_BODEGA.split(',');
+        // let ID_PREPARADAS = x.IDS_PREPARADAS.split(',');
+        let CODIGOS_VERIFICADAS = x.CODIGOS_VERIFICADAS.split(',');
+        let CODIGOS_CONSOLIDADAS = x.CODIGOS_CONSOLIDADAS.split(',');
+        let BODEGAS_ENFACTURA = x.BODEGAS_ENFACTURA.split(',');
+        let TEXTO_BODEGAS = "";
+        for (let i = 0; i < CODIGOS_VERIFICADAS.length; i++) {
+          if (CODIGOS_VERIFICADAS[i] && CODIGOS_VERIFICADAS[i] != '') {
+            TEXTO_BODEGAS += `<span class="fw-bold">${CODIGOS_VERIFICADAS[i]}</span><br>`
           }
-      )(); // 👈 ejecutas la función al final
+        }
+        for (let i = 0; i < CODIGOS_CONSOLIDADAS.length; i++) {
+          if (CODIGOS_CONSOLIDADAS[i] && CODIGOS_CONSOLIDADAS[i] != '') {
+            TEXTO_BODEGAS += `<span class="fw-bold">${CODIGOS_CONSOLIDADAS[i]}</span><br>`
+          }
+        }
 
-      // x.FACTURA_BLOQUEADA_TEXTO = x.FACTURA_BLOQUEADA == 1
-      //   ? `<span class="fs-6 badge bg-danger fw-bold">Bloqueada</span>`
-      //   : (x.CENTRO_CONSOLIDADO == 1 && x.CONSOLIDAR_FACTURA == 1 ? `<span class="fs-6 badge bg-danger fw-bold">Espera Consolidación</span>`
-      //     : (x.FACTURA_LISTA_ESTADO == '1' ? `<span class="fs-6 badge bg-success fw-bold">Consolidada</span>`
-      //       : `<span class="fs-6 badge bg-success fw-bold">Desbloqueada</span>`)
-      //   );
-    });
+        // Mantener el valor original que viene de la base de datos
+        // Si no hay valor en la BD, usar un valor por defecto
+        if (!x.ORDEN_TIPO_PEDIDO || x.ORDEN_TIPO_PEDIDO === '' || x.ORDEN_TIPO_PEDIDO === null) {
+          x.ORDEN_TIPO_PEDIDO = 'MOSTRADOR-GYE'; // Solo si está vacío
+        }
+        // Si tiene valor, lo mantiene tal como viene de la BD
 
-    this.tableConfig = { ...this.tableConfig, data: this.Usuarios_Datos };
+
+
+        // x.ORDEN_TIPO_PEDIDO = `<span class="badge badge-info fs-6 fw-bold">${x.ORDEN_TIPO_PEDIDO}</span>`;
+        x.FACTURA_SUCURSAL = `<span class="fw-bold badge badge-secondary fs-6">${x.FACTURA_SUCURSAL}</span>`;
+        x.CONSOLIDAR_FACTURA_TEXTO = `<span class="fs-6 badge bg-${x.CONSOLIDAR_FACTURA == 1 ? 'danger' : 'secondary'} fw-bold">${x.CONSOLIDAR_FACTURA == 1 ? 'SI' : 'NO'}</span>`;
+        x.CODIGOS_BODEGA_TEXTO = `<span title="${x.BODEGAS_ENFACTURA}" class="fw-bold">${TEXTO_BODEGAS}</span>`;
+        x.FACTURA_SECUENCIA_TEXTO = `<span class="badge bg-dark fs-6 fw-bold">${x.FACTURA_SECUENCIA}</span>`;
+        x.MULTIBODEGA_TEXTO = `<span class="fs-6 badge bg-${x.MULTIBODEGA === 'SI' ? 'primary' : 'secondary'} fw-bold">${x.MULTIBODEGA}</span>`;
+        x.CLIENTE_NOMBRE_TEXTO = `<span class="fw-bold">${x.CLIENTE_NOMBRE}</span>`;
+        x.FACTURA_FECHA = `<span class="fw-bold">${x.FACTURA_FECHA}</span>`;
+        // x.FACTURA_BLOQUEADA_TEXTO = `<span class="fs-6 badge bg-${x.FACTURA_BLOQUEADA == '0' ? 'success' : 'danger'} fw-bold">${x.FACTURA_BLOQUEADA == 1 ? 'Bloqueada' : 'Desbloqueada'}</span>`;
+
+
+
+        x.FACTURA_BLOQUEADA_TEXTO = (
+          x.FACTURA_BLOQUEADA == 1
+            ? () => `<span class="fs-6 badge bg-danger fw-bold">Bloqueada</span>`
+            : () => {
+              if (x.CENTRO_CONSOLIDADO == 1 && x.CONSOLIDAR_FACTURA == 1 && (CODIGOS_VERIFICADAS.length + CODIGOS_CONSOLIDADAS.length) != BODEGAS_ENFACTURA.length) {
+                return `<span class="fs-6 badge bg-danger fw-bold">Espera Consolidación</span>`;
+              } else if (x.CENTRO_CONSOLIDADO == 1 && x.CONSOLIDAR_FACTURA == 1 && (CODIGOS_VERIFICADAS.length + CODIGOS_CONSOLIDADAS.length) == BODEGAS_ENFACTURA.length) {
+                return `<span class="fs-6 badge bg-primary fw-bold">consolidacion completa</span>`;
+              } else if (x.CENTRO_CONSOLIDADO == 0 && x.CONSOLIDAR_FACTURA == 1 && x.FACTURA_LISTA_ESTADO == '0') {
+                return `<span class="fs-6 badge bg-danger fw-bold">Por consolidar</span>`;
+              } else if (x.FACTURA_LISTA_ESTADO == '1') {
+                return `<span class="fs-6 badge bg-success fw-bold">Consolidada</span>`;
+              } else {
+                return `<span class="fs-6 badge bg-success fw-bold">Desbloqueada</span>`;
+              }
+            }
+        )(); // 👈 ejecutas la función al final
+
+        // x.FACTURA_BLOQUEADA_TEXTO = x.FACTURA_BLOQUEADA == 1
+        //   ? `<span class="fs-6 badge bg-danger fw-bold">Bloqueada</span>`
+        //   : (x.CENTRO_CONSOLIDADO == 1 && x.CONSOLIDAR_FACTURA == 1 ? `<span class="fs-6 badge bg-danger fw-bold">Espera Consolidación</span>`
+        //     : (x.FACTURA_LISTA_ESTADO == '1' ? `<span class="fs-6 badge bg-success fw-bold">Consolidada</span>`
+        //       : `<span class="fs-6 badge bg-success fw-bold">Desbloqueada</span>`)
+        //   );
+      });
+      this.tableConfig = { ...this.tableConfig, data: this.Usuarios_Datos };
+    }
+
   }
 
   //** ACCIONES DE LOS BOTONES DE LA TABLA */
@@ -241,13 +304,20 @@ export class GuiasPickupComponent {
     // Debug para ver qué evento llega
     switch (action.action_to_perform) {
       case 'detalle_factura':
-        this.onPrepararFactura(action.data);
+        if (this.empresa == 'COMPUTRON') {
+          this.onIngresarGuiaComputron(action.data);
+          return;
+        }
+        if (this.empresa == 'CARTIMEX') {
+          this.onIngresarGuiaCartimex(action.data);
+          return;
+        }
         break;
       case 'ORDEN_TIPO_PEDIDO_change':
         this.onTransporteChange(action.data, action.value);
         break;
       default:
-
+        break;
     }
   }
 
@@ -287,6 +357,10 @@ export class GuiasPickupComponent {
       usrid: this.sessionData ? this.sessionData.usrid : null
     };
 
+    if (this.empresa === 'COMPUTRON') {
+      return; // Computron no permite cambiar tipo de pedido
+    }
+
     Swal.fire({
       title: "Estás seguro?",
       text: "Si ya hay facturas consolidadas puede haber problemas al ingresar la guía!",
@@ -318,9 +392,121 @@ export class GuiasPickupComponent {
 
   }
 
-  onPrepararFactura(data: any) {
+  onIngresarGuiaComputron(data: any) {
     console.log('data: ', data);
 
+    // Limpiar ambos modales al inicio
+    this.showPrepararModal = false;
+    this.showDetalleguiaComputronModal = false;
+
+    if (data.FACTURA_BLOQUEADA == 1 && data.CENTRO_CONSOLIDADO == 0) {
+      Swal.fire("Atención!", "La factura " + data.FACTURA_SECUENCIA + " está bloqueada y no se pueden ingresar guías.", "warning");
+      return;
+    }
+
+    if (data.CONSOLIDAR_FACTURA == 1 && data.CENTRO_CONSOLIDADO == 0 && data.FACTURA_LISTA_ESTADO == 1) {
+      Swal.fire("Atención!", "La factura " + data.FACTURA_SECUENCIA + " ya ha sido consolidada y no se pueden ingresar más guías.", "warning");
+      return;
+    }
+
+    let BOD_VERIFICADAS = data.CODIGOS_VERIFICADAS ? data.CODIGOS_VERIFICADAS.split(',').map((c: string) => c.trim()) : [];
+
+    let BOD_CONSOLIDADAS = data.CODIGOS_CONSOLIDADAS ? data.CODIGOS_CONSOLIDADAS.split(',').map((c: string) => c.trim()) : [];
+
+    let BODEGAS = [...BOD_VERIFICADAS, ...BOD_CONSOLIDADAS];
+    let BODEGAS_ENFACTURA = data.BODEGAS_ENFACTURA ? data.BODEGAS_ENFACTURA.split(',').map((c: string) => c.trim()) : [];
+
+    const normalizar = (valor: string): string => {
+      if (!valor) return "";
+      return parseFloat(valor).toFixed(2); // "00.07" → "0.07"
+    };
+    // ✅ Buscamos las bodegas que están en BODEGAS pero no en BODEGAS_ENFACTURA
+    const bodegasFaltantes: string[] = BODEGAS_ENFACTURA.filter(
+      (b: string) => !BODEGAS.some((e: string) => normalizar(e) === normalizar(b))
+    );
+
+    if (bodegasFaltantes.length > 0 && data.CENTRO_CONSOLIDADO == 1 && data.CONSOLIDAR_FACTURA == 1) {
+      Swal.fire("Atención!", "La factura " + data.FACTURA_SECUENCIA + " tiene bodegas que no se han completado: " + bodegasFaltantes.join(', '), "warning");
+      return;
+    }
+
+    // Almacenar los datos de la fila para usar en el template
+    this.facturaRowData = data;
+
+    let param = {
+      secuencia: data.FACTURA_SECUENCIA,
+      bodega: data.IDS_BODEGA,
+      usrid: this.sessionData ? this.sessionData.usrid : null
+    };
+
+    this.FacturacionService.GetFacturasDatosVerificar(param).subscribe({
+      next: (response) => {
+        console.log('response: ', response);
+
+
+
+        if (response.success && response.cabecera) {
+          if (response.cabecera.length > 0) {
+            this.facturaSeleccionada = response;
+            this.facturaActual = response.cabecera[0];
+            this.detalleFactura = response.detalle || [];
+
+            // Procesar bodegas para crear campos de guías dinámicos
+            this.procesarBodegas(data);
+
+            // Establecer el valor por defecto del checkbox de consolidación
+            // Solo si es multibodega, requiere consolidación y no es centro consolidado
+            const esMultibodega = this.facturaRowData?.MULTIBODEGA == 'SI';
+            const requiereConsolidacion = this.facturaRowData?.CONSOLIDAR_FACTURA == 1;
+            const noEsCentroConsolidado = this.facturaRowData?.CENTRO_CONSOLIDADO == '0';
+
+            this.consolidar = esMultibodega && requiereConsolidacion && noEsCentroConsolidado;
+
+            this.showDetalleguiaComputronModal = true;
+          } else {
+            this.showDetalleguiaComputronModal = false;
+            Swal.fire("Error!", "No se encontraron datos para la factura " + data.FACTURA_SECUENCIA, "error");
+          }
+        } else {
+          Swal.fire("Error!", response.message, "error");
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+
+        this.isLoading = false;
+      }
+    });
+
+    // Cargar lista de transportes
+    this.cargandoTransportes = true;
+    this.FacturacionService.GetTransporteGuiasPickup({}).subscribe({
+      next: (response) => {
+
+
+        if (response.success && response.data) {
+          this.listaTransportes = response.data;
+
+        } else {
+
+          Swal.fire("Error!", "No se pudieron cargar los transportes disponibles", "warning");
+        }
+        this.cargandoTransportes = false;
+      },
+      error: (error) => {
+
+        Swal.fire("Error!", "Error al conectar con el servicio de transportes", "error");
+        this.cargandoTransportes = false;
+      }
+    });
+  }
+
+  onIngresarGuiaCartimex(data: any) {
+    console.log('data: ', data);
+
+    // Limpiar ambos modales al inicio
+    this.showPrepararModal = false;
+    this.showDetalleguiaComputronModal = false;
 
     if (data.FACTURA_BLOQUEADA == 1 && data.CENTRO_CONSOLIDADO == 0) {
       Swal.fire("Atención!", "La factura " + data.FACTURA_SECUENCIA + " está bloqueada y no se pueden ingresar guías.", "warning");
@@ -369,6 +555,7 @@ export class GuiasPickupComponent {
 
     this.FacturacionService.GetFacturasDatosVerificar(param).subscribe({
       next: (response) => {
+        console.log('response: ', response);
 
 
 
@@ -447,7 +634,9 @@ export class GuiasPickupComponent {
 
   // Método para cerrar el modal
   cerrarModal() {
+    // Cerrar ambos modales
     this.showPrepararModal = false;
+    this.showDetalleguiaComputronModal = false;
     this.facturaActual = null;
     this.facturaSeleccionada = null;
     this.facturaRowData = null;
@@ -488,13 +677,20 @@ export class GuiasPickupComponent {
   // Método para actualizar las opciones del select basado en valores únicos de la BD
   actualizarOpcionesSelect() {
     // Opciones base que siempre deben estar
-    const opcionesBase = [
-      { label: 'MOSTRADOR-GYE', value: 'MOSTRADOR-GYE' },
-      { label: 'MOSTRADOR-UIO', value: 'MOSTRADOR-UIO' },
-      { label: 'CUIDAD-GYE', value: 'CUIDAD-GYE' },
-      { label: 'CUIDAD-UIO', value: 'CUIDAD-UIO' },
-      { label: 'PROVINCIA', value: 'PROVINCIA' }
-    ];
+    let opcionesBase = [];
+
+    if (this.empresa === 'CARTIMEX') {
+      opcionesBase.push({ label: 'MOSTRADOR-GYE', value: 'MOSTRADOR-GYE' });
+      opcionesBase.push({ label: 'MOSTRADOR-UIO', value: 'MOSTRADOR-UIO' });
+      opcionesBase.push({ label: 'CUIDAD-GYE', value: 'CUIDAD-GYE' });
+      opcionesBase.push({ label: 'CUIDAD-UIO', value: 'CUIDAD-UIO' });
+      opcionesBase.push({ label: 'PROVINCIA', value: 'PROVINCIA' });
+    }
+
+    if (this.empresa === 'COMPUTRON') {
+      opcionesBase.push({ label: 'PICKUP', value: 'PICKUP' });
+      opcionesBase.push({ label: 'ENVIO', value: 'ENVIO' });
+    }
 
     // Obtener valores únicos de la BD
     const valoresUnicos = [...new Set(this.Usuarios_Datos.map(x => x.ORDEN_TIPO_PEDIDO).filter(val => val && val !== ''))];

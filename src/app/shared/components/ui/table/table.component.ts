@@ -414,15 +414,30 @@ export class TableComponent {
       filteredData = filteredData.filter((item: any) => {
         return Object.keys(item).some(key => {
           const value = item[key];
-          if (typeof value === 'string' || typeof value === 'object') {
-            const valueString = typeof value === 'string' ? value : value.toString(); 
-            
-            if (valueString.toLowerCase().includes(this.filter['search'].toLowerCase())) {
+          
+          // Validar que el valor no sea null o undefined
+          if (value === null || value === undefined) {
+            return false;
+          }
+          
+          if (typeof value === 'string') {
+            if (value.toLowerCase().includes(this.filter['search'].toLowerCase())) {
               return true;
             }
-          }
-          if (typeof value === 'number' && value.toString().includes(this.filter['search'])) {
-            return true;
+          } else if (typeof value === 'number') {
+            if (value.toString().includes(this.filter['search'])) {
+              return true;
+            }
+          } else if (typeof value === 'object') {
+            try {
+              const valueString = value.toString();
+              if (valueString.toLowerCase().includes(this.filter['search'].toLowerCase())) {
+                return true;
+              }
+            } catch (error) {
+              // Si hay error al convertir a string, simplemente ignorar
+              return false;
+            }
           }
     
           return false;

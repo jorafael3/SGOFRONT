@@ -19,19 +19,18 @@
                     <label class="form-label fw-bold">Empresa:</label>
                     <div class="col-md-6 mb-2">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="empresa" id="cartimex" value="CARTIMEX"
-                                checked [(ngModel)]="selectedEmpresa" (change)="onEmpresaChange()">
+                            <input class="form-check-input" type="radio" name="empresa" id="cartimex" value="Cartimex"
+                                [(ngModel)]="selectedEmpresa" (change)="onEmpresaChange()">
                             <label class="form-check-label" for="cartimex">Cartimex</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="empresa" id="computron"
-                                value="COMPUTRONSA" [(ngModel)]="selectedEmpresa" (change)="onEmpresaChange()">
+                                value="Computron" [(ngModel)]="selectedEmpresa" (change)="onEmpresaChange()">
                             <label class="form-check-label" for="computron">Computron</label>
                         </div>
                     </div>
                 </div>
                 <div class="customer-order-report table-responsive custom-scrollbar">
-
                     <div class="recent-table">
                         <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
                             [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"

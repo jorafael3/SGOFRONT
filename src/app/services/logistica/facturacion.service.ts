@@ -84,10 +84,10 @@ export class FacturacionService extends BaseApiService {
         data.userdata = this.getUserSessionData();
         return this.http.post<any>(this.endpointverificar + "FinalizarVerificacion", data, { headers: this.headers });
     }
-
     //** GUIAS PICKUP */
 
     GetFacturasPorGuiasPickup(data: any): Observable<any> {
+        data.userdata = this.getUserSessionData();
         return this.http.post<any>(this.endpointguiaspickup + "GetFacturasGuiasPickup", data, { headers: this.headers });
     }
 
