@@ -145,6 +145,7 @@ export class GuiasPickupComponent {
 
     this.FacturacionService.GetFacturasPorGuiasPickup(param).subscribe({
       next: (response) => {
+        console.log('response: ', response);
 
         if (response.success && response.data) {
           // Forzar cambio de referencia para disparar ngOnChanges en TableComponent

@@ -251,14 +251,14 @@ export const content: Routes = [
     //         breadcrumb: "Chat"
     //     },
     // },
-    // {
-    //     path: 'user',
-    //     loadChildren: () => import('../../components/users/users.routes').then(r => r.users),
-    //     data: {
-    //         title: "User",
-    //         breadcrumb: "User"
-    //     },
-    // },
+    {
+        path: 'user',
+        loadChildren: () => import('../../components/users/users.routes').then(r => r.users),
+        data: {
+            title: "User",
+            breadcrumb: "User"
+        },
+    },
     // {
     //     path: 'reports',
     //     loadChildren: () => import('../../components/reports/reports.routes').then(r => r.reports),

@@ -32,6 +32,8 @@ export class UsuariosComponent {
   ListaDepartamentosLogistica: any[] = [];
   selectedEmpresa: string = 'Cartimex';
   isEditing: boolean = false;
+  userMenus: any[] = [];
+  isLoadingMenus: boolean = false;
 
   public customButtons: CustomButton[] = [
     {
@@ -160,21 +162,21 @@ export class UsuariosComponent {
         this.isLoading = false;
       }
     });
-    this.UsuariosService.getDepartamentosLogistica({ empresa: this.selectedEmpresa }).subscribe({
-      next: (response) => {
-        console.log('response: ', response);
-        if (response.success && response.data) {
-          this.ListaDepartamentosLogistica = response.data;
-        } else {
-          Swal.fire("Error!", response.message, "error");
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.log('error: ', error);
-        this.isLoading = false;
-      }
-    });
+    // this.UsuariosService.getDepartamentosLogistica({ empresa: this.selectedEmpresa }).subscribe({
+    //   next: (response) => {
+    //     console.log('response: ', response);
+    //     if (response.success && response.data) {
+    //       this.ListaDepartamentosLogistica = response.data;
+    //     } else {
+    //       Swal.fire("Error!", response.message, "error");
+    //     }
+    //     this.isLoading = false;
+    //   },
+    //   error: (error) => {
+    //     console.log('error: ', error);
+    //     this.isLoading = false;
+    //   }
+    // });
 
   }
 
@@ -271,10 +273,38 @@ export class UsuariosComponent {
   }
 
   editUser(user: any) {
+    console.log('user: ', user);
     this.isEditing = true;
     this.userForm.patchValue(user);
     this.ShowCreateModal = true;
+    this.isLoadingMenus = true;
+    this.userMenus = [];
+
+    let param = {
+      usrid: user.usrid,
+      empresa: user.empleado_empresa
+    };
+
+    this.UsuariosService.GetUserMenuAsignacion(param).subscribe({
+      next: (response) => {
+        console.log('response: ', response);
+        if (response.success && response.data) {
+          this.userMenus = response.data;
+          console.log('Menús cargados:', this.userMenus);
+        } else {
+          Swal.fire("Error!", response.message, "error");
+        }
+        this.isLoadingMenus = false;
+      },
+      error: (error) => {
+        console.log('error: ', error);
+        this.isLoadingMenus = false;
+        Swal.fire("Error!", "No se pudieron cargar los menús del usuario", "error");
+      }
+    });
   }
+
+
 
   GuardarUsuario() {
     console.log('this.userForm.valid: ', this.userForm.valid);
@@ -291,8 +321,19 @@ export class UsuariosComponent {
       const userData = this.userForm.value;
       console.log('Datos del usuario a guardar:', userData);
 
+      // Recopilar los menús seleccionados
+      const selectedMenus = this.getSelectedMenus(this.userMenus);
+      console.log('Menús seleccionados:', selectedMenus);
+
       if (this.isEditing) {
-        this.UsuariosService.updateUser(userData).subscribe({
+        // Incluir los menús seleccionados en los datos del usuario
+        const updateData = {
+          ...userData,
+          menus: selectedMenus
+        };
+          console.log('updateData: ', updateData);
+
+        this.UsuariosService.updateUser(updateData).subscribe({
           next: (response) => {
             console.log('Respuesta de actualización de usuario:', response);
             if (response.success) {
@@ -309,7 +350,12 @@ export class UsuariosComponent {
           }
         });
       } else {
-        this.UsuariosService.createUser(userData).subscribe({
+        const createData = {
+          ...userData,
+          menus: selectedMenus
+        };
+
+        this.UsuariosService.createUser(createData).subscribe({
           next: (response) => {
             console.log('Respuesta de creación de usuario:', response);
             if (response.success) {
@@ -355,6 +401,102 @@ export class UsuariosComponent {
       const message = invalidFields.length > 0 ? `Errores encontrados: ${invalidFields.join(', ')}` : "Por favor, complete todos los campos requeridos";
       Swal.fire("Error!", message, "warning");
     }
+  }
+
+  // Método para recopilar menús seleccionados recursivamente
+  getSelectedMenus(menus: any[]): any[] {
+    return menus.map(menu => {
+      const selectedMenu: any = {
+        menu_id: menu.menu_id,
+        id: menu.id,
+        checked: menu.checked || false
+      };
+
+      if (menu.children && menu.children.length > 0) {
+        selectedMenu.children = this.getSelectedMenus(menu.children);
+      }
+
+      return selectedMenu;
+    });
+  }
+
+  // Método para toggle de checkbox de menú
+  onMenuCheckboxChange(menu: any, event?: any) {
+    // Cambiar el estado del menú
+    menu.checked = !menu.checked;
+    console.log('Menu toggled:', menu.title || menu.main_title, 'New state:', menu.checked);
+    
+    if (menu.checked) {
+      // Si se marca: marcar todos los hijos y propagar hacia arriba
+      if (menu.children && menu.children.length > 0) {
+        this.setChildrenChecked(menu.children, true);
+      }
+      this.markParents(menu);
+    } else {
+      // Si se desmarca: desmarcar todos los hijos y propagar hacia arriba
+      if (menu.children && menu.children.length > 0) {
+        this.setChildrenChecked(menu.children, false);
+      }
+      this.unmarkParents(menu);
+    }
+  }
+
+  // Método para marcar los padres cuando se marca un hijo
+  markParents(menu: any) {
+    // Buscar el padre del menú actual en el árbol
+    const parent = this.findParent(menu, this.userMenus);
+    if (parent) {
+      parent.checked = true;
+      console.log('Parent marked:', parent.title || parent.main_title);
+      // Continuar marcando padres recursivamente
+      this.markParents(parent);
+    }
+  }
+
+  // Método para encontrar el padre de un menú
+  findParent(targetMenu: any, menuList: any[], parent: any = null): any {
+    for (let menu of menuList) {
+      if (menu === targetMenu) {
+        return parent;
+      }
+      if (menu.children && menu.children.length > 0) {
+        const found = this.findParent(targetMenu, menu.children, menu);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  // Método para establecer el estado de todos los hijos
+  setChildrenChecked(children: any[], checked: boolean) {
+    children.forEach(child => {
+      child.checked = checked;
+      if (child.children && child.children.length > 0) {
+        this.setChildrenChecked(child.children, checked);
+      }
+    });
+  }
+
+  // Método para desmarcar padres cuando se desmarca un hijo
+  unmarkParents(menu: any) {
+    const parent = this.findParent(menu, this.userMenus);
+    if (parent) {
+      // Solo desmarcar el padre si TODOS sus hijos están desmarcados
+      const allChildrenUnchecked = this.areAllChildrenUnchecked(parent.children);
+      if (allChildrenUnchecked) {
+        parent.checked = false;
+        console.log('Parent unmarked:', parent.title || parent.main_title);
+        // Continuar desmarcando padres recursivamente
+        this.unmarkParents(parent);
+      }
+    }
+  }
+
+  // Método para verificar si todos los hijos están desmarcados
+  areAllChildrenUnchecked(children: any[]): boolean {
+    return children.every(child => !child.checked);
   }
 
 
