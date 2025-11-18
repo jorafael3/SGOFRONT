@@ -13,7 +13,11 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="col-md-6 mb-2">
+                    <button *ngIf="pathStack.length > 1" class="btn btn-outline-secondary" (click)="goBackOneLevel()">
+                      ← Volver a departamentos
+                    </button>
+                </div>
 
                 <div class="customer-order-report table-responsive custom-scrollbar">
                     <div class="row">
@@ -22,13 +26,13 @@
                                 <h6>Carpetas</h6>
                                 <div class="p-3" *ngIf="folders.length === 0">No hay carpetas.</div>
                                 <ul class="list-group" *ngIf="folders.length > 0">
-                                    <li *ngFor="let folder of folders" class="list-group-item d-flex justify-content-between align-items-center" [class.active]="selectedFolder === folder.path" style="cursor:pointer;" (click)="selectFolder(folder.path)">
-                                        <div>
+                                    <li *ngFor="let folder of folders" class="list-group-item d-flex align-items-center" [class.active]="selectedFolder === folder.path" style="cursor:pointer;" (click)="selectFolder(folder.path)">
+                                        <div class="flex-grow-1 text-truncate" [title]="folder.name">
                                             <i class="fa fa-folder me-2"></i> {{ folder.name }}
                                         </div>
                                         <div class="text-muted small">{{ (filesMap[folder.path]?.length || 0) }} archivos</div>
                                         <div>
-                                            <button class="btn btn-sm" type="button" (click)="deleteFolder($event, folder.path)">
+                                            <button class="btn btn-sm p-0" type="button" (click)="deleteFolder($event, folder.path)">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </div>
