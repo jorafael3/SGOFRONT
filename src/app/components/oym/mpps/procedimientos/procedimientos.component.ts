@@ -7,12 +7,13 @@ import { TableConfigs, CustomButton } from '../../../../shared/interface/common'
 import { OymService } from '../../../../services/oym/oym.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-procedimientos',
   imports: [CommonModule, FormsModule, CardComponent, TableComponent],
   templateUrl: './procedimientos.component.html',
-  styleUrl: './procedimientos.component.scss'
+  styleUrls: ['./procedimientos.component.scss']
 })
 
 export class ProcedimientosComponent {
@@ -22,6 +23,8 @@ export class ProcedimientosComponent {
   selectedFolder: string | null = null;
   selectedFolderName: string | null = null;
   filesMap: { [folderPath: string]: Array<any> } = {};
+  currentPath: string = 'procedimientos';
+  pathStack: string[] = ['procedimientos'];
 
   public customButtons: CustomButton[] = [
     {
@@ -35,7 +38,7 @@ export class ProcedimientosComponent {
 
   filesTableConfig: TableConfigs = {
     columns: [
-      { title: 'Nombre', field_value: 'name', sort: true },
+      { title: 'Nombre', field_value: 'nameHtml', sort: true  },
       { title: 'Version', field_value: 'version', sort: true },
       { title: 'Titulo', field_value: 'title', sort: true }
     ],
@@ -63,26 +66,77 @@ export class ProcedimientosComponent {
   constructor(private OymService: OymService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
-    this.loadFolders();
+    this.getDepartments();
+    this.loadPath(this.currentPath);
   }
 
-  loadFolders(subpath: string = 'procedimientos') {
+  getDepartments() {
+    this.OymService.getDepartamentos().subscribe({
+      next: (res: any) => {
+        console.log('Departamentos:', res || []);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+
+  loadPath(subpath: string) {
     this.OymService.CargarCarpetaMPPs({ subpath }).subscribe({
       next: (res: any) => {
         if (!res || !res.success) {
           this.folders = [];
+          this.filesTableConfig = { ...this.filesTableConfig, data: [] };
+          this.selectedFolder = null;
+          this.selectedFolderName = null;
           return;
         }
+        const effectivePath = res.currentPath || subpath || 'procedimientos';
+        this.currentPath = effectivePath;
+        const parts = (effectivePath || '').split('/').filter(Boolean);
+        const isRoot = parts.length === 1;
 
-        // Hijos directos
+        // Lista de carpetas HIJAS en la columna izquierda
         this.folders = (res.folders || []).map((f: any) => ({
           name: f.name,
           path: f.path || f.name
         }));
+        const files = (res.files || []).map((f: any) => {
+          const ext = (f.extension || '').toLowerCase();
+          const icon = this.getIconForExt(ext);
+          const href = `${environment.sgo_docs_base}/${(f.path).split('/').map(encodeURIComponent).join('/')}`;
+          const nameHtml = `<i class="${icon.cls} me-2"></i> <a href="${href}" download target="_blank" rel="noopener"> ${(f.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')} </a>`;
+          console.log('file mapping: ', f, nameHtml);
+          console.log('file mapping: ', href);
+          console.log('file mapping: ', f.path);
+          return {
+            id: f.path,
+            name: f.name,
+            nameHtml,
+            path: f.path,
+            version: f.version || '',
+            title: f.title || f.name,
+            size: f.size,
+            modified: f.modified,
+            extension: ext
+          };
+        });
+        // Si estamos en root: no hay carpeta seleccionada
+        if (isRoot) {
+          this.selectedFolder = null;
+          this.selectedFolderName = null;
+        } else {
+          this.selectedFolder = effectivePath;
+          this.selectedFolderName = parts[parts.length - 1] || effectivePath;
+        }
+
+        this.filesMap[effectivePath] = files;
+        this.filesTableConfig = { ...this.filesTableConfig, data: files };
       },
       error: (err) => {
         console.error(err);
         this.folders = [];
+        this.filesTableConfig = { ...this.filesTableConfig, data: [] };
       }
     });
   }
@@ -93,15 +147,13 @@ export class ProcedimientosComponent {
       Swal.fire('Error', 'Ingrese un nombre de carpeta válido.', 'error');
       return;
     }
-
-    const subpath = `procedimientos/${name}`;
-
+    const subpath = `${this.currentPath}/${name}`;
     this.OymService.CrearCarpetaMPPs({ subpath }).subscribe({
       next: (res: any) => {
         if (res && res.success) {
           Swal.fire('¡Éxito!', 'Carpeta creada correctamente', 'success');
           this.newFolderName = '';
-          this.loadFolders(); // recargar hijos
+          this.loadPath(this.currentPath); // recargar hijos
         } else {
           Swal.fire('Error', res?.message || 'No se pudo crear la carpeta', 'error');
         }
@@ -115,37 +167,22 @@ export class ProcedimientosComponent {
   }
 
   selectFolder(folderPath: string) {
-    this.selectedFolder = folderPath;
-    this.selectedFolderName = folderPath.split('/').pop() || folderPath;
-
-    this.OymService.CargarCarpetaMPPs({ subpath: folderPath }).subscribe({
-      next: (res: any) => {
-        console.log('CargarCarpetaMPPs res: ', res);
-        if (!res || !res.success) {
-          this.filesTableConfig = { ...this.filesTableConfig, data: [] };
-          return;
-        }
-
-        const files = (res.files || []).map((f: any) => ({
-          id: f.path,
-          name: f.name,
-          path: f.path,
-          version: f.version || '',
-          title: f.title || f.name,
-          size: f.size,
-          modified: f.modified
-        }));
-
-        this.filesMap[folderPath] = files;
-        this.filesTableConfig = { ...this.filesTableConfig, data: files };
-      },
-      error: (err) => {
-        console.error(err);
-        Swal.fire('Error', 'No se pudo cargar la carpeta', 'error');
-      }
-    });
+    this.pathStack.push(folderPath);
+    this.loadPath(folderPath);
   }
 
+  goBackToDepartments() {
+    this.pathStack = ['procedimientos'];
+    this.loadPath('procedimientos');
+  }
+
+  goBackOneLevel() {
+    if (this.pathStack.length > 1) {
+      this.pathStack.pop();
+      const prev = this.pathStack[this.pathStack.length - 1];
+      this.loadPath(prev);
+    }
+  }
 
   deleteFolder(event: any, folderPath: string) {
     if (event && event.stopPropagation) event.stopPropagation();
@@ -165,7 +202,7 @@ export class ProcedimientosComponent {
         next: (res: any) => {
           if (res && res.success) {
             Swal.fire('¡Eliminada!', 'Carpeta eliminada correctamente', 'success');
-            this.loadFolders();
+            this.loadPath(this.currentPath);
             if (this.selectedFolder === folderPath) {
               this.selectedFolder = null;
               this.selectedFolderName = null;
@@ -215,7 +252,7 @@ export class ProcedimientosComponent {
         </div>
         <div class="mb-3">
           <label class="form-label">Título</label>
-          <input id="swal-input-title" class="form-control" placeholder="Procedimiento v1">
+          <input id="swal-input-title" class="form-control" placeholder="Procedimientos v1">
         </div>
       `,
       showCancelButton: true,
@@ -256,7 +293,7 @@ export class ProcedimientosComponent {
             if (res && res.success) {
               Swal.fire('¡Éxito!', 'Archivo guardado correctamente', 'success');
               if (this.selectedFolder) this.selectFolder(this.selectedFolder);
-              else this.loadFolders('');
+              else this.loadPath(this.currentPath);
             } else {
               Swal.fire('Error', res && res.message ? res.message : 'No se pudo guardar el archivo', 'error');
             }
@@ -303,7 +340,7 @@ export class ProcedimientosComponent {
       </div>
       <div class="mb-3">
         <label class="form-label">Título</label>
-        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Procedimiento v1">
+        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Procedimientos v1">
       </div>
     `,
       showCancelButton: true,
@@ -467,6 +504,21 @@ export class ProcedimientosComponent {
         });
       }
     });
+  }
+
+  private getIconForExt(ext: string) {
+    const e = (ext || '').toLowerCase();
+    const inSet = (set: string[]) => set.includes(e);
+
+    if (inSet(['pdf'])) return { cls: 'fa-solid fa-file-pdf text-danger', label: 'PDF' };
+    if (inSet(['doc', 'docx', 'rtf'])) return { cls: 'fa-solid fa-file-word text-primary', label: 'Word' };
+    if (inSet(['xls', 'xlsx', 'csv'])) return { cls: 'fa-solid fa-file-excel text-success', label: 'Excel' };
+    if (inSet(['ppt', 'pptx'])) return { cls: 'fa-solid fa-file-powerpoint text-warning', label: 'PowerPoint' };
+    if (inSet(['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'svg'])) return { cls: 'fa-solid fa-file-image text-info', label: 'Imagen' };
+    if (inSet(['txt', 'md', 'log'])) return { cls: 'fa-solid fa-file-lines', label: 'Texto' };
+    if (inSet(['zip', 'rar', '7z'])) return { cls: 'fa-solid fa-file-zipper', label: 'Comprimido' };
+    if (inSet(['json', 'xml', 'yml', 'yaml'])) return { cls: 'fa-solid fa-file-code', label: 'Código' };
+    return { cls: 'fa-solid fa-file', label: 'Archivo' };
   }
 
 }

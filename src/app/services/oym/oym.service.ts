@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BaseApiService } from '../base-api.service';
 import { environment } from '../../../environments/environment';
+import { user } from '../../shared/data/user';
 
 @Injectable({
   providedIn: 'root'
@@ -43,19 +44,24 @@ export class OymService extends BaseApiService {
   });
 
   CrearCarpetaMPPs( data: any ): Observable<any> {
+    data.userdata = this.getUserSessionData();
     return this.http.post<any>(this.endpoint + "CrearCarpetaMPPs", data, { headers: this.headers });
   }
 
   CargarCarpetaMPPs(data: any): Observable<any> {
+    data.userdata = this.getUserSessionData();
     return this.http.post<any>(this.endpoint + "CargarCarpetaMPPs", data, { headers: this.headers });
   }
 
   EliminarCarpetaMPPs(data: any): Observable<any> {
+    data.userdata = this.getUserSessionData();
     return this.http.post<any>(this.endpoint + "EliminarCarpetaMPPs", data, { headers: this.headers });
   }
 
   GuardarArchivoMPPs(file: File, subpath: string, metadata?: any): Observable<any> {
     const formData = new FormData();
+    const userdata = this.getUserSessionData();
+    formData.append('userdata', JSON.stringify(userdata));
     formData.append('file', file);
     formData.append('subpath', subpath);
     if (metadata) {
@@ -67,14 +73,19 @@ export class OymService extends BaseApiService {
   }
 
   EditarArchivoMPPs(path: string, newPath: string, metadata?: any): Observable<any> {
+    const userdata = this.getUserSessionData();
     return this.http.post(this.endpoint + "EditarArchivoMPPs",
-      { path, newPath, metadata },
+      { path, newPath, metadata, userdata },
       { headers: this.headers }
     );
   }
 
   EliminarArchivoMPPs(path: string): Observable<any> {
-    return this.http.post(this.endpoint + "EliminarArchivoMPPs", { path }, { headers: this.headers }
-    );
+    const userdata = this.getUserSessionData();
+    return this.http.post(this.endpoint + "EliminarArchivoMPPs", { path, userdata }, { headers: this.headers });
+  }
+
+  getDepartamentos(): Observable<any> {
+    return this.http.post<any>(this.endpoint + "getDepartamentos", {}, { headers: this.headers });
   }
 }
