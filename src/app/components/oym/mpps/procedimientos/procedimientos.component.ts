@@ -25,7 +25,17 @@ export class ProcedimientosComponent {
   filesMap: { [folderPath: string]: Array<any> } = {};
   currentPath: string = 'procedimientos';
   pathStack: string[] = ['procedimientos'];
+  isAdmin: boolean = false;
 
+  get showFoldersPanel(): boolean {
+    if (!this.isAdmin) return false;
+    const parts = (this.currentPath || '').split('/').filter(Boolean);
+    return parts.length === 1;
+  }
+
+  get canCreateFolder(): boolean {
+    return this.isAdmin && this.showFoldersPanel;
+  }
   public customButtons: CustomButton[] = [
     {
       label: '',
@@ -66,8 +76,20 @@ export class ProcedimientosComponent {
   constructor(private OymService: OymService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
+    this.loadUserRole();
     this.getDepartments();
     this.loadPath(this.currentPath);
+  }
+
+  loadUserRole() {
+    try {
+      const raw = localStorage.getItem('user');
+      if (!raw) return;
+      const user = JSON.parse(raw);
+      this.isAdmin = user?.is_admin === '1'
+    } catch (e) {
+      this.isAdmin = false;
+    }
   }
 
   getDepartments() {
@@ -173,15 +195,8 @@ export class ProcedimientosComponent {
 
   goBackToDepartments() {
     this.pathStack = ['procedimientos'];
+    this.currentPath = 'procedimientos';
     this.loadPath('procedimientos');
-  }
-
-  goBackOneLevel() {
-    if (this.pathStack.length > 1) {
-      this.pathStack.pop();
-      const prev = this.pathStack[this.pathStack.length - 1];
-      this.loadPath(prev);
-    }
   }
 
   deleteFolder(event: any, folderPath: string) {

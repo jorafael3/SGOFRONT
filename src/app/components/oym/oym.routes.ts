@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { ManualesFuncionesComponent } from './mpps/manuales_de_funciones/manuales_de_funciones.component';
 import { ProcedimientosComponent } from './mpps/procedimientos/procedimientos.component';
 import { PoliticasComponent } from './mpps/politicas/politicas.component';
+import { ContratosComponent } from './mpps/contratos/contratos.component';
 
 export const oymRoutes: Routes = [
     {
@@ -27,6 +28,14 @@ export const oymRoutes: Routes = [
         data: {
             title: 'Políticas',
             breadcrumb: 'Políticas'
+        }
+    },
+    {
+        path: 'mpps/contratos',
+        component: ContratosComponent,
+        data: {
+            title: 'Contratos',
+            breadcrumb: 'Contratos'
         }
     },
 ];

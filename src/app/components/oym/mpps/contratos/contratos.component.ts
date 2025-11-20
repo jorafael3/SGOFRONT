@@ -10,22 +10,32 @@ import Swal from 'sweetalert2';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
-  selector: 'app-procedimientos',
+  selector: 'app-contratos',
   imports: [CommonModule, FormsModule, CardComponent, TableComponent],
-  templateUrl: './procedimientos.component.html',
-  styleUrls: ['./procedimientos.component.scss']
+  templateUrl: './contratos.component.html',
+  styleUrls: ['./contratos.component.scss']
 })
 
-export class ProcedimientosComponent {
+export class ContratosComponent {
   newFolderName: string = '';
   folders: Array<{ name: string; path: string }> = [];
   selectedFiles: File[] = [];
   selectedFolder: string | null = null;
   selectedFolderName: string | null = null;
   filesMap: { [folderPath: string]: Array<any> } = {};
-  currentPath: string = 'procedimientos';
-  pathStack: string[] = ['procedimientos'];
+  currentPath: string = 'contratos';
+  pathStack: string[] = ['contratos'];
+  isAdmin: boolean = false;
 
+  get showFoldersPanel(): boolean {
+    if (!this.isAdmin) return false;
+    const parts = (this.currentPath || '').split('/').filter(Boolean);
+    return parts.length === 1;
+  }
+
+  get canCreateFolder(): boolean {
+    return this.isAdmin && this.showFoldersPanel;
+  }
   public customButtons: CustomButton[] = [
     {
       label: '',
@@ -66,8 +76,20 @@ export class ProcedimientosComponent {
   constructor(private OymService: OymService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
+    this.loadUserRole();
     this.getDepartments();
     this.loadPath(this.currentPath);
+  }
+
+  loadUserRole() {
+    try {
+      const raw = localStorage.getItem('user');
+      if (!raw) return;
+      const user = JSON.parse(raw);
+      this.isAdmin = user?.is_admin === '1'
+    } catch (e) {
+      this.isAdmin = false;
+    }
   }
 
   getDepartments() {
@@ -91,7 +113,7 @@ export class ProcedimientosComponent {
           this.selectedFolderName = null;
           return;
         }
-        const effectivePath = res.currentPath || subpath || 'procedimientos';
+        const effectivePath = res.currentPath || subpath || 'contratos';
         this.currentPath = effectivePath;
         const parts = (effectivePath || '').split('/').filter(Boolean);
         const isRoot = parts.length === 1;
@@ -172,16 +194,9 @@ export class ProcedimientosComponent {
   }
 
   goBackToDepartments() {
-    this.pathStack = ['procedimientos'];
-    this.loadPath('procedimientos');
-  }
-
-  goBackOneLevel() {
-    if (this.pathStack.length > 1) {
-      this.pathStack.pop();
-      const prev = this.pathStack[this.pathStack.length - 1];
-      this.loadPath(prev);
-    }
+    this.pathStack = ['contratos'];
+    this.currentPath = 'contratos';
+    this.loadPath('contratos');
   }
 
   deleteFolder(event: any, folderPath: string) {
@@ -252,7 +267,7 @@ export class ProcedimientosComponent {
         </div>
         <div class="mb-3">
           <label class="form-label">Título</label>
-          <input id="swal-input-title" class="form-control" placeholder="Procedimientos v1">
+          <input id="swal-input-title" class="form-control" placeholder="Contratos v1">
         </div>
       `,
       showCancelButton: true,
@@ -340,7 +355,7 @@ export class ProcedimientosComponent {
       </div>
       <div class="mb-3">
         <label class="form-label">Título</label>
-        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Procedimientos v1">
+        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Contratos v1">
       </div>
     `,
       showCancelButton: true,

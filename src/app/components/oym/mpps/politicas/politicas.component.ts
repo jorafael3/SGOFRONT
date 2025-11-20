@@ -25,7 +25,17 @@ export class PoliticasComponent {
   filesMap: { [folderPath: string]: Array<any> } = {};
   currentPath: string = 'politicas';
   pathStack: string[] = ['politicas'];
+  isAdmin: boolean = false;
 
+  get showFoldersPanel(): boolean {
+    if (!this.isAdmin) return false;
+    const parts = (this.currentPath || '').split('/').filter(Boolean);
+    return parts.length === 1;
+  }
+
+  get canCreateFolder(): boolean {
+    return this.isAdmin && this.showFoldersPanel;
+  }
   public customButtons: CustomButton[] = [
     {
       label: '',
@@ -66,8 +76,20 @@ export class PoliticasComponent {
   constructor(private OymService: OymService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
+    this.loadUserRole();
     this.getDepartments();
     this.loadPath(this.currentPath);
+  }
+
+  loadUserRole() {
+    try {
+      const raw = localStorage.getItem('user');
+      if (!raw) return;
+      const user = JSON.parse(raw);
+      this.isAdmin = user?.is_admin === '1'
+    } catch (e) {
+      this.isAdmin = false;
+    }
   }
 
   getDepartments() {
@@ -173,15 +195,8 @@ export class PoliticasComponent {
 
   goBackToDepartments() {
     this.pathStack = ['politicas'];
+    this.currentPath = 'politicas';
     this.loadPath('politicas');
-  }
-
-  goBackOneLevel() {
-    if (this.pathStack.length > 1) {
-      this.pathStack.pop();
-      const prev = this.pathStack[this.pathStack.length - 1];
-      this.loadPath(prev);
-    }
   }
 
   deleteFolder(event: any, folderPath: string) {
@@ -252,7 +267,7 @@ export class PoliticasComponent {
         </div>
         <div class="mb-3">
           <label class="form-label">Título</label>
-          <input id="swal-input-title" class="form-control" placeholder="Políticas v1">
+          <input id="swal-input-title" class="form-control" placeholder="Politicas v1">
         </div>
       `,
       showCancelButton: true,
@@ -340,7 +355,7 @@ export class PoliticasComponent {
       </div>
       <div class="mb-3">
         <label class="form-label">Título</label>
-        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Políticas v1">
+        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Politicas v1">
       </div>
     `,
       showCancelButton: true,
