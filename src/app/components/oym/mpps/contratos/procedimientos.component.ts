@@ -10,32 +10,22 @@ import Swal from 'sweetalert2';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
-  selector: 'app-manuales_de_funciones',
+  selector: 'app-procedimientos',
   imports: [CommonModule, FormsModule, CardComponent, TableComponent],
-  templateUrl: './manuales_de_funciones.component.html',
-  styleUrls: ['./manuales_de_funciones.component.scss']
+  templateUrl: './procedimientos.component.html',
+  styleUrls: ['./procedimientos.component.scss']
 })
 
-export class ManualesFuncionesComponent {
+export class ProcedimientosComponent {
   newFolderName: string = '';
   folders: Array<{ name: string; path: string }> = [];
   selectedFiles: File[] = [];
   selectedFolder: string | null = null;
   selectedFolderName: string | null = null;
   filesMap: { [folderPath: string]: Array<any> } = {};
-  currentPath: string = 'manuales_de_funciones';
-  pathStack: string[] = ['manuales_de_funciones'];
-  isAdmin: boolean = false;
+  currentPath: string = 'procedimientos';
+  pathStack: string[] = ['procedimientos'];
 
-  get showFoldersPanel(): boolean {
-    if (!this.isAdmin) return false;
-    const parts = (this.currentPath || '').split('/').filter(Boolean);
-    return parts.length === 1;
-  }
-
-  get canCreateFolder(): boolean {
-    return this.isAdmin && this.showFoldersPanel;
-  }
   public customButtons: CustomButton[] = [
     {
       label: '',
@@ -76,20 +66,8 @@ export class ManualesFuncionesComponent {
   constructor(private OymService: OymService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
-    this.loadUserRole();
     this.getDepartments();
     this.loadPath(this.currentPath);
-  }
-
-  loadUserRole() {
-    try {
-      const raw = localStorage.getItem('user');
-      if (!raw) return;
-      const user = JSON.parse(raw);
-      this.isAdmin = user?.is_admin === '1'
-    } catch (e) {
-      this.isAdmin = false;
-    }
   }
 
   getDepartments() {
@@ -113,7 +91,7 @@ export class ManualesFuncionesComponent {
           this.selectedFolderName = null;
           return;
         }
-        const effectivePath = res.currentPath || subpath || 'manuales_de_funciones';
+        const effectivePath = res.currentPath || subpath || 'procedimientos';
         this.currentPath = effectivePath;
         const parts = (effectivePath || '').split('/').filter(Boolean);
         const isRoot = parts.length === 1;
@@ -194,9 +172,16 @@ export class ManualesFuncionesComponent {
   }
 
   goBackToDepartments() {
-    this.pathStack = ['manuales_de_funciones'];
-    this.currentPath = 'manuales_de_funciones';
-    this.loadPath('manuales_de_funciones');
+    this.pathStack = ['procedimientos'];
+    this.loadPath('procedimientos');
+  }
+
+  goBackOneLevel() {
+    if (this.pathStack.length > 1) {
+      this.pathStack.pop();
+      const prev = this.pathStack[this.pathStack.length - 1];
+      this.loadPath(prev);
+    }
   }
 
   deleteFolder(event: any, folderPath: string) {
@@ -267,7 +252,7 @@ export class ManualesFuncionesComponent {
         </div>
         <div class="mb-3">
           <label class="form-label">Título</label>
-          <input id="swal-input-title" class="form-control" placeholder="Manual de Funciones v1">
+          <input id="swal-input-title" class="form-control" placeholder="Procedimientos v1">
         </div>
       `,
       showCancelButton: true,
@@ -355,7 +340,7 @@ export class ManualesFuncionesComponent {
       </div>
       <div class="mb-3">
         <label class="form-label">Título</label>
-        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Manual de Funciones v1">
+        <input id="swal-input-title" class="form-control" value="${file.title || ''}" placeholder="Procedimientos v1">
       </div>
     `,
       showCancelButton: true,

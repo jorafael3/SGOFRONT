@@ -3,7 +3,7 @@
         <div class="col-12">
             <app-card [headerTitle]="''" [cardClass]="'mb-4'">
 
-                <div class="row mb-3" *ngIf="canCreateFolder">
+                <div class="row mb-3">
                     <div class="col-md-6 mb-2">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Nombre de la nueva carpeta" [(ngModel)]="newFolderName" />
@@ -14,12 +14,14 @@
                     </div>
                 </div>
                 <div class="col-md-6 mb-2">
-                    <button *ngIf="isAdmin && !showFoldersPanel" class="btn btn-outline-secondary" (click)="goBackToDepartments()">← Volver a departamentos</button>
+                    <button *ngIf="pathStack.length > 1" class="btn btn-outline-secondary" (click)="goBackOneLevel()">
+                      ← Volver a departamentos
+                    </button>
                 </div>
 
                 <div class="customer-order-report table-responsive custom-scrollbar">
                     <div class="row">
-                        <div class="col-md-4" *ngIf="showFoldersPanel">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <h6>Carpetas</h6>
                                 <div class="p-3" *ngIf="folders.length === 0">No hay carpetas.</div>
@@ -40,7 +42,7 @@
                         </div>
 
 
-                        <div [ngClass]="showFoldersPanel ? 'col-md-8' : 'col-md-12'">
+                        <div class="col-md-8">
                             <div class="mb-3">
                                 <h6 *ngIf="!selectedFolder">Archivos</h6>
                                 <h6 *ngIf="selectedFolder">Archivos en: <small class="text-primary">{{ selectedFolderName }}</small></h6>

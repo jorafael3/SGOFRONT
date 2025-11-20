@@ -1,28 +1,570 @@
 <div class="container-fluid customer-order-wrapper">
     <div class="row">
         <div class="col-12">
-            <app-card [headerTitle]="'Obligaciones Bancarias'" [cardClass]="'mb-4'">
-                <!-- Spinner de cargando -->
-                <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
-                    <div class="text-center">
-                        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
-                        <p class="text-muted fw-bold">Cargando datos...</p>
-                    </div>
+            <app-card [headerTitle]="'Calculadora de Amortización'" [cardClass]="'mb-4'">
+                <div class="mb-4 text-muted">
+                    Ingrese los valores para calcular una tabla de amortización
                 </div>
 
-                <!-- Tabla -->
-                <div class="customer-order-report table-responsive custom-scrollbar" *ngIf="!isLoading">
-                    <div class="recent-table">
-                        <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
-                            [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
-                            [exportButtons]="Buttons_Export" [customButtons]="customButtons"
-                            [initialDateFilter]="'this_month'" (action)="onTableAction($event)"
+                <!-- Tabs -->
+                <div class="d-flex gap-2 mb-4">
+                    <button class="btn" [ngClass]="activeTab === 'nueva' ? 'btn-primary' : 'btn-light'"
+                        (click)="activeTab = 'nueva'">Nueva Amortización</button>
+                    <button class="btn" [ngClass]="activeTab === 'lista' ? 'btn-primary' : 'btn-light'"
+                        (click)="activeTab = 'lista'; cargarLista()">Lista Amortizaciones</button>
+                </div>
+
+                <div *ngIf="activeTab === 'nueva'">
+                    <!-- Radios -->
+                    <div class="d-flex mb-3 gap-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="modo_interes" value="compuesto"
+                                [(ngModel)]="modoInteres" checked>
+                            <label class="fst-italic">Interes Compuesto</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="modo_interes" value="simple"
+                                [(ngModel)]="modoInteres">
+                            <label class="fst-italic">Interes Simple</label>
+                        </div>
+                    </div>
+
+                    <!-- =============== FORM COMPUESTO ================= -->
+                    <div *ngIf="modoInteres === 'compuesto'">
+                        <div class="row g-4">
+
+                            <div class="col-md-7">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body">
+
+                                        <div class="row">
+                                            <!-- Left -->
+                                            <div class="col-md-6">
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Valor del préstamo</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" value="0" class="form-control"
+                                                            (input)="actualizarResumen()"
+                                                            [(ngModel)]="form.capital">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tasa nominal anual(T.N.A.)</label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control"
+                                                            (input)="actualizarResumen()"
+                                                            [(ngModel)]="form.tna">
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Plazo (cuotas)</label>
+                                                    <input type="number" class="form-control"
+                                                        (input)="actualizarResumen()" [(ngModel)]="form.cuotas">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Fecha inicio</label>
+                                                    <input type="date" class="form-control"
+                                                        [(ngModel)]="form.fechaInicio">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Otros (Solca)</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" disabled class="form-control"
+                                                            [(ngModel)]="form.otros">
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <!-- Right -->
+
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tasa Mensual:</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">%</span>
+                                                        <input type="number" disabled class="form-control"
+                                                            [(ngModel)]="form.tasaMensual">
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Cuota</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">%</span>
+                                                        <input type="number" disabled class="form-control"
+                                                            [ngModel]="form.cuotaFija">
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="mb-3">
+                                                    <label class="fw-semibold">Sistema de amortización</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" checked type="radio"
+                                                            [(ngModel)]="form.tipoAmortizacion" [value]=1 >
+                                                        <label class="fst-italic">Sistema Francés (cuota fija)</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input disabled class="form-check-input" [(ngModel)]="form.tipoAmortizacion" [value]=2 type="radio">
+                                                        <label class="text-muted">Sistema Alemán</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Referencia</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">#</span>
+                                                        <input type="text" class="form-control" placeholder="xxxxxxxxxx"
+                                                            [(ngModel)]="form.referencia">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tipo de obligación</label>
+                                                    <select class="form-select" [(ngModel)]="form.tipoObligacion">
+                                                        <option value="">Seleccione</option>
+                                                        <option *ngFor="let item of tiposObligaciones"
+                                                            [value]="item.nombre"> {{ item.nombre }} </option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Proveedor</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" placeholder="Proveedor"
+                                                            [(ngModel)]="form.proveedor" readonly>
+                                                        <button class="btn btn-primary" type="button"
+                                                            (click)="abrirModalProveedor()">
+                                                            Buscar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3">
+                                            <button class="btn btn-primary" (click)="calcularAmortizacion()">
+                                                Calcular amortización
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- RESUMEN -->
+                            <div class="col-md-5">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-white border-0">
+                                        <h5>Resumen</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="p-4 rounded" style="background:#e9fff1">
+
+                                            <div class="row">
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Capital</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.capital | currency:'USD' }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Tasa</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.tasa }}%</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Plazo</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.plazo }} mensual</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Cuota</span>
+                                                    <div class="fw-bold text-primary fs-5">{{ resumen.cuota |
+                                                        currency:'USD' }}</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Total intereses</span>
+                                                    <div class="fw-bold text-danger fs-5">{{ resumen.intereses |
+                                                        currency:'USD' }}</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Total</span>
+                                                    <div class="fw-bold text-success fs-5">{{ resumen.total |
+                                                        currency:'USD' }}</div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <span class="text-muted">Proveedor</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.proveedor }}</div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TABLA AMORTIZACIÓN -->
+
+                        <div class="card shadow-sm border-0 mt-4">
+                            <div class="card-header bg-white border-0">
+                                <h5>Tabla de Amortización</h5>
+                            </div>
+
+                            <div>
+                                <div class="customer-order-report table-responsive custom-scrollbar">
+                                    <app-table [hasCheckbox]="false" [tableConfig]="amortizacionTableConfig"
+                                        [pageSize]="10" [paginateDetails]="true" [selectedRows]="true"
+                                        [downloadReports]="true" [exportButtons]="Buttons_Export"
+                                        [customButtons]="amortizacionButtons" (action)="onListaAction($event)"
+                                        (customAction)="onCustomAction($event)">
+                                    </app-table>
+                                </div>
+                            </div>
+
+                            <!-- <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>N° Cuota</th>
+                                                <th>Fecha Pago</th>
+                                                <th>Valor Capital</th>
+                                                <th>Interés</th>
+                                                <th>Otros</th>
+                                                <th>Cuota (Constante)</th>
+                                                <th>Saldo</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr *ngFor="let item of tablaAmortizacion">
+                                                <td>{{ item.cuota }}</td>
+                                                <td>{{ item.fechaPago }}</td>
+                                                <td>{{ item.pagoTotal }}</td>
+                                                <td>{{ item.interes }}</td>
+                                                <td>{{ item.abonoCapital }}</td>
+                                                <td>{{ item.saldo }}</td>
+                                            </tr>
+
+                                            <tr *ngIf="tablaAmortizacion.length === 0">
+                                                <td colspan="6" class="text-center text-muted py-3">
+                                                    No se ha calculado aún.
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div> -->
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =============== FORM SIMPLE ================= -->
+                    <div *ngIf="modoInteres === 'simple'">
+                        <div class="row g-4">
+
+                            <div class="col-md-7">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-body">
+
+                                        <div class="row">
+                                            <!-- Left -->
+                                            <div class="col-md-6">
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Valor del préstamo</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" value="0" class="form-control"
+                                                            (input)="actualizarResumen()"
+                                                            [(ngModel)]="form.capital">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tasa nominal anual(T.N.A.)</label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control"
+                                                            (input)="actualizarResumen()"
+                                                            [(ngModel)]="form.tna">
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Plazo (cuotas)</label>
+                                                    <input type="number" class="form-control"
+                                                        (input)="actualizarResumen()" [(ngModel)]="form.cuotas">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Fecha inicio</label>
+                                                    <input type="date" class="form-control"
+                                                        [(ngModel)]="form.fechaInicio">
+                                                </div>
+
+                                            </div>
+
+                                            <!-- Right -->
+
+                                            <div class="col-md-6">
+
+                                                <div class="mb-3">
+                                                    <label class="fw-semibold">Sistema de amortización</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio"
+                                                            [(ngModel)]="form.tipoAmortizacion" value="frances" checked>
+                                                        <label class="fst-italic">Sistema Francés (cuota fija)</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input disabled class="form-check-input" type="radio">
+                                                        <label class="text-muted">Sistema Alemán</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Referencia</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">#</span>
+                                                        <input type="text" class="form-control" placeholder="xxxxxxxxxx"
+                                                            [(ngModel)]="form.referencia">
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tipo de obligación</label>
+                                                    <select class="form-select" [(ngModel)]="form.tipoObligacion">
+                                                        <option value="">Seleccione</option>
+                                                        <option *ngFor="let item of tiposObligaciones"
+                                                            [value]="item.nombre"> {{ item.nombre }} </option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3">
+                                            <button class="btn btn-primary" (click)="calcularAmortizacion()">
+                                                Calcular amortización
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- RESUMEN -->
+                            <div class="col-md-5">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-white border-0">
+                                        <h5>Resumen</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="p-4 rounded" style="background:#e9fff1">
+
+                                            <div class="row">
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Capital</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.capital | currency:'USD' }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Tasa</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.tasa }}%</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Plazo</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.plazo }} mensual</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Provision</span>
+                                                    <div class="fw-bold text-primary fs-5">$ 0.00</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Interes Simple</span>
+                                                    <div class="fw-bold text-danger fs-5">{{ resumen.intereses |
+                                                        currency:'USD' }}</div>
+                                                </div>
+
+                                                <div class="col-6 mb-3">
+                                                    <span class="text-muted">Total</span>
+                                                    <div class="fw-bold text-success fs-5">{{ resumen.total |
+                                                        currency:'USD' }}</div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <span class="text-muted">Proveedor</span>
+                                                    <div class="fw-bold fs-5">{{ resumen.proveedor }}</div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TABLA AMORTIZACIÓN -->
+
+                        <div class="card shadow-sm border-0 mt-4">
+                            <div class="card-header bg-white border-0">
+                                <h5>Tabla de Amortización</h5>
+                            </div>
+
+                            <div>
+                                <div class="customer-order-report table-responsive custom-scrollbar">
+                                    <app-table [hasCheckbox]="false" [tableConfig]="amortizacionTableConfig"
+                                        [pageSize]="10" [paginateDetails]="true" [selectedRows]="true"
+                                        [downloadReports]="true" [exportButtons]="Buttons_Export"
+                                        [customButtons]="amortizacionButtons" (action)="onListaAction($event)"
+                                        (customAction)="onCustomAction($event)">
+                                    </app-table>
+                                </div>
+                            </div>
+
+                            <!-- <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>N° Cuota</th>
+                                                <th>Fecha Pago</th>
+                                                <th>Valor Capital</th>
+                                                <th>Interés</th>
+                                                <th>Otros</th>
+                                                <th>Cuota (Constante)</th>
+                                                <th>Saldo</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr *ngFor="let item of tablaAmortizacion">
+                                                <td>{{ item.cuota }}</td>
+                                                <td>{{ item.fechaPago }}</td>
+                                                <td>{{ item.pagoTotal }}</td>
+                                                <td>{{ item.interes }}</td>
+                                                <td>{{ item.abonoCapital }}</td>
+                                                <td>{{ item.saldo }}</td>
+                                            </tr>
+
+                                            <tr *ngIf="tablaAmortizacion.length === 0">
+                                                <td colspan="6" class="text-center text-muted py-3">
+                                                    No se ha calculado aún.
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div> -->
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <!-- ===================== LISTA AMORTIZACIONES ===================== -->
+                <div *ngIf="activeTab === 'lista'">
+                    <div class="customer-order-report table-responsive custom-scrollbar">
+                        <app-table [hasCheckbox]="false" [tableConfig]="listaTableConfig" [pageSize]="10"
+                            [selectedRows]="true" (action)="onListaAction($event)"
                             (customAction)="onCustomAction($event)">
                         </app-table>
                     </div>
                 </div>
+
+
+
+                <!-- MODAL SELECCIÓN PROVEEDOR -->
+                <div *ngIf="showModalProveedor">
+                    <!-- Fondo oscuro -->
+                    <div class="modal-backdrop fade show" (click)="cerrarModalProveedor()"></div>
+
+                    <!-- Modal -->
+                    <div class="modal fade show d-block" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Seleccionar Proveedor</h5>
+                                    <button type="button" class="btn-close" (click)="cerrarModalProveedor()"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <!-- Buscador opcional -->
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control"
+                                            placeholder="Buscar por nombre o identificación..."
+                                            [(ngModel)]="filtroProveedor">
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Nombre</th>
+                                                    <th>Identificación</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let prov of proveedoresFiltrados; let i = index">
+                                                    <td>{{ i + 1 }}</td>
+                                                    <td>{{ prov.Nombre }}</td>
+                                                    <td>{{ prov.id }}</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-primary"
+                                                            (click)="seleccionarProveedor(prov)">
+                                                            Seleccionar
+                                                        </button>
+                                                    </td>
+                                                </tr>
+
+                                                <tr *ngIf="proveedoresFiltrados.length === 0">
+                                                    <td colspan="4" class="text-center text-muted">
+                                                        No se encontraron proveedores.
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" (click)="cerrarModalProveedor()">
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </app-card>
         </div>
     </div>
