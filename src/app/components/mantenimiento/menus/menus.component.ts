@@ -146,7 +146,7 @@ export class MenusComponent implements OnInit {
    */
   onTypeChange() {
     const tipoSeleccionado = this.menuForm.get('Type')?.value;
-    
+
     // Si es menú principal, limpiar PadreId
     if (tipoSeleccionado === 'main_title') {
       this.menuForm.get('PadreId')?.setValue('');
@@ -216,14 +216,16 @@ export class MenusComponent implements OnInit {
       Empresa: this.selectedEmpresa,
       PadreId: formValue.PadreId ? parseInt(formValue.PadreId) : null
     };
+    console.log('menuData: ', menuData);
 
     const operacion = this.isEditing ? 'actualizar' : 'crear';
-    const metodo = this.isEditing ? 
-      this.menusService.updateMenu(menuData) : 
+    const metodo = this.isEditing ?
+      this.menusService.updateMenu(menuData) :
       this.menusService.createMenu(menuData);
 
     metodo.subscribe({
       next: (response: any) => {
+        console.log('response: ', response);
         if (response.success) {
           Swal.fire('Éxito', `Menú ${operacion}do correctamente`, 'success');
           this.cerrarModal();
@@ -294,7 +296,7 @@ export class MenusComponent implements OnInit {
     // El TableComponent emite 'action_to_perform', no 'action'
     const action = event.action_to_perform || event.action;
     const rowData = event.data;
-    
+
     console.log('Acción:', action, 'Datos:', rowData);
 
     if (!action) {

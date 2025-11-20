@@ -162,21 +162,21 @@ export class UsuariosComponent {
         this.isLoading = false;
       }
     });
-    // this.UsuariosService.getDepartamentosLogistica({ empresa: this.selectedEmpresa }).subscribe({
-    //   next: (response) => {
-    //     console.log('response: ', response);
-    //     if (response.success && response.data) {
-    //       this.ListaDepartamentosLogistica = response.data;
-    //     } else {
-    //       Swal.fire("Error!", response.message, "error");
-    //     }
-    //     this.isLoading = false;
-    //   },
-    //   error: (error) => {
-    //     console.log('error: ', error);
-    //     this.isLoading = false;
-    //   }
-    // });
+    this.UsuariosService.getDepartamentosLogistica({ empresa: this.selectedEmpresa }).subscribe({
+      next: (response) => {
+        console.log('response: ', response);
+        if (response.success && response.data) {
+          this.ListaDepartamentosLogistica = response.data;
+        } else {
+          Swal.fire("Error!", response.message, "error");
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.log('error: ', error);
+        this.isLoading = false;
+      }
+    });
 
   }
 
@@ -185,8 +185,8 @@ export class UsuariosComponent {
     this.Usuarios_Datos.map(function (x) {
       x.usuario_texto = `<span class="fs-6 fw-bold badge bg-secondary">${x.usuario}</span>`;
       x.Departamento_texto = `<span class="fw-bold">${x.Departamento}</span>`;
-      x.IS_GERENCIA_TEXTO = `<span class="fs-6 fw-bold badge bg-${x.IS_GERENCIA === '1' ? 'primary' : 'secondary'}">${x.IS_GERENCIA === '1' ? 'SI' : 'NO'}</span>`;
-      x.IS_ADMIN_TEXTO = `<span class="fs-6 fw-bold badge bg-${x.IS_ADMIN === '1' ? 'primary' : 'secondary'}">${x.IS_ADMIN === '1' ? 'SI' : 'NO'}</span>`;
+      x.IS_GERENCIA_TEXTO = `<span class="fs-6 fw-bold badge bg-${x.isgerencia === '1' ? 'primary' : 'secondary'}">${x.isgerencia === '1' ? 'SI' : 'NO'}</span>`;
+      x.IS_ADMIN_TEXTO = `<span class="fs-6 fw-bold badge bg-${x.is_admin === '1' ? 'primary' : 'secondary'}">${x.is_admin === '1' ? 'SI' : 'NO'}</span>`;
       x.ESTADO_TEXTO = `<span class="fs-6 fw-bold badge badge-light-${x.anulado === '1' ? 'danger' : 'success'}">${x.anulado === '1' ? 'Inactivo' : 'Activo'}</span>`;
       // x.FACTURA_SUCURSAL = `<span class="fw-bold badge badge-secondary fs-6">${x.FACTURA_SUCURSAL}</span>`;
       // x.MULTIBODEGA = `<span class="fs-6 badge bg-${x.MULTIBODEGA === 'SI' ? 'primary' : 'secondary'} fw-bold">${x.MULTIBODEGA}</span>`;
@@ -275,7 +275,25 @@ export class UsuariosComponent {
   editUser(user: any) {
     console.log('user: ', user);
     this.isEditing = true;
-    this.userForm.patchValue(user);
+
+    // Mapear correctamente los datos: convertir strings "0"/"1" a booleanos
+    this.userForm.patchValue({
+      usrid: user.usrid,
+      usuario: user.usuario,
+      nombre: user.nombre,
+      clave: user.clave,
+      Departamento: user.Departamento,
+      EmpleadoID: user.EmpleadoID,
+      email: user.email,
+      departamento_id: user.departamento_id,
+      departamento_log: user.departamento_log,
+      // Convertir strings "0"/"1" a booleanos
+      isgerencia: user.isgerencia === '1' || user.isgerencia === true,
+      is_admin: user.is_admin === '1' || user.is_admin === true,
+      // Estado: "0" = Activo, "1" = Inactivo. Usar 'anulado' como referencia
+      estado: user.anulado === '1' ? '1' : '0'
+    });
+
     this.ShowCreateModal = true;
     this.isLoadingMenus = true;
     this.userMenus = [];
@@ -331,7 +349,7 @@ export class UsuariosComponent {
           ...userData,
           menus: selectedMenus
         };
-          console.log('updateData: ', updateData);
+        console.log('updateData: ', updateData);
 
         this.UsuariosService.updateUser(updateData).subscribe({
           next: (response) => {
@@ -425,7 +443,7 @@ export class UsuariosComponent {
     // Cambiar el estado del menú
     menu.checked = !menu.checked;
     console.log('Menu toggled:', menu.title || menu.main_title, 'New state:', menu.checked);
-    
+
     if (menu.checked) {
       // Si se marca: marcar todos los hijos y propagar hacia arriba
       if (menu.children && menu.children.length > 0) {

@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class MenusService extends BaseApiService {
 
-    private readonly endpoint = environment.apiUrl + '/mantenimiento/menus/';
+    private readonly endpoint = environment.apiUrl + '/mantenimiento/usuarios/menus/';
 
     constructor(http: HttpClient) {
         super(http);
