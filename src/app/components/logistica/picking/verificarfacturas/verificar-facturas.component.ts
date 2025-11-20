@@ -64,7 +64,7 @@ export class VerificarFacturasComponent {
 
   public tableConfig: TableConfigs = {
     columns: [
-      { title: 'Sucursal', field_value: 'FACTURA_SUCURSAL', sort: true },
+      { title: 'Sucursal', field_value: 'FACTURA_SUCURSAL_TEXTO', sort: true },
       { title: 'Bodega', field_value: 'CODIGOS_BODEGA_TEXTO', sort: true },
       { title: 'Cliente', field_value: 'CLIENTE_NOMBRE_TEXTO', sort: true },
       { title: 'Factura', field_value: 'FACTURA_SECUENCIA_TEXTO', sort: true },
@@ -159,7 +159,7 @@ export class VerificarFacturasComponent {
           TEXTO_BODEGAS += `<span class="fw-bold">${CODIGOS_BODEGA[i]}</span><br>`
         }
       }
-      x.FACTURA_SUCURSAL = `<span class="fw-bold badge badge-secondary fs-6">${x.FACTURA_SUCURSAL}</span>`;
+      x.FACTURA_SUCURSAL_TEXTO = `<span class="fw-bold badge badge-secondary fs-6">${x.FACTURA_SUCURSAL}</span>`;
       x.CODIGOS_BODEGA_TEXTO = TEXTO_BODEGAS;
       x.FACTURA_SECUENCIA_TEXTO = `<span class="badge bg-dark fs-6 fw-bold">${x.FACTURA_SECUENCIA}</span>`;
       x.MULTIBODEGA = `<span class="fs-6 badge bg-${x.MULTIBODEGA === 'SI' ? 'primary' : 'secondary'} fw-bold">${x.MULTIBODEGA}</span>`;
@@ -172,7 +172,6 @@ export class VerificarFacturasComponent {
     this.tableConfig = { ...this.tableConfig, data: this.Usuarios_Datos };
 
   }
-
 
   //** ACCIONES DE LOS BOTONES DE LA TABLA */
   onTableAction(action: TableClickedAction) {
@@ -261,7 +260,6 @@ export class VerificarFacturasComponent {
       }
     });
   }
-
   // Método para cerrar el modal
   cerrarModal() {
     this.showPrepararModal = false;
@@ -271,7 +269,6 @@ export class VerificarFacturasComponent {
     this.productosJaula = [];
     this.productosNoJaula = [];
   }
-
   // Método para guardar la verificación de series
   guardarVerificacion() {
     // Verificar que todos los productos estén verificados (series completas)
@@ -417,7 +414,6 @@ export class VerificarFacturasComponent {
   onRefreshTableData() {
     this.loadTableData();
   }
-
   // ==================== MÉTODOS PARA CAPTURA DE SERIES ====================
 
   // Limpiar inputs de captura
