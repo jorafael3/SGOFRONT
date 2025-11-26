@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /SGONUEVO/
+
+  # Si piden directamente /SGONUEVO, cargar /browser/index.html
+  RewriteRule ^$ browser/index.html [L]
+
+  # Si NO es un archivo ni carpeta real, enviar todo a /browser/index.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ browser/index.html [L]
+</IfModule>

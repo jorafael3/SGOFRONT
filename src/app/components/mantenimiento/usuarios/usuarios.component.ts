@@ -140,6 +140,8 @@ export class UsuariosComponent {
     };
 
     console.log('param: ', param);
+    console.log('param: ', param);
+    console.log('param: ', param);
 
     this.UsuariosService.getUserList(param).subscribe({
       next: (response) => {
