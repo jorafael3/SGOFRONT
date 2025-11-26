@@ -146,6 +146,7 @@ export class VerificarFacturasComponent {
       let ID_PREPARADAS = x.IDS_PREPARADAS.split(',');
       let CODIGOS_BODEGA = x.CODIGOS_BODEGA.split(',');
 
+      
       let TEXTO_BODEGAS = "";
       for (let i = 0; i < CODIGOS_BODEGA.length; i++) {
         let AGREGADA = 0
