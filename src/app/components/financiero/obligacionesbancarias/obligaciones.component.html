@@ -132,7 +132,7 @@
                                                     <select class="form-select" [(ngModel)]="form.tipoObligacion">
                                                         <option value="">Seleccione</option>
                                                         <option *ngFor="let item of tiposObligaciones"
-                                                            [value]="item.nombre"> {{ item.nombre }} </option>
+                                                            [ngValue]="item.id"> {{ item.nombre }} </option>
                                                     </select>
                                                 </div>
 
@@ -354,7 +354,7 @@
                                                     <select class="form-select" [(ngModel)]="form.tipoObligacion">
                                                         <option value="">Seleccione</option>
                                                         <option *ngFor="let item of tiposObligaciones"
-                                                            [value]="item.nombre"> {{ item.nombre }} </option>
+                                                            [ngValue]="item.id"> {{ item.nombre }} </option>
                                                     </select>
                                                 </div>
 
