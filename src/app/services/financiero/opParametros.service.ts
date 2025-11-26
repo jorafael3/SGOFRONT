@@ -8,9 +8,9 @@ import { user } from '../../shared/data/user';
 @Injectable({
   providedIn: 'root'
 })
-export class OpcionesService extends BaseApiService {
+export class OpParametrosService extends BaseApiService {
 
-  private readonly endpoint = environment.apiUrl + '/financiero/opciones/';
+  private readonly endpoint = environment.apiUrl + '/financiero/opciones/parametros/';
 
   constructor(http: HttpClient) {
     super(http);
@@ -43,13 +43,5 @@ export class OpcionesService extends BaseApiService {
     'Authorization': `Bearer ${this.getUserSessionToken()}`
   });
 
-  CargarTiposObligaciones(data: any): Observable<any> {
-    return this.http.post<any>(this.endpoint + "Cargar_Tipos_Obligaciones", data, { headers: this.headers });
-  }
-  ActualizarCuentasObligaciones(data: any): Observable<any> {
-    return this.http.post<any>(this.endpoint + "Actualizar_cuentas_obligaciones", data, { headers: this.headers });
-  }
-  BorrarTipoObligacion(data: any): Observable<any> {
-    return this.http.post<any>(this.endpoint + "Borrar_Tipo_Obligacion", data, { headers: this.headers });
-  }
+  
 }

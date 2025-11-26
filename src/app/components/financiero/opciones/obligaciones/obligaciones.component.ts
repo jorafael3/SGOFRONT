@@ -6,7 +6,7 @@ import { TableComponent } from "../../../../shared/components/ui/table/table.com
 import { TableConfigs, TableClickedAction, CustomButton } from '../../../../shared/interface/common';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-import { OpcionesService } from '../../../../services/financiero/opciones.service';
+import { OpObligacionesService } from '../../../../services/financiero/opObligaciones.service';
 
 @Component({
   selector: 'app-obligaciones',
@@ -16,26 +16,56 @@ import { OpcionesService } from '../../../../services/financiero/opciones.servic
 })
 export class ObligacionesComponent {
   public tiposObligaciones: any[] = [];
+  public cuentasACPP: any[] = [];
+  public cuentasACGastos: any[] = [];
+  // cuenta Pasivo, cuentaGasto, cuentaProvision
+  public cuentaGasto = '';
+  public cuentaPasivo = '';
+  public cuentaProvision = '';
 
-  constructor(private OpcionesService: OpcionesService, private cdr: ChangeDetectorRef, private router: Router) { }
+
+  constructor(private service: OpObligacionesService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
     this.cargarTiposObligaciones();
+    this.cargarACCuentasPP();
+    this.cargarACCuentasGastos();
   }
 
   cargarTiposObligaciones() {
     let param: never[] = []
-    this.OpcionesService.CargarTiposObligaciones(param).subscribe({
+    this.service.CargarTiposObligaciones(param).subscribe({
       next: (res: any) => {
         if (!res.success) return;
         this.tiposObligaciones = res.data.map((item: any) => ({
           ...item,
-          cuentaDebe: item.cuentaDebe || '',
-          cuentaHaber: item.cuentaHaber || '',
-          cuentaGasto: item.cuentaGasto || ''
+          cuentaGasto: item.cuentaGasto || '',
+          cuentaPasivo: item.cuentaPasivo || '',
+          cuentaProvision: item.cuentaProvision || '',
         }));
         // this.tiposObligaciones = res.data;
         console.log("Cargar Tipos Obligaciones ", this.tiposObligaciones)
+      }
+    })
+  }
+  
+  cargarACCuentasPP() {
+    let param: never[] = []
+    this.service.Cargar_ACC_CuentasPasivos_Provision(param).subscribe({
+      next: (res: any) => {
+        if (!res.success) return;
+        this.cuentasACPP = res.data;
+        console.log("Cargar ACCuentas Pasivos y Provisión", this.cuentasACPP)
+      }
+    })
+  }
+  cargarACCuentasGastos() {
+    let param: never[] = []
+    this.service.CargarACCuentasGastos(param).subscribe({
+      next: (res: any) => {
+        if (!res.success) return;
+        this.cuentasACGastos = res.data;
+        console.log("Cargar ACCuentas Gastos", this.cuentasACGastos)
       }
     })
   }
@@ -46,12 +76,12 @@ export class ObligacionesComponent {
       nombre: item.nombre,
       cuenta: item.cuenta,
       estado: item.estado,
-      cuentaDebe: item.cuentaDebe,
-      cuentaHaber: item.cuentaHaber,
       cuentaGasto: item.cuentaGasto,
+      cuentaPasivo: item.cuentaPasivo,
+      cuentaProvision: item.cuentaProvision,
     }));
     console.log('Payload a guardar:', payload);
-    this.OpcionesService.ActualizarCuentasObligaciones(payload).subscribe({
+    this.service.ActualizarCuentasObligaciones(payload).subscribe({
       next: (res: any) => {
         console.log('Respuesta del servidor:', res);
         if (!res.success) {
@@ -70,9 +100,9 @@ export class ObligacionesComponent {
       nombre: '',
       cuenta: '',
       estado: 1,
-      cuentaDebe: '',
-      cuentaHaber: '',
-      cuentaGasto: ''
+      cuentaGasto: '',
+      cuentaPasivo: '',
+      cuentaProvision: '',
     });
   }
 
@@ -80,7 +110,7 @@ export class ObligacionesComponent {
     Swal.fire({
       title: '¿Estás seguro?',
     }).then((result) => {
-      this.OpcionesService.BorrarTipoObligacion({ id: item.id }).subscribe({
+      this.service.BorrarTipoObligacion({ id: item.id }).subscribe({
         next: (res: any) => {
           console.log('Respuesta del servidor:', res);
           if (!res.success) {

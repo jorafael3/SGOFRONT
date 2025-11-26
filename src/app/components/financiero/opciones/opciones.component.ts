@@ -8,8 +8,9 @@ import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { BancoService } from '../../../services/financiero/banco.service';
 import { ObligacionesComponent } from './obligaciones/obligaciones.component';
+import { ParametrosComponent } from './parametros/parametros.component';
 
-type TabId = 'obligaciones' | 'otra';
+type TabId = 'obligaciones' | 'parametros' | 'otra';
 
 interface Tab {
   id: TabId;
@@ -20,7 +21,8 @@ interface Tab {
   selector: 'app-opciones-bancarias',
   standalone: true,
   imports: [CommonModule, FormsModule, CardComponent, TableComponent,
-    ObligacionesComponent
+    ObligacionesComponent,
+    ParametrosComponent
   ],
   templateUrl: './opciones.component.html',
   styleUrl: './opciones.component.scss'
@@ -28,9 +30,10 @@ interface Tab {
 export class OpcionesBancariasComponent {
   tabs: Tab[] = [
     { id: 'obligaciones',  label: 'Obligaciones' },
+    { id: 'parametros',  label: 'Parámetros' },
     { id: 'otra',         label: 'Que otra opción' },
   ];
-  activeTab: TabId = 'obligaciones';
+  activeTab: TabId = 'parametros';
   
   setTab(tab: TabId) {
     this.activeTab = tab;

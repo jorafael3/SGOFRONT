@@ -15,9 +15,9 @@
                         <thead class="">
                             <tr>
                                 <th>Nombre</th>
-                                <th style="width: 200px;">Cuenta Debe</th>
-                                <th style="width: 200px;">Cuenta Haber</th>
+                                <th style="width: 200px;">Cuenta Pasivo</th>
                                 <th style="width: 200px;">Cuenta Gasto</th>
+                                <th style="width: 200px;">Cuenta Provisional</th>
                                 <th style="width: 200px;">Borrar</th>
                             </tr>
                         </thead>
@@ -27,13 +27,28 @@
                                     <input type="text " class="form-control fw-semibold" [(ngModel)]="item.nombre">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control fw-semibold" [(ngModel)]="item.cuentaDebe">
+                                    <select class="form-select" [(ngModel)]="item.cuentaPasivo">
+                                        <option value="">Seleccione</option>
+                                        <option *ngFor="let cuenta of cuentasACPP" [value]="cuenta.ID"> {{
+                                            cuenta.Nombre }} </option>
+                                    </select>
+                                    <!-- <input type="text" class="form-control fw-semibold" [(ngModel)]="item.cuentaDebe"> -->
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control fw-semibold" [(ngModel)]="item.cuentaHaber">
+                                    <select class="form-select" [(ngModel)]="item.cuentaGasto">
+                                        <option value="">Seleccione</option>
+                                        <option *ngFor="let cuenta of cuentasACGastos" [value]="cuenta.ID"> {{
+                                            cuenta.Nombre }} </option>
+                                    </select>
+                                    <!-- <input type="text" class="form-control fw-semibold" [(ngModel)]="item.cuentaHaber"> -->
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control fw-semibold" [(ngModel)]="item.cuentaGasto">
+                                    <select class="form-select" [(ngModel)]="item.cuentaProvision">
+                                        <option value="">Seleccione</option>
+                                        <option *ngFor="let cuenta of cuentasACPP" [value]="cuenta.ID"> {{
+                                            cuenta.Nombre }} </option>
+                                    </select>
+                                    <!-- <input type="text" class="form-control fw-semibold" [(ngModel)]="item.cuentaGasto"> -->
                                 </td>
                                 <td>
                                     <button class="btn btn-danger btn-sm" (click)="borrarTipoObligacion(item)">
