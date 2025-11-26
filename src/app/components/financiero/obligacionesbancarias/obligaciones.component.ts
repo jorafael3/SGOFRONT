@@ -35,7 +35,7 @@ export class ObligacionesBancariasComponent {
     otros: 0,
     referencia: '',
     tipoAmortizacion: 1,
-    tipoObligacion: '',
+    tipoObligacion: "",
     proveedor: '',
     proveedorId: '',
     tasaMensual: 0,
@@ -349,6 +349,7 @@ export class ObligacionesBancariasComponent {
         proveedor: this.form.proveedorId,
         datos: this.amortizacionTableConfig.data
       };
+      console.log("Params Guardar Amortización ", params)
       this.BancoService.GuardarAmortizacion(params).subscribe({
         next: (res: any) => {
           console.log("Guardar Amortización ", res)
