@@ -1,17 +1,24 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../../models/auth.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfileService {
-  
+
   private userProfileSubject = new BehaviorSubject<User | null>(null);
   public userProfile$ = this.userProfileSubject.asObservable();
 
-  constructor(private authService: AuthService) {
+  private readonly endpoint = environment.apiUrl + '/recursoshumanos/empleados/';
+
+  constructor(
+    private authService: AuthService,
+    private http: HttpClient
+  ) {
     // Suscribirse a cambios del usuario actual
     this.authService.currentUser$.subscribe(user => {
       this.userProfileSubject.next(user);
@@ -75,5 +82,38 @@ export class UserProfileService {
       return names.map(name => name.charAt(0)).join('').toUpperCase();
     }
     return 'U';
+  }
+
+  /**
+   * Obtener datos personales del empleado
+   * @param empleadoId - ID del empleado
+   */
+  getDatosPersonales(empleadoId: string): Observable<any> {
+    const payload = { empleadoId: empleadoId };
+    console.log('📤 [getDatosPersonales] Enviando al backend:', payload);
+    console.log('📍 [getDatosPersonales] URL:', this.endpoint + 'GetDatosPersonales');
+    return this.http.post<any>(this.endpoint + 'GetDatosPersonales', payload);
+  }
+
+  /**
+   * Obtener cargas familiares del empleado
+   * @param empleadoId - ID del empleado
+   */
+  getCargasFamiliares(empleadoId: string): Observable<any> {
+    const payload = { empleadoId: empleadoId };
+    console.log('📤 [getCargasFamiliares] Enviando al backend:', payload);
+    console.log('📍 [getCargasFamiliares] URL:', this.endpoint + 'GetCargasFamiliares');
+    return this.http.post<any>(this.endpoint + 'GetCargasFamiliares', payload);
+  }
+
+  /**
+   * Obtener historial de vacaciones del empleado
+   * @param empleadoId - ID del empleado
+   */
+  getVacaciones(empleadoId: string): Observable<any> {
+    const payload = { empleadoId: empleadoId };
+    console.log('📤 [getVacaciones] Enviando al backend:', payload);
+    console.log('📍 [getVacaciones] URL:', this.endpoint + 'GetVacaciones');
+    return this.http.post<any>(this.endpoint + 'GetVacaciones', payload);
   }
 }

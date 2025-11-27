@@ -60,6 +60,14 @@ export const content: Routes = [
             breadcrumb: "Empresas"
         }
     },
+    {
+        path: 'recursoshumanos',
+        loadChildren: () => import('../../components/recursoshumanos/recursoshumanos.routes').then(r => r.recursoshumanosRoutes),
+        data: {
+            title: "Recursos Humanos",
+            breadcrumb: "recursoshumanos"
+        }
+    },
 
 
     // {
