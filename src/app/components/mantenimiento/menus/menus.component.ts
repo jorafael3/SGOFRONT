@@ -217,11 +217,15 @@ export class MenusComponent implements OnInit {
       PadreId: formValue.PadreId ? parseInt(formValue.PadreId) : null
     };
     console.log('menuData: ', menuData);
+    console.log('menuData: ', menuData);
+    console.log('menuData: ', menuData);
 
     const operacion = this.isEditing ? 'actualizar' : 'crear';
     const metodo = this.isEditing ?
       this.menusService.updateMenu(menuData) :
       this.menusService.createMenu(menuData);
+
+
 
     metodo.subscribe({
       next: (response: any) => {
