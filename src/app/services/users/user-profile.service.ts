@@ -116,4 +116,14 @@ export class UserProfileService {
     console.log('📍 [getVacaciones] URL:', this.endpoint + 'GetVacaciones');
     return this.http.post<any>(this.endpoint + 'GetVacaciones', payload);
   }
+
+  /**
+   * Enviar solicitud de actualización de datos
+   * @param solicitud - Datos de la solicitud
+   */
+  enviarSolicitudActualizacion(solicitud: any): Observable<any> {
+    console.log('📤 [enviarSolicitudActualizacion] Enviando al backend:', solicitud);
+    console.log('📍 [enviarSolicitudActualizacion] URL:', this.endpoint + 'SolicitudActualizacionDatos');
+    return this.http.post<any>(this.endpoint + 'SolicitudActualizacionDatos', solicitud);
+  }
 }
