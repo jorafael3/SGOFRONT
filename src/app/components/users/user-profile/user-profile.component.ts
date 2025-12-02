@@ -59,13 +59,13 @@ export class UserProfileComponent {
       title: 'Roles de Pago',
       value: 'payroll',
       icon: 'fa-solid fa-money-bill'
-    },
-    {
-      id: 4,
-      title: 'Ajustes',
-      value: 'setting',
-      icon: 'fa-solid fa-cog'
     }
+    // {
+    //   id: 4,
+    //   title: 'Ajustes',
+    //   value: 'setting',
+    //   icon: 'fa-solid fa-cog'
+    // }
   ];
 
   // Datos del empleado desde el backend
@@ -106,6 +106,7 @@ export class UserProfileComponent {
 
   // Roles de Pago
   public fechaConsultaRol: string = '';
+  public maxFechaRol: string = ''; // Fecha máxima permitida para selección
   public rolesPago: any[] = [];
 
   constructor(
@@ -118,6 +119,9 @@ export class UserProfileComponent {
     this.route.data.subscribe(data => {
       this.currentUser = data['user'];
     });
+
+    // Calcular fecha máxima permitida para roles de pago
+    this.calcularMaxFechaRol();
 
     // Obtener usuario actual del servicio
     this.userProfileService.userProfile$.subscribe((usuario: any) => {
@@ -787,12 +791,36 @@ export class UserProfileComponent {
     });
   }
 
+  /**
+   * Calcular fecha máxima permitida para consultar roles
+   * El mes actual solo está disponible después del día 10
+   */
+  calcularMaxFechaRol() {
+    const hoy = new Date();
+    const diaActual = hoy.getDate();
+
+    let fechaMaxima: Date;
+
+    // Si estamos antes del día 10, el mes máximo es el anterior
+    if (diaActual < 10) {
+      fechaMaxima = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+    } else {
+      // Si estamos después del día 10, permitir el mes actual
+      fechaMaxima = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    }
+
+    // Formatear como YYYY-MM para el input type="month"
+    const year = fechaMaxima.getFullYear();
+    const month = String(fechaMaxima.getMonth() + 1).padStart(2, '0');
+    this.maxFechaRol = `${year}-${month}`;
+
+    console.log(`📅 Fecha máxima permitida para roles: ${this.maxFechaRol} (hoy es día ${diaActual})`);
+  }
 
   formatearFecha(fecha: string) {
     return new Date(fecha).toLocaleDateString('es-EC', {
       year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      month: 'long'
     });
   }
 
@@ -808,41 +836,15 @@ export class UserProfileComponent {
     console.log("📄 Abrir PDF para:", rol);
 
     this.userProfileService.descargarRolPago(rol.RolID).subscribe({
-      next: (response) => {
-        console.log("✅ Respuesta backend PDF:", response);
+      next: (blob: Blob) => {
+        console.log("✅ PDF recibido, tamaño:", blob.size, "bytes");
 
-        // Caso 1: si backend devuelve base64
-        if (response?.pdfBase64) {
-          const byteCharacters = atob(response.pdfBase64);
-          const bytes = new Uint8Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            bytes[i] = byteCharacters.charCodeAt(i);
-          }
-          const blob = new Blob([bytes], { type: 'application/pdf' });
-          const url = URL.createObjectURL(blob);
-          window.open(url, "_blank");
-          return;
-        }
+        // Crear URL del blob y abrirlo en nueva pestaña
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
 
-        // Caso 2: si backend devuelve una URL para abrir
-        if (response?.url) {
-          window.open(response.url, "_blank");
-          return;
-        }
-
-        // Caso 3: si devuelve blob directo (muy raro pero valido)
-        if (response instanceof Blob) {
-          const url = URL.createObjectURL(response);
-          window.open(url, "_blank");
-          return;
-        }
-
-        // Si no identifica formato
-        Swal.fire({
-          icon: "error",
-          title: "Formato desconocido",
-          text: "El servidor no regresó un PDF válido."
-        });
+        // Liberar memoria después de un momento
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
       },
       error: (error) => {
         console.error("❌ Error al pedir PDF:", error);

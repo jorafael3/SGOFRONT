@@ -208,13 +208,12 @@ export class UserProfileService {
    * Descargar rol de pago en PDF
    * @param rolId - ID del rol de pago
    */
-  descargarRolPago(rolId: string): Observable<any> {
+  descargarRolPago(rolId: string): Observable<Blob> {
     const payload = { rolId: rolId };
     console.log('📤 [descargarRolPago] Enviando al backend:', payload);
     console.log('📍 [descargarRolPago] URL:', this.endpoint + 'DescargarRolPago');
-    // Asumiendo que el backend devuelve un archivo blob o una url, ajustaremos según respuesta típica.
-    // Si devuelve JSON con base64 o URL:
-    return this.http.post<any>(this.endpoint + 'DescargarRolPago', payload);
+    // El backend devuelve un PDF binario, por lo que usamos responseType: 'blob'
+    return this.http.post(this.endpoint + 'DescargarRolPago', payload, { responseType: 'blob' });
   }
 
 }
