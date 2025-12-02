@@ -160,16 +160,14 @@ def obtener_filas_con_interes(conexion):
         query = """
             SELECT d.*, dt.interes
             FROM ACR_ACREEDORES_DEUDAS d
-            INNER JOIN SGO_AMORTIZACION_CAB cab 
-                    ON cab.proveedorid = d.AcreedorID
             INNER JOIN SGO_AMORTIZACION_DT dt
-                    ON dt.cabecera_id = cab.id
-                   AND dt.fecha_pago = d.Vencimiento
+                    ON dt.ACR_ID = d.ID
             WHERE d.Tipo = 'ACR-AM'
               AND dt.interes > 0
               AND MONTH(d.Vencimiento) = MONTH(GETDATE())
               AND YEAR(d.Vencimiento) = YEAR(GETDATE())
               AND (d.Procesado = 0 OR d.Procesado IS NULL)
+            ORDER BY d.ID DESC;
         """
         cursor.execute(query)
         filas = fetch_dict(cursor)
