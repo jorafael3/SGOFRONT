@@ -56,9 +56,9 @@ export class UserProfileComponent {
     },
     {
       id: 6,
-      title: 'Datos Médicos',
-      value: 'medical',
-      icon: 'fa-solid fa-briefcase-medical'
+      title: 'Roles de Pago',
+      value: 'payroll',
+      icon: 'fa-solid fa-money-bill'
     },
     {
       id: 4,
@@ -102,6 +102,11 @@ export class UserProfileComponent {
     alergias: '',
     enfermedades: ''
   };
+  public tieneEnfermedades: boolean = false;
+
+  // Roles de Pago
+  public fechaConsultaRol: string = '';
+  public rolesPago: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -207,6 +212,10 @@ export class UserProfileComponent {
             alergias: datos.alergias || '',
             enfermedades: datos.enfermedades || ''
           };
+          // Si hay datos médicos, marcar el checkbox
+          if (datos.alergias || datos.enfermedades || datos.contactoEmergenciaNombre) {
+            this.tieneEnfermedades = true;
+          }
           console.log('📋 Datos médicos cargados:', this.datosMedicos);
         }
       },
@@ -719,5 +728,184 @@ export class UserProfileComponent {
       }
     });
   }
+
+  /**
+   * Consultar roles de pago por fecha
+   */
+  consultarRolesPago() {
+    if (!this.fechaConsultaRol) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Fecha requerida',
+        text: 'Por favor seleccione una fecha para consultar',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
+    // Convertir fecha de YYYY-MM a YYYYMMDD (primer día del mes)
+    const fechaFormateada = this.fechaConsultaRol.replace('-', '') + '01';
+
+    const payload = {
+      empleadoId: this.usuarioActual.EmpleadoID,
+      fecha: fechaFormateada
+    };
+
+    console.log('📤 Consultando roles de pago:', payload);
+
+    this.userProfileService.consultarRolesPago(payload).subscribe({
+      next: (response) => {
+        console.log('✅ Roles de pago recibidos:', response);
+        if (response.success && response.data) {
+          this.rolesPago = response.data;
+          if (this.rolesPago.length === 0) {
+            Swal.fire({
+              icon: 'info',
+              title: 'Sin resultados',
+              text: 'No se encontraron roles de pago para la fecha seleccionada',
+              confirmButtonColor: '#3085d6'
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'No se pudieron obtener los roles de pago',
+            confirmButtonColor: '#d33'
+          });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error al consultar roles:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo conectar con el servidor',
+          confirmButtonColor: '#d33'
+        });
+      }
+    });
+  }
+
+
+  formatearFecha(fecha: string) {
+    return new Date(fecha).toLocaleDateString('es-EC', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+
+  // abrirPDF(rol: any) {
+  //   console.log("Abrir PDF para:", rol);
+  //   // Aquí luego implementas la descarga del pdf
+  // }
+
+
+
+  abrirPDF(rol: any) {
+    console.log("📄 Abrir PDF para:", rol);
+
+    this.userProfileService.descargarRolPago(rol.RolID).subscribe({
+      next: (response) => {
+        console.log("✅ Respuesta backend PDF:", response);
+
+        // Caso 1: si backend devuelve base64
+        if (response?.pdfBase64) {
+          const byteCharacters = atob(response.pdfBase64);
+          const bytes = new Uint8Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            bytes[i] = byteCharacters.charCodeAt(i);
+          }
+          const blob = new Blob([bytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+          return;
+        }
+
+        // Caso 2: si backend devuelve una URL para abrir
+        if (response?.url) {
+          window.open(response.url, "_blank");
+          return;
+        }
+
+        // Caso 3: si devuelve blob directo (muy raro pero valido)
+        if (response instanceof Blob) {
+          const url = URL.createObjectURL(response);
+          window.open(url, "_blank");
+          return;
+        }
+
+        // Si no identifica formato
+        Swal.fire({
+          icon: "error",
+          title: "Formato desconocido",
+          text: "El servidor no regresó un PDF válido."
+        });
+      },
+      error: (error) => {
+        console.error("❌ Error al pedir PDF:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo obtener el rol de pago"
+        });
+      }
+    });
+  }
+
+
+
+
+  // abrirPDF() {
+
+  //   if (this.roles.length === 0) {
+  //     Swal.fire({
+  //       icon: 'info',
+  //       title: 'Sin roles',
+  //       text: 'No hay roles para guardar',
+  //       confirmButtonColor: '#3085d6'
+  //     });
+  //     return;
+  //   }
+
+  //   const payload = {
+  //     empleadoId: this.usuarioActual.EmpleadoID,
+  //     roles: this.roles   // <<— AQUÍ ENVIAS LOS IDS O OBJETOS DE ROLES
+  //   };
+
+  //   console.log('📤 Guardando roles:', payload);
+
+  //   this.userProfileService.actualizarroles(payload).subscribe({
+  //     next: (response) => {
+  //       console.log('✅ Respuesta del backend:', response);
+  //       if (response.success) {
+  //         Swal.fire({
+  //           icon: 'success',
+  //           title: '¡Guardado!',
+  //           text: response.message || 'Roles guardados correctamente',
+  //           confirmButtonColor: '#3085d6'
+  //         });
+  //       } else {
+  //         Swal.fire({
+  //           icon: 'error',
+  //           title: 'Error',
+  //           text: response.error || 'No se pudieron guardar los roles',
+  //           confirmButtonColor: '#d33'
+  //         });
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('❌ Error al guardar roles:', error);
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Error de conexión',
+  //         text: 'No se pudo conectar con el servidor',
+  //         confirmButtonColor: '#d33'
+  //       });
+  //     }
+  //   });
+  // }
 
 }

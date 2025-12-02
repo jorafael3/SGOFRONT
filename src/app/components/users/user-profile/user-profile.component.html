@@ -153,6 +153,63 @@
                               Cargando datos personales...
                             </div>
                             }
+
+                            <!-- Sección de Datos Médicos -->
+                            <div class="row mt-4 pt-3 border-top">
+                              <div class="col-12 mb-3">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" id="tieneEnfermedades"
+                                    [(ngModel)]="tieneEnfermedades">
+                                  <label class="form-check-label fw-bold" for="tieneEnfermedades">
+                                    ¿Tiene alguna enfermedad?
+                                  </label>
+                                </div>
+                              </div>
+
+                              @if(tieneEnfermedades) {
+                              <div class="col-12">
+                                <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">Datos Médicos y Emergencia</h6>
+                              </div>
+                              <div class="col-12">
+                                <h6 class="fw-bold mb-3">Contacto de Emergencia</h6>
+                              </div>
+                              <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Nombre de Contacto</label>
+                                <input type="text" class="form-control"
+                                  [(ngModel)]="datosMedicos.contactoEmergenciaNombre">
+                              </div>
+                              <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Teléfono de Contacto</label>
+                                <input type="tel" class="form-control"
+                                  [(ngModel)]="datosMedicos.contactoEmergenciaTelefono">
+                              </div>
+                              <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Relación/Parentesco</label>
+                                <input type="text" class="form-control"
+                                  [(ngModel)]="datosMedicos.contactoEmergenciaRelacion">
+                              </div>
+
+                              <div class="col-12 mt-3">
+                                <h6 class="fw-bold mb-3">Información de Salud</h6>
+                              </div>
+                              <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Alergias</label>
+                                <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.alergias"
+                                  placeholder="Especifique si tiene alergias..."></textarea>
+                              </div>
+                              <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Enfermedades Preexistentes</label>
+                                <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.enfermedades"
+                                  placeholder="Especifique si tiene enfermedades..."></textarea>
+                              </div>
+
+                              <div class="col-12 d-flex justify-content-end mt-3">
+                                <button type="button" class="btn btn-success" (click)="guardarDatosMedicos()">
+                                  <i class="fa fa-save me-2"></i>Guardar Datos Médicos
+                                </button>
+                              </div>
+                              }
+                            </div>
                           </div>
                         </div>
                         }
@@ -369,53 +426,71 @@
                           </div>
                         </div>
                         }
-                        @if(activeTab == 'medical') {
+                        @if(activeTab == 'payroll') {
                         <!-- Datos Médicos -->
                         <div class="card">
                           <div class="card-header">
-                            <h4 class="card-title mb-0">Datos Médicos y Emergencia</h4>
+                            <h4 class="card-title mb-0">Roles de Pago</h4>
                           </div>
                           <div class="card-body">
-                            <div class="row g-3">
+                            <!-- Filtro de fecha -->
+                            <div class="row g-3 mb-4 p-3 border rounded bg-light">
                               <div class="col-12">
-                                <h6 class="fw-bold text-primary border-bottom pb-2">Contacto de Emergencia</h6>
+                                <h6 class="fw-bold text-dark">Consultar Rol de Pago</h6>
+                                <p class="text-muted mb-3">Seleccione el mes y año para consultar el rol de pago</p>
                               </div>
                               <div class="col-md-4">
-                                <label class="form-label fw-bold">Nombre de Contacto</label>
-                                <input type="text" class="form-control"
-                                  [(ngModel)]="datosMedicos.contactoEmergenciaNombre">
+                                <label class="form-label fw-bold text-dark">Mes y Año <span
+                                    class="text-danger">*</span></label>
+                                <input type="month" class="form-control" [(ngModel)]="fechaConsultaRol"
+                                  placeholder="YYYY-MM">
                               </div>
-                              <div class="col-md-4">
-                                <label class="form-label fw-bold">Teléfono de Contacto</label>
-                                <input type="tel" class="form-control"
-                                  [(ngModel)]="datosMedicos.contactoEmergenciaTelefono">
-                              </div>
-                              <div class="col-md-4">
-                                <label class="form-label fw-bold">Relación/Parentesco</label>
-                                <input type="text" class="form-control"
-                                  [(ngModel)]="datosMedicos.contactoEmergenciaRelacion">
-                              </div>
-
-                              <div class="col-12 mt-4">
-                                <h6 class="fw-bold text-primary border-bottom pb-2">Información de Salud</h6>
-                              </div>
-                              <div class="col-md-6">
-                                <label class="form-label fw-bold">Alergias</label>
-                                <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.alergias"
-                                  placeholder="Especifique si tiene alergias..."></textarea>
-                              </div>
-                              <div class="col-md-6">
-                                <label class="form-label fw-bold">Enfermedades Preexistentes</label>
-                                <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.enfermedades"
-                                  placeholder="Especifique si tiene enfermedades..."></textarea>
-                              </div>
-
-                              <div class="col-12 d-flex justify-content-end mt-3">
-                                <button type="button" class="btn btn-success" (click)="guardarDatosMedicos()">
-                                  <i class="fa fa-save me-2"></i>Guardar Datos Médicos
+                              <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-primary w-100" (click)="consultarRolesPago()">
+                                  <i class="fa fa-search me-2"></i>Consultar
                                 </button>
                               </div>
                             </div>
+                            <!-- Tabla de roles de pago -->
+                            @if(rolesPago && rolesPago.length > 0) {
+                            <div class="table-responsive mt-4">
+                              <table class="table table-hover table-bordered">
+                                <thead class="table-light">
+                                  <tr>
+                                    <th class="fw-bold"># Documento</th>
+                                    <th class="fw-bold">Detalle</th>
+                                    <th class="fw-bold text-center">PDF</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  @for(rol of rolesPago; track rol) {
+                                  <tr>
+                                    <!-- RolID -->
+                                    <td>{{ rol.RolID }}</td>
+
+                                    <!-- Detalle: ROL + Fecha -->
+                                    <td>
+                                      ROL - {{ formatearFecha(rol.Fecha) }}
+                                    </td>
+
+                                    <!-- Botón PDF -->
+                                    <td class="text-center">
+                                      <button class="btn btn-danger btn-sm" (click)="abrirPDF(rol)">
+                                        <i class="fa fa-file-pdf"></i>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                  }
+                                </tbody>
+                              </table>
+                            </div>
+                            }
+                            @else {
+                            <div class="alert alert-info">
+                              <i class="fa fa-info-circle me-2"></i>
+                              Seleccione un mes y año para consultar los roles de pago
+                            </div>
+                            }
                           </div>
                         </div>
                         }

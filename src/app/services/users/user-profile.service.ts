@@ -173,10 +173,10 @@ export class UserProfileService {
   }
 
 
-   /**
- * Agregar titulos y certificados  
- * @param datos - Datos actualizarcargasempleado
- */
+  /**
+* Agregar titulos y certificados  
+* @param datos - Datos actualizarcargasempleado
+*/
   actualizarenfermedades(datos: any): Observable<any> {
     console.log('📤 [actualizarenfermedades] Enviando al backend:', datos);
     console.log('📍 [actualizarenfermedades] URL:', this.endpoint + 'ActualizarEnfermedades');
@@ -184,14 +184,37 @@ export class UserProfileService {
   }
 
 
- /**
- * Obtener enfermedades
- * @param datos -
- */
+  /**
+  * Obtener enfermedades
+  * @param datos -
+  */
   getenfermedades(datos: any): Observable<any> {
     console.log('📤 [getenfermedades] Enviando al backend:', datos);
     console.log('📍 [getenfermedades] URL:', this.endpoint + 'Getenfermedades');
     return this.http.post<any>(this.endpoint + 'Getenfermedades', datos);
+  }
+
+  /**
+   * Consultar roles de pago por fecha
+   * @param datos - { empleadoId, fecha (YYYYMMDD) }
+   */
+  consultarRolesPago(datos: any): Observable<any> {
+    console.log('📤 [consultarRolesPago] Enviando al backend:', datos);
+    console.log('📍 [consultarRolesPago] URL:', this.endpoint + 'ConsultarRolesPago');
+    return this.http.post<any>(this.endpoint + 'ConsultarRolesPago', datos);
+  }
+
+  /**
+   * Descargar rol de pago en PDF
+   * @param rolId - ID del rol de pago
+   */
+  descargarRolPago(rolId: string): Observable<any> {
+    const payload = { rolId: rolId };
+    console.log('📤 [descargarRolPago] Enviando al backend:', payload);
+    console.log('📍 [descargarRolPago] URL:', this.endpoint + 'DescargarRolPago');
+    // Asumiendo que el backend devuelve un archivo blob o una url, ajustaremos según respuesta típica.
+    // Si devuelve JSON con base64 o URL:
+    return this.http.post<any>(this.endpoint + 'DescargarRolPago', payload);
   }
 
 }
