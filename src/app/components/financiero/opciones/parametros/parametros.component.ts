@@ -15,14 +15,32 @@ import { OpParametrosService } from '../../../../services/financiero/opParametro
   styleUrl: './parametros.component.scss'
 })
 export class ParametrosComponent {
-  public fechaVencimiento = 0;
+  public optParam: any = {};
 
-
-  constructor(private OpcionesService: OpParametrosService, private cdr: ChangeDetectorRef, private router: Router) { }
+  constructor(private service: OpParametrosService, private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit(): void {
+    this.cargarParam();
   }
 
+  cargarParam() {
+    let param: never[] = []
+    this.service.Cargar_OPT_Param(param).subscribe({
+      next: (res: any) => {
+        if (!res.success) return;
+        this.optParam = res.data[0] || {};
+      }
+    })
+  }
 
+  guardarParametros() {
+    this.service.Guardar_OPT_Param(this.optParam).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          Swal.fire("Guardado", "Los parámetros fueron actualizados", "success");
+        }
+      }
+    });
+  }
 
 }
