@@ -24,8 +24,7 @@ export class ParametrosComponent {
   }
 
   cargarParam() {
-    let param: never[] = []
-    this.service.Cargar_OPT_Param(param).subscribe({
+    this.service.Cargar_OPT_Param().subscribe({
       next: (res: any) => {
         if (!res.success) return;
         this.optParam = res.data[0] || {};
