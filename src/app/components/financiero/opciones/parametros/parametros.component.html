@@ -9,10 +9,15 @@
                     <div class="mb-3">
                         <label class="form-label">Fecha</label>
                         <div class="input-group">
-                            <input type="number" value="0" class="form-control">
+                            <input type="number" class="form-control" [(ngModel)]="optParam.fechaVencimientoCalcInt" />
                         </div>
                     </div>
 
+                    <td>
+                        <button class="btn btn-success" (click)="guardarParametros()">
+                           <span>Guardar</span>
+                        </button>
+                    </td>
                 </div>
 
 
