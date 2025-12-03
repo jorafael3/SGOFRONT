@@ -59,13 +59,13 @@ export class UserProfileComponent {
       title: 'Roles de Pago',
       value: 'payroll',
       icon: 'fa-solid fa-money-bill'
-    },
-    {
-      id: 4,
-      title: 'Ajustes',
-      value: 'setting',
-      icon: 'fa-solid fa-cog'
     }
+    // {
+    //   id: 4,
+    //   title: 'Ajustes',
+    //   value: 'setting',
+    //   icon: 'fa-solid fa-cog'
+    // }
   ];
 
   // Datos del empleado desde el backend
