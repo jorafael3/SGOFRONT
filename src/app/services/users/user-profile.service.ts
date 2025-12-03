@@ -216,4 +216,14 @@ export class UserProfileService {
     return this.http.post(this.endpoint + 'DescargarRolPago', payload, { responseType: 'blob' });
   }
 
+  /**
+   * Actualizar contraseña del usuario
+   * @param datos - { empleadoId, currentPassword, newPassword }
+   */
+  actualizarContrasena(datos: any): Observable<any> {
+    console.log('📤 [actualizarContrasena] Enviando al backend:', datos);
+    console.log('📍 [actualizarContrasena] URL:', this.endpoint + 'ActualizarPassword');
+    return this.http.post<any>(this.endpoint + 'ActualizarPassword', datos);
+  }
+
 }

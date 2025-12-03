@@ -59,13 +59,13 @@ export class UserProfileComponent {
       title: 'Roles de Pago',
       value: 'payroll',
       icon: 'fa-solid fa-money-bill'
+    },
+    {
+      id: 4,
+      title: 'Ajustes',
+      value: 'setting',
+      icon: 'fa-solid fa-cog'
     }
-    // {
-    //   id: 4,
-    //   title: 'Ajustes',
-    //   value: 'setting',
-    //   icon: 'fa-solid fa-cog'
-    // }
   ];
 
   // Datos del empleado desde el backend
@@ -108,6 +108,19 @@ export class UserProfileComponent {
   public fechaConsultaRol: string = '';
   public maxFechaRol: string = ''; // Fecha máxima permitida para selección
   public rolesPago: any[] = [];
+
+  // Cambio de Contraseña
+  public passwordForm = {
+    current: '',
+    new: '',
+    confirm: ''
+  };
+
+  public mostrarPassword = {
+    actual: false,
+    nueva: false,
+    confirmar: false
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -815,6 +828,94 @@ export class UserProfileComponent {
     this.maxFechaRol = `${year}-${month}`;
 
     console.log(`📅 Fecha máxima permitida para roles: ${this.maxFechaRol} (hoy es día ${diaActual})`);
+  }
+
+  /**
+   * Alternar visibilidad de contraseña
+   */
+  togglePasswordVisibility(campo: 'actual' | 'nueva' | 'confirmar') {
+    this.mostrarPassword[campo] = !this.mostrarPassword[campo];
+  }
+
+  /**
+   * Cambiar contraseña del usuario
+   */
+  cambiarContrasena() {
+    // Validaciones básicas
+    if (!this.passwordForm.current || !this.passwordForm.new || !this.passwordForm.confirm) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor complete todos los campos',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
+    if (this.passwordForm.new !== this.passwordForm.confirm) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Contraseñas no coinciden',
+        text: 'La nueva contraseña y su confirmación no coinciden',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (this.passwordForm.new.length < 6) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Contraseña insegura',
+        text: 'La nueva contraseña debe tener al menos 6 caracteres',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
+    const payload = {
+      empleadoId: this.usuarioActual.EmpleadoID,
+      currentPassword: this.passwordForm.current,
+      newPassword: this.passwordForm.new
+    };
+
+    console.log('📤 Cambiando contraseña:', payload);
+
+    this.userProfileService.actualizarContrasena(payload).subscribe({
+      next: (response) => {
+        console.log('✅ Respuesta cambio contraseña:', response);
+        if (response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Contraseña Actualizada!',
+            text: 'Su contraseña ha sido modificada correctamente',
+            confirmButtonColor: '#3085d6'
+          });
+
+          // Limpiar formulario
+          this.passwordForm = {
+            current: '',
+            new: '',
+            confirm: ''
+          };
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'No se pudo actualizar la contraseña. Verifique su contraseña actual.',
+            confirmButtonColor: '#d33'
+          });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error al cambiar contraseña:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo conectar con el servidor',
+          confirmButtonColor: '#d33'
+        });
+      }
+    });
   }
 
   formatearFecha(fecha: string) {

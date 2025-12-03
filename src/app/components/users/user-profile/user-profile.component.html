@@ -534,7 +534,69 @@
 
                         <!-- SETTING TAB -->
                         <div *ngIf="activeTab === 'setting'">
-                          <app-user-setting></app-user-setting>
+                          <div class="card">
+                            <div class="card-header">
+                              <h4 class="card-title mb-0">Cambiar Contraseña</h4>
+                            </div>
+                            <div class="card-body">
+                              <div class="row g-3">
+                                <div class="col-md-12">
+                                  <div class="alert alert-warning" role="alert">
+                                    <i class="fa fa-exclamation-triangle me-2"></i>
+                                    Asegúrese de usar una contraseña segura que incluya letras, números y caracteres
+                                    especiales.
+                                  </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                  <label class="form-label fw-bold">Contraseña Actual <span
+                                      class="text-danger">*</span></label>
+                                  <div class="input-group">
+                                    <input [type]="mostrarPassword.actual ? 'text' : 'password'" class="form-control"
+                                      [(ngModel)]="passwordForm.current" placeholder="Ingrese su contraseña actual">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                      (click)="togglePasswordVisibility('actual')">
+                                      <i class="fa" [ngClass]="mostrarPassword.actual ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label class="form-label fw-bold">Nueva Contraseña <span
+                                      class="text-danger">*</span></label>
+                                  <div class="input-group">
+                                    <input [type]="mostrarPassword.nueva ? 'text' : 'password'" class="form-control"
+                                      [(ngModel)]="passwordForm.new" placeholder="Ingrese la nueva contraseña">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                      (click)="togglePasswordVisibility('nueva')">
+                                      <i class="fa" [ngClass]="mostrarPassword.nueva ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label class="form-label fw-bold">Confirmar Nueva Contraseña <span
+                                      class="text-danger">*</span></label>
+                                  <div class="input-group">
+                                    <input [type]="mostrarPassword.confirmar ? 'text' : 'password'" class="form-control"
+                                      [(ngModel)]="passwordForm.confirm" placeholder="Confirme la nueva contraseña">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                      (click)="togglePasswordVisibility('confirmar')">
+                                      <i class="fa"
+                                        [ngClass]="mostrarPassword.confirmar ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div class="col-12 d-flex justify-content-end mt-4">
+                                  <button type="button" class="btn btn-primary" (click)="cambiarContrasena()">
+                                    <i class="fa fa-key me-2"></i>Cambiar Contraseña
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
                         </div>
 
                       </div>
