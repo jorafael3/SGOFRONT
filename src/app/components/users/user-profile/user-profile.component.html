@@ -1,7 +1,7 @@
-<div class="container-fluid ">
+﻿<div class="container-fluid">
   <div class="user-profile">
     <!-- Información del Usuario Actual -->
-    <div class="row mb-4" *ngIf="usuarioActual.EMPLEADO_NOMBRE">
+    <div class="row mb-4" *ngIf="usuarioActual?.EMPLEADO_NOMBRE">
       <div class="col-12">
         <app-card [headerTitle]="'Mi Perfil'">
           <div class="row">
@@ -9,7 +9,7 @@
               <div class="avatar-wrapper text-center">
                 <img
                   src="https://st3.depositphotos.com/3538469/15750/i/450/depositphotos_157501024-stock-photo-business-man-icon.jpg"
-                  alt="User Avatar" style="width: 100px; height: 100px; border-radius: 10px; object-fit: cover;">
+                  alt="User Avatar" style="width: 100px; height: 100px; border-radius: 10px; object-fit: cover;" />
               </div>
             </div>
             <div class="col-md-9">
@@ -36,12 +36,13 @@
 
       <div class="col-12">
         <div class="row scope-bottom-wrapper user-profile-wrapper">
+          <!-- Sidebar (tabs) -->
           <div class="col-xxl-3 user-xl-25 col-xl-4 box-col-4">
             <app-card>
               <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="sidebar-left-icons nav nav-pills flex-column"
                 orientation="vertical">
-                @for(tab of userDetailsTab; track tab) {
-                <li [ngbNavItem]="tab.value">
+                <!-- Render tabs -->
+                <li *ngFor="let tab of userDetailsTab" [ngbNavItem]="tab.value">
                   <a ngbNavLink>
                     <div class="nav-rounded">
                       <div class="product-icons">
@@ -52,318 +53,504 @@
                       <h6>{{ tab.title }}</h6>
                     </div>
                   </a>
+
+                  <!-- Content for each tab -->
                   <ng-template ngbNavContent>
                     <div class="row">
                       <div class="col-12">
-                        @if(activeTab == 'activity') {
-                        <!-- Datos Personales -->
-                        <div class="card">
-                          <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="card-title mb-0">Información Personal</h4>
-                            @if(!editandoDatosPersonales) {
-                            <button type="button" class="btn btn-primary btn-sm" (click)="editarDatosPersonales()">
-                              <i class="fa fa-edit me-2"></i>Editar
-                            </button>
-                            }
-                          </div>
-                          <div class="card-body">
-                            @if(datosPersonales) {
-                            <div class="row">
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Cédula:</label>
-                                <p class="form-control-static">{{ datosPersonales.Cedula || 'N/A' }}</p>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Nombre Completo:</label>
-                                <p class="form-control-static">{{ usuarioActual.EMPLEADO_NOMBRE || 'N/A' }}</p>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Fecha de Nacimiento:</label>
-                                <p class="form-control-static">{{ datosPersonales.FechaNac ?
-                                  datosPersonales.FechaNac.split(' ')[0] : 'N/A' }}</p>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Estado Civil:</label>
-                                @if(editandoDatosPersonales) {
-                                <select class="form-select" [(ngModel)]="datosPersonales.EstadoCivil">
-                                  <option value="SOLTERA/O">Soltero/a</option>
-                                  <option value="CASADA/O">Casado/a</option>
-                                  <option value="DIVORCIADA/O">Divorciado/a</option>
-                                  <option value="VIUDA/O">Viudo/a</option>
-                                  <option value="UNION LIBRE">Unión Libre</option>
-                                </select>
-                                } @else {
-                                <p class="form-control-static">{{ datosPersonales.EstadoCivil || 'N/A' }}</p>
-                                }
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Dirección:</label>
-                                @if(editandoDatosPersonales) {
-                                <input type="text" class="form-control" [(ngModel)]="datosPersonales['Dirección']">
-                                } @else {
-                                <p class="form-control-static">{{ datosPersonales['Dirección'] || 'N/A' }}</p>
-                                }
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Teléfono:</label>
-                                @if(editandoDatosPersonales) {
-                                <input type="tel" class="form-control" [(ngModel)]="datosPersonales['Teléfono3']">
-                                } @else {
-                                <p class="form-control-static">{{ datosPersonales['Teléfono3'] || 'N/A' }}</p>
-                                }
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Email:</label>
-                                @if(editandoDatosPersonales) {
-                                <input type="email" class="form-control" [(ngModel)]="datosPersonales.email">
-                                } @else {
-                                <p class="form-control-static">{{ datosPersonales.email || 'N/A' }}</p>
-                                }
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Jefe Inmediato:</label>
-                                <p class="form-control-static">{{ datosPersonales.Jefe || 'N/A' }}</p>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Departamento:</label>
-                                <p class="form-control-static">{{ datosPersonales.Nombre || 'N/A' }}</p>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Acumula Décimos:</label>
-                                <p class="form-control-static">{{ datosPersonales.PDecimos || 'N/A' }}</p>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Provisiona Fondos:</label>
-                                <p class="form-control-static">{{ datosPersonales.PFondos || 'N/A' }}</p>
-                              </div>
-                            </div>
-                            @if(editandoDatosPersonales) {
-                            <div class="d-flex justify-content-end gap-2 mt-3">
-                              <button type="button" class="btn btn-light" (click)="cancelarEdicionDatosPersonales()">
-                                <i class="fa fa-times me-2"></i>Cancelar
-                              </button>
-                              <button type="button" class="btn btn-success" (click)="actualizarDatosPersonales()">
-                                <i class="fa fa-save me-2"></i>Actualizar
-                              </button>
-                            </div>
-                            }
-                            } @else {
-                            <div class="alert alert-info">
-                              <i class="fa fa-info-circle me-2"></i>
-                              Cargando datos personales...
-                            </div>
-                            }
 
-                            <!-- Sección de Datos Médicos -->
-                            <div class="row mt-4 pt-3 border-top">
-                              <div class="col-12 mb-3">
-                                <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" id="tieneEnfermedades"
-                                    [(ngModel)]="tieneEnfermedades">
-                                  <label class="form-check-label fw-bold" for="tieneEnfermedades">
-                                    ¿Tiene alguna enfermedad?
-                                  </label>
+                        <!-- ACTIVITY TAB -->
+                        <div *ngIf="activeTab === 'activity'">
+                          <!-- Datos Personales -->
+                          <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                              <h4 class="card-title mb-0">Información Personal</h4>
+                              <button *ngIf="!editandoDatosPersonales" type="button" class="btn btn-primary btn-sm"
+                                (click)="editarDatosPersonales()">
+                                <i class="fa fa-edit me-2"></i>Editar
+                              </button>
+                            </div>
+                            <div class="card-body">
+                              <div *ngIf="datosPersonales; else cargandoDatosPersonales">
+                                <div class="row">
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Cédula:</label>
+                                    <p class="form-control-static">{{ datosPersonales.Cedula || 'N/A' }}</p>
+                                  </div>
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Nombre Completo:</label>
+                                    <p class="form-control-static">{{ usuarioActual.EMPLEADO_NOMBRE || 'N/A' }}</p>
+                                  </div>
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Fecha de Nacimiento:</label>
+                                    <p class="form-control-static">
+                                      {{ datosPersonales.FechaNac ? datosPersonales.FechaNac.split(' ')[0] : 'N/A' }}
+                                    </p>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Estado Civil:</label>
+                                    <div *ngIf="editandoDatosPersonales; else estadoCivilTexto">
+                                      <select class="form-select" [(ngModel)]="datosPersonales.EstadoCivil">
+                                        <option value="SOLTERA/O">Soltero/a</option>
+                                        <option value="CASADA/O">Casado/a</option>
+                                        <option value="DIVORCIADA/O">Divorciado/a</option>
+                                        <option value="VIUDA/O">Viudo/a</option>
+                                        <option value="UNION LIBRE">Unión Libre</option>
+                                      </select>
+                                    </div>
+                                    <ng-template #estadoCivilTexto>
+                                      <p class="form-control-static">{{ datosPersonales.EstadoCivil || 'N/A' }}</p>
+                                    </ng-template>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Dirección:</label>
+                                    <div *ngIf="editandoDatosPersonales; else direccionTexto">
+                                      <input type="text" class="form-control"
+                                        [(ngModel)]="datosPersonales['Dirección']" />
+                                    </div>
+                                    <ng-template #direccionTexto>
+                                      <p class="form-control-static">{{ datosPersonales['Dirección'] || 'N/A' }}</p>
+                                    </ng-template>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Teléfono:</label>
+                                    <div *ngIf="editandoDatosPersonales; else telefonoTexto">
+                                      <input type="tel" class="form-control"
+                                        [(ngModel)]="datosPersonales['Teléfono3']" />
+                                    </div>
+                                    <ng-template #telefonoTexto>
+                                      <p class="form-control-static">{{ datosPersonales['Teléfono3'] || 'N/A' }}</p>
+                                    </ng-template>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Email:</label>
+                                    <div *ngIf="editandoDatosPersonales; else emailTexto">
+                                      <input type="email" class="form-control" [(ngModel)]="datosPersonales.email" />
+                                    </div>
+                                    <ng-template #emailTexto>
+                                      <p class="form-control-static">{{ datosPersonales.email || 'N/A' }}</p>
+                                    </ng-template>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Jefe Inmediato:</label>
+                                    <p class="form-control-static">{{ datosPersonales.Jefe || 'N/A' }}</p>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Departamento:</label>
+                                    <p class="form-control-static">{{ datosPersonales.Nombre || 'N/A' }}</p>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Acumula Décimos:</label>
+                                    <p class="form-control-static">{{ datosPersonales.PDecimos || 'N/A' }}</p>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Provisiona Fondos:</label>
+                                    <p class="form-control-static">{{ datosPersonales.PFondos || 'N/A' }}</p>
+                                  </div>
+                                </div>
+
+                                <div *ngIf="editandoDatosPersonales" class="d-flex justify-content-end gap-2 mt-3">
+                                  <button type="button" class="btn btn-light"
+                                    (click)="cancelarEdicionDatosPersonales()">
+                                    <i class="fa fa-times me-2"></i>Cancelar
+                                  </button>
+                                  <button type="button" class="btn btn-success" (click)="actualizarDatosPersonales()">
+                                    <i class="fa fa-save me-2"></i>Actualizar
+                                  </button>
                                 </div>
                               </div>
 
-                              @if(tieneEnfermedades) {
-                              <div class="col-12">
-                                <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">Datos Médicos y Emergencia</h6>
-                              </div>
-                              <div class="col-12">
-                                <h6 class="fw-bold mb-3">Contacto de Emergencia</h6>
-                              </div>
-                              <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">Nombre de Contacto</label>
-                                <input type="text" class="form-control"
-                                  [(ngModel)]="datosMedicos.contactoEmergenciaNombre">
-                              </div>
-                              <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">Teléfono de Contacto</label>
-                                <input type="tel" class="form-control"
-                                  [(ngModel)]="datosMedicos.contactoEmergenciaTelefono">
-                              </div>
-                              <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">Relación/Parentesco</label>
-                                <input type="text" class="form-control"
-                                  [(ngModel)]="datosMedicos.contactoEmergenciaRelacion">
-                              </div>
+                              <ng-template #cargandoDatosPersonales>
+                                <div class="alert alert-info">
+                                  <i class="fa fa-info-circle me-2"></i>
+                                  Cargando datos personales...
+                                </div>
+                              </ng-template>
 
-                              <div class="col-12 mt-3">
-                                <h6 class="fw-bold mb-3">Información de Salud</h6>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Alergias</label>
-                                <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.alergias"
-                                  placeholder="Especifique si tiene alergias..."></textarea>
-                              </div>
-                              <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Enfermedades Preexistentes</label>
-                                <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.enfermedades"
-                                  placeholder="Especifique si tiene enfermedades..."></textarea>
-                              </div>
+                              <!-- Sección de Datos Médicos -->
+                              <div class="row mt-4 pt-3 border-top">
+                                <div class="col-12 mb-3">
+                                  <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="tieneEnfermedades"
+                                      [(ngModel)]="tieneEnfermedades" />
+                                    <label class="form-check-label fw-bold" for="tieneEnfermedades">
+                                      ¿Tiene alguna enfermedad?
+                                    </label>
+                                  </div>
+                                </div>
 
-                              <div class="col-12 d-flex justify-content-end mt-3">
-                                <button type="button" class="btn btn-success" (click)="guardarDatosMedicos()">
-                                  <i class="fa fa-save me-2"></i>Guardar Datos Médicos
-                                </button>
+                                <div *ngIf="tieneEnfermedades">
+                                  <div class="col-12">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">Datos Médicos y Emergencia
+                                    </h6>
+                                  </div>
+
+                                  <div class="col-12">
+                                    <h6 class="fw-bold mb-3">Contacto de Emergencia</h6>
+                                  </div>
+
+                                  <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Nombre de Contacto</label>
+                                    <input type="text" class="form-control"
+                                      [(ngModel)]="datosMedicos.contactoEmergenciaNombre" />
+                                  </div>
+
+                                  <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Teléfono de Contacto</label>
+                                    <input type="tel" class="form-control"
+                                      [(ngModel)]="datosMedicos.contactoEmergenciaTelefono" />
+                                  </div>
+
+                                  <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-bold">Relación/Parentesco</label>
+                                    <input type="text" class="form-control"
+                                      [(ngModel)]="datosMedicos.contactoEmergenciaRelacion" />
+                                  </div>
+
+                                  <div class="col-12 mt-3">
+                                    <h6 class="fw-bold mb-3">Información de Salud</h6>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Alergias</label>
+                                    <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.alergias"
+                                      placeholder="Especifique si tiene alergias..."></textarea>
+                                  </div>
+
+                                  <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Enfermedades Preexistentes</label>
+                                    <textarea class="form-control" rows="3" [(ngModel)]="datosMedicos.enfermedades"
+                                      placeholder="Especifique si tiene enfermedades..."></textarea>
+                                  </div>
+
+                                  <div class="col-12 d-flex justify-content-end mt-3">
+                                    <button type="button" class="btn btn-success" (click)="guardarDatosMedicos()">
+                                      <i class="fa fa-save me-2"></i>Guardar Datos Médicos
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              }
                             </div>
                           </div>
                         </div>
-                        }
-                        @if(activeTab == 'task') {
-                        <!-- Cargas Familiares -->
-                        <div class="card">
-                          <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="card-title mb-0">Cargas Familiares</h4>
-                            <button type="button" class="btn btn-primary btn-sm" (click)="toggleFormularioCarga()">
-                              <i class="fa fa-plus me-2"></i>{{ mostrarFormularioCarga ? 'Ocultar' : 'Agregar' }}
-                            </button>
+
+                        <!-- TASK TAB (Cargas Familiares) -->
+                        <div *ngIf="activeTab === 'task'">
+                          <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                              <h4 class="card-title mb-0">Cargas Familiares</h4>
+                              <button type="button" class="btn btn-primary btn-sm" (click)="toggleFormularioCarga()">
+                                <i class="fa fa-plus me-2"></i>{{ mostrarFormularioCarga ? 'Ocultar' : 'Agregar' }}
+                              </button>
+                            </div>
+
+                            <div class="card-body">
+                              <!-- Formulario para agregar nueva carga -->
+                              <div *ngIf="mostrarFormularioCarga" class="row g-3 mb-4 p-3 border rounded bg-light">
+                                <div class="col-12">
+                                  <h6 class="fw-bold text-dark">Nueva Carga Familiar</h6>
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label class="form-label fw-bold text-dark">Nombre <span
+                                      class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" [(ngModel)]="nuevaCarga.nombres"
+                                    placeholder="Nombre completo" />
+                                </div>
+
+                                <div class="col-md-6">
+                                  <label class="form-label fw-bold text-dark">Cédula <span
+                                      class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" [(ngModel)]="nuevaCarga.cedula"
+                                    placeholder="0000000000" />
+                                </div>
+
+                                <div class="col-md-4">
+                                  <label class="form-label fw-bold text-dark">Parentesco <span
+                                      class="text-danger">*</span></label>
+                                  <select class="form-select" [(ngModel)]="nuevaCarga.tipoCarga">
+                                    <option value="">Seleccione...</option>
+                                    <option value="HIJO/A">Hijo/a</option>
+                                    <option value="CONYUGE">Cónyuge</option>
+                                    <option value="PADRE/MADRE">Padre/Madre</option>
+                                    <option value="HERMANO/A">Hermano/a</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                  <label class="form-label fw-bold text-dark">Sexo</label>
+                                  <select class="form-select" [(ngModel)]="nuevaCarga.sexo">
+                                    <option value="">Seleccione...</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                  <label class="form-label fw-bold text-dark">Fecha de Nacimiento</label>
+                                  <input type="date" class="form-control" [(ngModel)]="nuevaCarga.fechaNacimiento" />
+                                </div>
+
+                                <div class="col-md-12">
+                                  <div class="d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-light" (click)="toggleFormularioCarga()">
+                                      <i class="fa fa-times me-2"></i>Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-primary" (click)="agregarCargaFamiliar()">
+                                      <i class="fa fa-plus me-2"></i>Agregar
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!-- Tabla de cargas familiares -->
+                              <div *ngIf="cargasFamiliares && cargasFamiliares.length > 0; else sinCargas">
+                                <div class="table-responsive">
+                                  <table class="table table-hover">
+                                    <thead>
+                                      <tr>
+                                        <th class="fw-bold">Nombre</th>
+                                        <th class="fw-bold">Cédula</th>
+                                        <th class="fw-bold">Parentesco</th>
+                                        <th class="fw-bold">Sexo</th>
+                                        <th class="fw-bold">Fecha de Nacimiento</th>
+                                        <th class="fw-bold">Edad</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr *ngFor="let carga of cargasFamiliares">
+                                        <td>{{ carga.Nombres || 'N/A' }}</td>
+                                        <td>{{ carga['cédula'] || 'N/A' }}</td>
+                                        <td>{{ carga.TipoCarga || 'N/A' }}</td>
+                                        <td>
+                                          <ng-container *ngIf="carga.Sexo === 'F'; else sexoM">
+                                            Femenino
+                                          </ng-container>
+                                          <ng-template #sexoM>
+                                            <ng-container *ngIf="carga.Sexo === 'M'; else sexoNA">
+                                              Masculino
+                                            </ng-container>
+                                          </ng-template>
+                                          <ng-template #sexoNA>{{ carga.Sexo || 'N/A' }}</ng-template>
+                                        </td>
+                                        <td>{{ carga.FechaNacimiento ? carga.FechaNacimiento.split(' ')[0] : 'N/A' }}
+                                        </td>
+                                        <td>{{ carga.Edad || 'N/A' }}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+
+                              <ng-template #sinCargas>
+                                <div class="alert alert-info">
+                                  <i class="fa fa-info-circle me-2"></i>
+                                  No hay cargas familiares registradas. Agregue una nueva arriba.
+                                </div>
+                              </ng-template>
+                            </div>
                           </div>
-                          <div class="card-body">
-                            <!-- Formulario para agregar nueva carga -->
-                            @if(mostrarFormularioCarga) {
-                            <div class="row g-3 mb-4 p-3 border rounded bg-light">
-                              <div class="col-12">
-                                <h6 class="fw-bold text-dark">Nueva Carga Familiar</h6>
+                        </div>
+
+                        <!-- NOTIFICATION TAB (Vacaciones) -->
+                        <div *ngIf="activeTab === 'notification'">
+                          <div class="card">
+                            <div class="card-header">
+                              <h4 class="card-title mb-0">Historial de Vacaciones</h4>
+                            </div>
+                            <div class="card-body">
+                              <div *ngIf="vacaciones && vacaciones.length > 0; else sinVacaciones">
+                                <div class="table-responsive">
+                                  <table class="table table-hover">
+                                    <thead>
+                                      <tr>
+                                        <th class="fw-bold">Periodo</th>
+                                        <th class="fw-bold text-center">Gozados</th>
+                                        <th class="fw-bold text-center">Disponibles</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr *ngFor="let vacacion of vacaciones">
+                                        <td class="fw-bold">{{ vacacion.Periodo }}</td>
+                                        <td class="text-center">{{ vacacion.Gozados }}</td>
+                                        <td class="text-center">{{ vacacion.Disponibles }}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                  <div class="mt-4 pt-3 border-top">
+                                    <h5 class="fw-bold">Total de días disponibles: {{ totalVacacionesDisponibles }}</h5>
+                                  </div>
+                                </div>
                               </div>
-                              <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark">Nombre <span
-                                    class="text-danger">*</span></label>
-                                <input type="text" class="form-control" [(ngModel)]="nuevaCarga.nombres"
-                                  placeholder="Nombre completo">
-                              </div>
-                              <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark">Cédula <span
-                                    class="text-danger">*</span></label>
-                                <input type="text" class="form-control" [(ngModel)]="nuevaCarga.cedula"
-                                  placeholder="0000000000">
-                              </div>
-                              <div class="col-md-4">
-                                <label class="form-label fw-bold text-dark">Parentesco <span
-                                    class="text-danger">*</span></label>
-                                <select class="form-select" [(ngModel)]="nuevaCarga.tipoCarga">
-                                  <option value="">Seleccione...</option>
-                                  <option value="HIJO/A">Hijo/a</option>
-                                  <option value="CONYUGE">Cónyuge</option>
-                                  <option value="PADRE/MADRE">Padre/Madre</option>
-                                  <option value="HERMANO/A">Hermano/a</option>
-                                </select>
-                              </div>
-                              <div class="col-md-4">
-                                <label class="form-label fw-bold text-dark">Sexo</label>
-                                <select class="form-select" [(ngModel)]="nuevaCarga.sexo">
-                                  <option value="">Seleccione...</option>
-                                  <option value="M">Masculino</option>
-                                  <option value="F">Femenino</option>
-                                </select>
-                              </div>
-                              <div class="col-md-4">
-                                <label class="form-label fw-bold text-dark">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" [(ngModel)]="nuevaCarga.fechaNacimiento">
-                              </div>
-                              <div class="col-md-12">
-                                <div class="d-flex justify-content-end gap-2">
-                                  <button type="button" class="btn btn-light" (click)="toggleFormularioCarga()">
-                                    <i class="fa fa-times me-2"></i>Cancelar
-                                  </button>
-                                  <button type="button" class="btn btn-primary" (click)="agregarCargaFamiliar()">
+
+                              <ng-template #sinVacaciones>
+                                <div class="alert alert-info">
+                                  <i class="fa fa-info-circle me-2"></i>
+                                  No hay datos de vacaciones disponibles
+                                </div>
+                              </ng-template>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- EDUCATION TAB (Estudios) -->
+                        <div *ngIf="activeTab === 'education'">
+                          <div class="card">
+                            <div class="card-header">
+                              <h4 class="card-title mb-0">Estudios Realizados</h4>
+                            </div>
+                            <div class="card-body">
+                              <!-- Formulario para agregar estudio -->
+                              <div class="row g-3 mb-4 p-3 border rounded bg-light">
+                                <div class="col-12">
+                                  <h6 class="fw-bold text-dark">Agregar Nuevo Estudio</h6>
+                                </div>
+                                <div class="col-md-4">
+                                  <label class="form-label fw-bold text-dark">Título <span
+                                      class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" [(ngModel)]="nuevoEstudio.titulo"
+                                    placeholder="Ej: Ingeniero en Sistemas" />
+                                </div>
+                                <div class="col-md-4">
+                                  <label class="form-label fw-bold text-dark">Institución <span
+                                      class="text-danger">*</span></label>
+                                  <input type="text" class="form-control" [(ngModel)]="nuevoEstudio.institucion"
+                                    placeholder="Ej: Universidad Central" />
+                                </div>
+                                <div class="col-md-2">
+                                  <label class="form-label fw-bold text-dark">Año Graduación <span
+                                      class="text-danger">*</span></label>
+                                  <input type="number" class="form-control" [(ngModel)]="nuevoEstudio.anio"
+                                    placeholder="2023" />
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                  <button type="button" class="btn btn-primary w-100" (click)="agregarEstudio()">
                                     <i class="fa fa-plus me-2"></i>Agregar
                                   </button>
                                 </div>
                               </div>
-                            </div>
-                            }
 
-                            <!-- Tabla de cargas familiares -->
-                            @if(cargasFamiliares && cargasFamiliares.length > 0) {
-                            <div class="table-responsive">
-                              <table class="table table-hover">
-                                <thead>
-                                  <tr>
-                                    <th class="fw-bold">Nombre</th>
-                                    <th class="fw-bold">Cédula</th>
-                                    <th class="fw-bold">Parentesco</th>
-                                    <th class="fw-bold">Sexo</th>
-                                    <th class="fw-bold">Fecha de Nacimiento</th>
-                                    <th class="fw-bold">Edad</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  @for(carga of cargasFamiliares; track carga) {
-                                  <tr>
-                                    <td>{{ carga.Nombres || 'N/A' }}</td>
-                                    <td>{{ carga['cédula'] || 'N/A' }}</td>
-                                    <td>{{ carga.TipoCarga || 'N/A' }}</td>
-                                    <td>
-                                      @if(carga.Sexo == 'F') { Femenino }
-                                      @else if(carga.Sexo == 'M') { Masculino }
-                                      @else { {{ carga.Sexo || 'N/A' }} }
-                                    </td>
-                                    <td>{{ carga.FechaNacimiento ? carga.FechaNacimiento.split(' ')[0] : 'N/A' }}</td>
-                                    <td>{{ carga.Edad || 'N/A' }}</td>
-                                    No hay datos de vacaciones disponibles
-                            </div>
-                            }
-                          </div>
-                        </div>
-                        }
-                        @if(activeTab == 'education') {
-                        <!-- Estudios Realizados -->
-                        <div class="card">
-                          <div class="card-header">
-                            <h4 class="card-title mb-0">Estudios Realizados</h4>
-                          </div>
-                          <div class="card-body">
-                            <!-- Formulario para agregar estudio -->
-                            <div class="row g-3 mb-4 p-3 border rounded bg-light">
-                              <div class="col-12">
-                                <h6 class="fw-bold text-dark">Agregar Nuevo Estudio</h6>
+                              <!-- Tabla de estudios -->
+                              <div *ngIf="estudios && estudios.length > 0; else sinEstudios">
+                                <div class="table-responsive">
+                                  <table class="table table-hover">
+                                    <thead>
+                                      <tr>
+                                        <th class="fw-bold">Título</th>
+                                        <th class="fw-bold">Institución</th>
+                                        <th class="fw-bold">Año Graduación</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr *ngFor="let estudio of estudios; let i = index">
+                                        <td>{{ estudio.titulo }}</td>
+                                        <td>{{ estudio.institucion }}</td>
+                                        <td>{{ estudio.anio }}</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
-                              <div class="col-md-4">
-                                <label class="form-label fw-bold text-dark">Título <span
-                                    class="text-danger">*</span></label>
-                                <input type="text" class="form-control" [(ngModel)]="nuevoEstudio.titulo"
-                                  placeholder="Ej: Ingeniero en Sistemas">
-                              </div>
-                              <div class="col-md-4">
-                                <label class="form-label fw-bold text-dark">Institución <span
-                                    class="text-danger">*</span></label>
-                                <input type="text" class="form-control" [(ngModel)]="nuevoEstudio.institucion"
-                                  placeholder="Ej: Universidad Central">
-                              </div>
-                              <div class="col-md-2">
-                                <label class="form-label fw-bold text-dark">Año Graduación <span
-                                    class="text-danger">*</span></label>
-                                <input type="number" class="form-control" [(ngModel)]="nuevoEstudio.anio"
-                                  placeholder="2023">
-                              </div>
-                              <div class="col-md-2 d-flex align-items-end">
-                                <button type="button" class="btn btn-primary w-100" (click)="agregarEstudio()">
-                                  <i class="fa fa-plus me-2"></i>Agregar
-                                </button>
-                              </div>
-                            </div>
 
-                            <!-- Tabla de estudios -->
-                            @if(estudios && estudios.length > 0) {
-                            <div class="table-responsive">
-                              <table class="table table-hover">
-                                <thead>
-                                  <tr>
-                                    <th class="fw-bold">Título</th>
-                                    <th class="fw-bold">Institución</th>
-                                    <th class="fw-bold">Año Graduación</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  @for(estudio of estudios; track estudio; let i = $index) {
-                                  <tr>
-                                    <td>{{ estudio.titulo }}</td>
-                                    <td>{{ estudio.institucion }}</td>
-                                    <td>{{ estudio.anio }}</td>
+                              <ng-template #sinEstudios>
+                                <div class="alert alert-info">
+                                  <i class="fa fa-info-circle me-2"></i>
+                                  No hay estudios registrados. Agregue uno nuevo arriba.
+                                </div>
+                              </ng-template>
                             </div>
                           </div>
                         </div>
+
+                        <!-- PAYROLL TAB (Roles de Pago) -->
+                        <div *ngIf="activeTab === 'payroll'">
+                          <div class="card">
+                            <div class="card-header">
+                              <h4 class="card-title mb-0">Roles de Pago</h4>
+                            </div>
+                            <div class="card-body">
+                              <div class="row g-3 mb-4 p-3 border rounded bg-light">
+                                <div class="col-12">
+                                  <h6 class="fw-bold text-dark">Consultar Rol de Pago</h6>
+                                  <p class="text-muted mb-3">Seleccione el mes y año para consultar el rol de pago</p>
+                                </div>
+
+                                <div class="col-md-4">
+                                  <label class="form-label fw-bold text-dark">Mes y Año <span
+                                      class="text-danger">*</span></label>
+                                  <input type="month" class="form-control" [(ngModel)]="fechaConsultaRol"
+                                    [max]="maxFechaRol" placeholder="YYYY-MM" />
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-end">
+                                  <button type="button" class="btn btn-primary w-100" (click)="consultarRolesPago()">
+                                    <i class="fa fa-search me-2"></i>Consultar
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div *ngIf="rolesPago && rolesPago.length > 0; else sinRoles">
+                                <div class="table-responsive mt-4">
+                                  <table class="table table-hover table-bordered">
+                                    <thead class="table-light">
+                                      <tr>
+                                        <th class="fw-bold"># Documento</th>
+                                        <th class="fw-bold">Detalle</th>
+                                        <th class="fw-bold text-center">PDF</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr *ngFor="let rol of rolesPago">
+                                        <td>{{ rol.RolID }}</td>
+                                        <td>ROL - {{ formatearFecha(rol.Fecha) }}</td>
+                                        <td class="text-center">
+                                          <button class="btn btn-danger btn-sm" (click)="abrirPDF(rol)">
+                                            <i class="fa fa-file-pdf"></i>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+
+                              <ng-template #sinRoles>
+                                <div class="alert alert-info">
+                                  <i class="fa fa-info-circle me-2"></i>
+                                  Seleccione un mes y año para consultar los roles de pago
+                                </div>
+                              </ng-template>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- SETTING TAB -->
+                        <div *ngIf="activeTab === 'setting'">
+                          <app-user-setting></app-user-setting>
+                        </div>
+
+                      </div>
+                    </div>
+                  </ng-template>
+                </li> <!-- end li *ngFor -->
+              </ul>
+            </app-card>
+          </div>
+
+          <!-- Content area (nav outlet) -->
+          <div class="col-xxl-9 user-xl-75 col-xl-8 box-col-8e">
+            <div [ngbNavOutlet]="nav"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
