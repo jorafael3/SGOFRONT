@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 
 import { PrepararFacturasComponent } from "./picking/prepararfacturas/preparar-facturas.component";
+import { DropshippingFacturasComponent } from "./picking/dropshipping/dropshipping-facturas.component";
 import { VerificarFacturasComponent } from "./picking/verificarfacturas/verificar-facturas.component";
 import { GuiasPickupComponent } from "./picking/guiaspickup/guias-pickup.component";
 import { OpcionesComponent } from "./opciones/opciones.component";
 import { DespacharFacturasComponent } from "./picking/despachar/despachar-facturas.component";
 import { TrackingFacturasComponent } from "./tracking/tracking-facturas.component";
+import { ModificarSeriesComponent } from "./modificarseries/modificarseries.component";
 
 export const LogisticaRoutes: Routes = [
     {
@@ -14,6 +16,14 @@ export const LogisticaRoutes: Routes = [
         data: {
             title: 'Preparar Facturas',
             breadcrumb: 'Preparar Facturas'
+        }
+    },
+    {
+        path: 'picking/dropshipping',
+        component: DropshippingFacturasComponent,
+        data: {
+            title: 'Dropshipping Facturas',
+            breadcrumb: 'Dropshipping Facturas'
         }
     },
     {
@@ -54,6 +64,14 @@ export const LogisticaRoutes: Routes = [
         data: {
             title: 'Tracking Facturas',
             breadcrumb: 'Facturas por rastrear'
+        }
+    },
+    {
+        path: 'modificarseries',
+        component: ModificarSeriesComponent,
+        data: {
+            title: 'Modificar Series',
+            breadcrumb: 'Modificar Series'
         }
     },
     // {

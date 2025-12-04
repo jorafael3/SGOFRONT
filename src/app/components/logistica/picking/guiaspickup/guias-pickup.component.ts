@@ -225,6 +225,7 @@ export class GuiasPickupComponent {
         x.FACTURA_BODEGA_RETIRO_TEXTO = `<span class="fw-bold">${x.SISCO_BODEGA_RETIRO}</span>`;
         x.FACTURA_COMENTARIO = x.SISCO_COMENTARIO;
         x.FACTURA_ESTADO_TEXTO = `<span class="fw-bold ` + (x.ACTIVAR_LINK == 1 ? 'text-success' : 'text-danger') + `">` + x.FACTURA_ESTADO + `</span>`;
+     
       });
       this.tableConfig = { ...this.tableConfigCComputron, data: this.Usuarios_Datos };
     }
