@@ -605,22 +605,32 @@ export class ObligacionesBancariasComponent {
         }
         const nCuota = Number(this.reajusteForm.cuota);
         const arrayCompleto = this.amortizacionSeleccionada.amortizacion_detalle || [];
+
+        const mapaACR: Record<number, string | null> = {};
+        arrayCompleto.forEach((item: any) => {
+          mapaACR[Number(item.n_cuota)] = item.ACR_ID || null;
+        });
+
         const detalleAnteriorBackend = arrayCompleto.filter(
           (item: any) => Number(item.n_cuota) <= nCuota
         );
 
-        const detalleNuevoBackend = (res.data || []).map((item: any, index: number) => ({
-          id: "",
-          cabecera_id: this.amortizacionSeleccionada.id,
-          n_cuota: String(nCuota + index + 1),
-          fecha_pago: item.fechaPago,
-          abono_capital: Number(item.abonoCapital).toFixed(4),
-          interes: Number(item.interes).toFixed(4),
-          cuota: Number(item.pagoTotal).toFixed(4),
-          saldo: Number(item.saldo).toFixed(4),
-          otros: Number(item.otros ?? 0).toFixed(4),
-          fila_reajuste: index === 0 ? '1' : '0'
-        }));
+        const detalleNuevoBackend = (res.data || []).map((item: any, index: number) => {
+          const nuevaCuotaNum = nCuota + index + 1;
+          return {
+            id: "",
+            cabecera_id: this.amortizacionSeleccionada.id,
+            n_cuota: String(nCuota + index + 1),
+            fecha_pago: item.fechaPago,
+            abono_capital: Number(item.abonoCapital).toFixed(4),
+            interes: Number(item.interes).toFixed(4),
+            cuota: Number(item.pagoTotal).toFixed(4),
+            saldo: Number(item.saldo).toFixed(4),
+            otros: Number(item.otros ?? 0).toFixed(4),
+            fila_reajuste: index === 0 ? '1' : '0',
+            ACR_ID: mapaACR[nuevaCuotaNum] || null
+          };
+        });
 
         const detalleFinalBackend = [...detalleAnteriorBackend, ...detalleNuevoBackend];
         const d = {

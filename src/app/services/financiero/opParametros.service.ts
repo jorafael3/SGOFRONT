@@ -43,5 +43,10 @@ export class OpParametrosService extends BaseApiService {
     'Authorization': `Bearer ${this.getUserSessionToken()}`
   });
 
-  
+  Cargar_OPT_Param(): Observable<any> {
+    return this.http.post<any>(this.endpoint + "Cargar_OPT_Param", { headers: this.headers });
+  }
+  Guardar_OPT_Param(data: any): Observable<any> {
+    return this.http.post<any>(this.endpoint + "Guardar_OPT_Param", data, { headers: this.headers });
+  }
 }

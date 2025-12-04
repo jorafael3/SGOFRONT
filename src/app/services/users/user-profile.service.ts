@@ -126,4 +126,104 @@ export class UserProfileService {
     console.log('📍 [enviarSolicitudActualizacion] URL:', this.endpoint + 'SolicitudActualizacionDatos');
     return this.http.post<any>(this.endpoint + 'SolicitudActualizacionDatos', solicitud);
   }
+
+  /**
+   * Actualizar datos personales del empleado
+   * @param datos - Datos personales a actualizar
+   */
+  actualizarDatosPersonales(datos: any): Observable<any> {
+    console.log('📤 [actualizarDatosPersonales] Enviando al backend:', datos);
+    console.log('📍 [actualizarDatosPersonales] URL:', this.endpoint + 'ActualizarDatosPersonales');
+    return this.http.post<any>(this.endpoint + 'ActualizarDatosPersonales', datos);
+  }
+
+  /**
+  * Actualizar CARGAS  del empleado
+  * @param datos - Datos actualizarcargasempleado
+  */
+  actualizarcargasempleado(datos: any): Observable<any> {
+    console.log('📤 [actualizarcargasempleado] Enviando al backend:', datos);
+    console.log('📍 [actualizarcargasempleado] URL:', this.endpoint + 'ActualizarCargasEmpleado');
+    return this.http.post<any>(this.endpoint + 'ActualizarCargasEmpleado', datos);
+  }
+
+
+
+  /**
+ * Agregar titulos y certificados  
+ * @param datos - Datos actualizarcargasempleado
+ */
+  actualizarestudios(datos: any): Observable<any> {
+    console.log('📤 [actualizarestudios] Enviando al backend:', datos);
+    console.log('📍 [actualizarestudios] URL:', this.endpoint + 'ActualizarEstudios');
+    return this.http.post<any>(this.endpoint + 'ActualizarEstudios', datos);
+  }
+
+
+
+  /**
+  * Obtener cargar estudios 
+  * @param empleadoId - ID del empleado
+  */
+  getCargasEstudios(empleadoId: string): Observable<any> {
+    const payload = { empleadoId: empleadoId };
+    console.log('📤 [getCargasEstudios] Enviando al backend:', payload);
+    console.log('📍 [getCargasEstudios] URL:', this.endpoint + 'GetCargasEstudios');
+    return this.http.post<any>(this.endpoint + 'GetCargasEstudios', payload);
+  }
+
+
+  /**
+* Agregar titulos y certificados  
+* @param datos - Datos actualizarcargasempleado
+*/
+  actualizarenfermedades(datos: any): Observable<any> {
+    console.log('📤 [actualizarenfermedades] Enviando al backend:', datos);
+    console.log('📍 [actualizarenfermedades] URL:', this.endpoint + 'ActualizarEnfermedades');
+    return this.http.post<any>(this.endpoint + 'ActualizarEnfermedades', datos);
+  }
+
+
+  /**
+  * Obtener enfermedades
+  * @param datos -
+  */
+  getenfermedades(datos: any): Observable<any> {
+    console.log('📤 [getenfermedades] Enviando al backend:', datos);
+    console.log('📍 [getenfermedades] URL:', this.endpoint + 'Getenfermedades');
+    return this.http.post<any>(this.endpoint + 'Getenfermedades', datos);
+  }
+
+  /**
+   * Consultar roles de pago por fecha
+   * @param datos - { empleadoId, fecha (YYYYMMDD) }
+   */
+  consultarRolesPago(datos: any): Observable<any> {
+    console.log('📤 [consultarRolesPago] Enviando al backend:', datos);
+    console.log('📍 [consultarRolesPago] URL:', this.endpoint + 'ConsultarRolesPago');
+    return this.http.post<any>(this.endpoint + 'ConsultarRolesPago', datos);
+  }
+
+  /**
+   * Descargar rol de pago en PDF
+   * @param rolId - ID del rol de pago
+   */
+  descargarRolPago(rolId: string): Observable<Blob> {
+    const payload = { rolId: rolId };
+    console.log('📤 [descargarRolPago] Enviando al backend:', payload);
+    console.log('📍 [descargarRolPago] URL:', this.endpoint + 'DescargarRolPago');
+    // El backend devuelve un PDF binario, por lo que usamos responseType: 'blob'
+    return this.http.post(this.endpoint + 'DescargarRolPago', payload, { responseType: 'blob' });
+  }
+
+  /**
+   * Actualizar contraseña del usuario
+   * @param datos - { empleadoId, currentPassword, newPassword }
+   */
+  actualizarContrasena(datos: any): Observable<any> {
+    console.log('📤 [actualizarContrasena] Enviando al backend:', datos);
+    console.log('📍 [actualizarContrasena] URL:', this.endpoint + 'ActualizarPassword');
+    return this.http.post<any>(this.endpoint + 'ActualizarPassword', datos);
+  }
+
 }
