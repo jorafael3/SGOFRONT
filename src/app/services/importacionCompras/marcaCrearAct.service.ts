@@ -8,9 +8,9 @@ import { user } from '../../shared/data/user';
 @Injectable({
   providedIn: 'root'
 })
-export class BancoService extends BaseApiService {
+export class MarcaCrearActService extends BaseApiService {
 
-  private readonly endpoint = environment.apiUrl + '/financiero/bancos/obligacionesbancarias/';
+  private readonly endpoint = environment.apiUrl + '/ImportCompras/proteccionMarcas/crearact/';
 
   constructor(http: HttpClient) {
     super(http);
@@ -43,24 +43,14 @@ export class BancoService extends BaseApiService {
     'Authorization': `Bearer ${this.getUserSessionToken()}`
   });
 
-  BuscarProveedor(data: any): Observable<any> {
+  Guardar_datos(data: any): Observable<any> {
     data.userdata = this.getUserSessionData();
-    return this.http.post<any>(this.endpoint + "buscar_proveedor", data, { headers: this.headers });
+    return this.http.post<any>(this.endpoint + "Guardar_datos", data, { headers: this.headers });
   }
-  CargarTiposObligaciones(): Observable<any> {
-    return this.http.post<any>(this.endpoint + "Cargar_Tipos_Obligaciones", { headers: this.headers });
+  Cargar_Tipos_Marcas(): Observable<any> {
+    return this.http.post<any>(this.endpoint + "Cargar_Tipos_Marcas", { headers: this.headers });
   }
-  CalcularAmortizacion(data: any): Observable<any> {
-    return this.http.post<any>(this.endpoint + "Calcular_Amortizacion", data, { headers: this.headers });
-  }
-
-  GuardarAmortizacion(data: any): Observable<any> {
-    return this.http.post<any>(this.endpoint + "guardar_modelo_amortizacion", data, { headers: this.headers });
-  }
-  CargarAmortizacion(): Observable<any> {
-    return this.http.post<any>(this.endpoint + "cargar_amortizaciones", { headers: this.headers });
-  }
-  GuardarReajuste(data: any): Observable<any> {
-    return this.http.post<any>(this.endpoint + "guardar_reajuste", data, { headers: this.headers });
+  Cargar_Marcas(data: any): Observable<any> {
+    return this.http.post<any>(this.endpoint + "Cargar_Marcas", data, { headers: this.headers });
   }
 }

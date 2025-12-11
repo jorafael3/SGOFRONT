@@ -68,6 +68,15 @@ export const content: Routes = [
             breadcrumb: "recursoshumanos"
         }
     },
+    
+    {
+        path: 'ImportCompras',
+        loadChildren: () => import('../../components/ImportCompras/ImportCompras.routes').then(r => r.ImportComprasRoutes),
+        data: {
+            title: "Importación de Compras",
+            breadcrumb: "Importación de Compras"
+        }
+    },
 
 
     // {

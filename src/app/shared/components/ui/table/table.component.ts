@@ -55,10 +55,13 @@ export class TableComponent {
   @Output() action = new EventEmitter<TableClickedAction>();
   @Output() customAction = new EventEmitter<{action: string, data?: any}>();
   @Output() dateFilterChange = new EventEmitter<string>();
+  @Output() selectedRowsChange = new EventEmitter<any[]>()
 
   public tableData$: Observable<any>;
   public total$: Observable<number>;
   public selected: number[] = [];
+  // Use strings for ids internally to avoid type mismatches
+  public selectedIds: string[] = [];
   public paginate: Pagination; // Pagination use only
   public tableData: any;
   public pageNo: number = 1
@@ -145,6 +148,32 @@ export class TableComponent {
     }
 
     if (changes['tableConfig'] && this.tableConfig && this.tableConfig.data) {
+      // Use `selectedRows` input to determine whether selection should be initialized
+      if (this.selectedRows) {
+        const preselected = this.tableConfig.data
+          .filter((r: any) => r && (r.is_checked === true || r.is_checked === 1))
+          .map((r: any) => String(this.getRowId(r)))
+          .filter((id: any) => id && id !== 'null');
+        if (preselected && preselected.length) {
+          this.selectedIds = Array.from(new Set(preselected));
+          this.tableConfig.data.forEach((row: any) => {
+            const rid = this.getRowId(row);
+            row.is_checked = rid != null && this.selectedIds.includes(String(rid));
+          });
+          const selectedRowsData = this.tableConfig.data.filter((row: any) => {
+            const rid = this.getRowId(row);
+            return rid != null && this.selectedIds.includes(String(rid));
+          });
+          this.selectedRowsChange.emit(selectedRowsData);
+        }
+      } else {
+        // If selection disabled, ensure no selectedIds remain
+        this.selectedIds = [];
+        // Also ensure rows do not have is_checked forced
+        this.tableConfig.data.forEach((row: any) => {
+          if (row) row.is_checked = false;
+        });
+      }
       this.paginateData();
       this.cdr.detectChanges();
     }
@@ -188,23 +217,53 @@ export class TableComponent {
   }
 
   checkUncheckAll(event: Event) {
+    const checked = (<HTMLInputElement>event?.target)?.checked;
     this.tableConfig.data.forEach((item: any) => {
-      item.is_checked = (<HTMLInputElement>event?.target)?.checked;
-      this.setSelectedItem((<HTMLInputElement>event?.target)?.checked, item?.id);
+      item.is_checked = checked;
+      this.setSelectedItem(checked, this.getRowId(item));
     });
   }
 
   onItemChecked(event: Event) {
-    this.setSelectedItem((<HTMLInputElement>event.target)?.checked, Number((<HTMLInputElement>event.target)?.value));
+    const input = (<HTMLInputElement>event.target);
+    // Stop propagation is handled in template; here we just forward id
+    this.setSelectedItem(input.checked, input.value);
+  }
+  // Helper to get a stable id from a row
+  getRowId(row: any): any {
+    if (!row) return null;
+    return row.CONSOLIDADO_ID ?? row.ACTIVIDAD_ID ?? row.id ?? row.ID ?? row.Id ?? row.key ?? null;
   }
 
-  setSelectedItem(checked: Boolean, value: Number) {
-    const index = this.selected.indexOf(Number(value));
+  // Toggle selection for a full row (used when clicking the row)
+  toggleRowSelection(row: any) {
+    const id = this.getRowId(row);
+    if (id == null) return;
+    const isSelected = this.selectedIds.includes(String(id));
+    this.setSelectedItem(!isSelected, id);
+  }
+
+  setSelectedItem(checked: Boolean, value: any) {
+    const idStr = value == null ? '' : String(value);
+    const index = this.selectedIds.indexOf(idStr);
     if (checked) {
-      if (index == -1) this.selected.push(Number(value));
+      if (index === -1) this.selectedIds.push(idStr);
     } else {
-      this.selected = this.selected.filter(id => id !== Number(value));
+      this.selectedIds = this.selectedIds.filter(id => id !== idStr);
     }
+
+    // Update selected flag on rows for UI (checkboxes)
+    this.tableConfig.data.forEach((row: any) => {
+      const rid = this.getRowId(row);
+      row.is_checked = rid != null && this.selectedIds.includes(String(rid));
+    });
+
+    // Emit actual selected row objects
+    const selectedRowsData = this.tableConfig.data.filter(row => {
+      const rid = this.getRowId(row);
+      return rid != null && this.selectedIds.includes(String(rid));
+    });
+    this.selectedRowsChange.emit(selectedRowsData);
   }
 
   onSort(field: string) {

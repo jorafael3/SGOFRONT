@@ -53,3 +53,9 @@
     }
   }
 }
+/* Forzar el mismo fondo en las celdas: muchas tablas aplican fondo en td que tapa el tr */
+.table-hover.table tbody tr.selected td,
+.table-hover tbody tr.selected td {
+  background-color: #dce6f0 !important;
+  color: inherit !important;
+}

@@ -114,9 +114,9 @@
     <tr>
       @if(hasCheckbox) {
       <th class="datatable-checkbox"
-        [class.selected-checkbox]="selected.length && selected.length != tableConfig.data.length">
+        [class.selected-checkbox]="selectedIds.length && selectedIds.length != tableConfig.data.length">
         <input type="checkbox" class="cb-select-checkbox"
-          [checked]="(tableConfig && tableConfig.data.length && selected && selected.length == tableConfig.data.length) || false"
+          [checked]="(tableConfig && tableConfig.data.length && selectedIds && selectedIds.length == tableConfig.data.length) || false"
           (change)="checkUncheckAll($event)">
       </th>
       }
@@ -152,11 +152,12 @@
   @if(tableData && tableData.length) {
   <tbody>
     @for(details of tableData; track details) {
-    <tr [class.selected]="selected && selected.length && selected.includes(details.id)">
+    <tr (click)="selectedRows && toggleRowSelection(details)" [class.selected]="selectedRows && selectedIds && selectedIds.length && selectedIds.includes(getRowId(details) + '')"
+      [ngStyle]="{'cursor': selectedRows ? 'pointer' : 'default'}">
       @if(hasCheckbox) {
       <td class="datatable-checkbox">
-        <input type="checkbox" [attr.data-id]="details.id" [value]="details?.id"
-          [checked]="selected && selected.length && selected.includes(details.id)" (change)="onItemChecked($event)">
+        <input type="checkbox" [attr.data-id]="getRowId(details)" [value]="getRowId(details)"
+          [checked]="selectedIds && selectedIds.includes(getRowId(details) + '')" (click)="$event.stopPropagation()" (change)="onItemChecked($event)">
       </td>
       }
 
@@ -210,7 +211,7 @@
           @for(rows of tableConfig.row_action; track rows) {
 
 
-          <button class="btn-sm" title="{{ rows.tooltip }}" [class]="rows.class" (click)="handleAction(rows, details)">
+          <button class="btn-sm" title="{{ rows.tooltip }}" [class]="rows.class" (click)="handleAction(rows, details); $event.stopPropagation()">
             <span>
               @if(rows.icon) {
               <i class="fa-solid fa-{{ rows.icon }}"></i> &nbsp;

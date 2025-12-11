@@ -211,8 +211,7 @@ export class ObligacionesBancariasComponent {
   }
 
   cargarTiposObligaciones() {
-    let param: never[] = []
-    this.BancoService.CargarTiposObligaciones(param).subscribe({
+    this.BancoService.CargarTiposObligaciones().subscribe({
       next: (res: any) => {
         if (!res.success) return;
         this.tiposObligaciones = res.data;
