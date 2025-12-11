@@ -18,7 +18,8 @@
                     <!-- Spinner de cargando -->
                     <div *ngIf="isLoading" class="loading-container">
                         <div class="loading-content">
-                            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"
+                                role="status">
                                 <span class="visually-hidden">Cargando...</span>
                             </div>
                             <p class="text-muted spinner-text fw-bold">Cargando datos de facturas...</p>
@@ -27,6 +28,15 @@
 
                     <!-- Tabla -->
                     <div class="recent-table" *ngIf="!isLoading">
+
+                        <div class="col-3">
+                            <select class="form-select form-select-solid mb-2" name="filter" id="filter">
+                                <option class="fw-bold" value="1">Facturas</option>
+                                <option class="fw-bold" value="2">Dropshipping</option>
+                            </select>
+                        </div>
+
+
                         <app-table [hasCheckbox]="false" [tableConfig]="tableConfig" [pageSize]="10"
                             [paginateDetails]="true" [selectedRows]="true" [downloadReports]="true"
                             [exportButtons]="Buttons_Export" [customButtons]="customButtons"
@@ -67,7 +77,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Datos de la Cabecera -->
                     <div class="row" *ngIf="facturaActual">
                         <div class="col-12 mb-1">
@@ -113,9 +123,9 @@
                                             </tr>
                                             <tr style="height: 28px;">
                                                 <td class="fw-bold text-muted py-1">
-                                                    <i class="fa fa-file-alt text-secondary me-1"></i>Número:
+                                                    <i class="fa fa-file-alt text-secondary me-1"></i>ID:
                                                 </td>
-                                                <td class="py-1">{{ facturaActual.Numero }}</td>
+                                                <td class="py-1">{{ facturaActual.Id }}</td>
                                             </tr>
                                             <tr style="height: 28px;">
                                                 <td class="fw-bold text-muted py-1">
@@ -262,7 +272,8 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let item of detalleFactura; let i = index" class="align-middle">
+                                                <tr *ngFor="let item of detalleFactura; let i = index"
+                                                    class="align-middle">
                                                     <!-- Columna Tipo -->
                                                     <!-- <td class="text-center py-1">
                                                         <span *ngIf="item.RegistaSerie === '0'" 
@@ -308,31 +319,34 @@
                                 <div class="col-12">
                                     <div class="alert alert-primary py-2">
                                         <i class="fa fa-info-circle me-1"></i>
-                                        <strong>Factura Multibodega:</strong> Un solo número de guía se aplicará a todas las bodegas ({{ bodegas.length }} bodegas)
+                                        <strong>Factura Multibodega:</strong> Un solo número de guía se aplicará a todas
+                                        las bodegas ({{ bodegas.length }} bodegas)
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Alerta de consolidación -->
                             <div class="row mb-2" *ngIf="consolidar">
                                 <div class="col-12">
                                     <div class="alert alert-warning py-2">
                                         <i class="fa fa-boxes me-1"></i>
-                                        <strong>Consolidación Activada:</strong> Se ha activado la consolidación para este envío
+                                        <strong>Consolidación Activada:</strong> Se ha activado la consolidación para
+                                        este envío
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Alerta para centro consolidado -->
                             <div class="row mb-2" *ngIf="facturaRowData?.CENTRO_CONSOLIDADO == 1">
                                 <div class="col-12">
                                     <div class="alert alert-info py-2">
                                         <i class="fa fa-info-circle me-1"></i>
-                                        <strong>Centro Consolidado:</strong> Esta factura pertenece a un centro consolidado, no requiere consolidación adicional
+                                        <strong>Centro Consolidado:</strong> Esta factura pertenece a un centro
+                                        consolidado, no requiere consolidación adicional
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="card border-0 shadow-sm h-100">
@@ -346,25 +360,24 @@
                                                 style="line-height: 1.2;">
                                                 <tbody>
                                                     <!-- Checkbox Consolidar (solo para multibodega con consolidación y no centro consolidado) -->
-                                                    <tr *ngIf="facturaRowData?.MULTIBODEGA == 'SI' && facturaRowData?.CONSOLIDAR_FACTURA == 1 && facturaRowData?.CENTRO_CONSOLIDADO == '0'" style="height: 28px;">
+                                                    <tr *ngIf="facturaRowData?.MULTIBODEGA == 'SI' && facturaRowData?.CONSOLIDAR_FACTURA == 1 && facturaRowData?.CENTRO_CONSOLIDADO == '0'"
+                                                        style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1" style="width: 35%;">
                                                             <i class="fa fa-boxes text-warning me-1"></i>Consolidar:
                                                         </td>
                                                         <td class="py-1">
                                                             <div class="form-check">
-                                                                <input class="form-check-input" 
-                                                                    type="checkbox" 
-                                                                    [(ngModel)]="consolidar"
-                                                                    name="consolidar"
-                                                                    id="checkConsolidar"
-                                                                    [disabled]="true">
-                                                                <label class="form-check-label text-muted" for="checkConsolidar">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    [(ngModel)]="consolidar" name="consolidar"
+                                                                    id="checkConsolidar" [disabled]="true">
+                                                                <label class="form-check-label text-muted"
+                                                                    for="checkConsolidar">
                                                                     Consolidación obligatoria (no se puede cambiar)
                                                                 </label>
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                    
+
                                                     <!-- Tipo de Consolidación (oculto por el momento) -->
                                                     <!-- <tr *ngIf="consolidar && false" style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1">
@@ -383,7 +396,7 @@
                                                             </select>
                                                         </td>
                                                     </tr> -->
-                                                    
+
                                                     <!-- Guía de Consolidación (solo visible si consolidar está activado) -->
                                                     <tr *ngIf="consolidar" style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1">
@@ -391,33 +404,36 @@
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <input type="text" 
-                                                                [(ngModel)]="guiaConsolidacion"
+                                                            <input type="text" [(ngModel)]="guiaConsolidacion"
                                                                 name="guiaConsolidacion"
                                                                 class="form-control form-control-sm"
                                                                 placeholder="Número de guía de consolidación">
                                                         </td>
                                                     </tr>
-                                                    
+
                                                     <tr style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1" style="width: 35%;">
-                                                            <i class="fa fa-shopping-cart text-info me-1"></i>Transporte:
+                                                            <i
+                                                                class="fa fa-shopping-cart text-info me-1"></i>Transporte:
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <select [(ngModel)]="transporteSeleccionado" 
+                                                            <select [(ngModel)]="transporteSeleccionado"
                                                                 name="transporte"
                                                                 class="form-select form-select-solid form-select-sm"
                                                                 [disabled]="cargandoTransportes">
-                                                                <option value="" *ngIf="!cargandoTransportes">Seleccione transporte</option>
-                                                                <option value="" *ngIf="cargandoTransportes">Cargando transportes...</option>
-                                                                <option *ngFor="let transporte of listaTransportes" 
-                                                                        [value]="transporte.id">
+                                                                <option value="" *ngIf="!cargandoTransportes">Seleccione
+                                                                    transporte</option>
+                                                                <option value="" *ngIf="cargandoTransportes">Cargando
+                                                                    transportes...</option>
+                                                                <option *ngFor="let transporte of listaTransportes"
+                                                                    [value]="transporte.id">
                                                                     {{ transporte.Codigo }}
                                                                 </option>
                                                             </select>
                                                             <small class="text-muted" *ngIf="cargandoTransportes">
-                                                                <i class="fa fa-spinner fa-spin me-1"></i>Cargando lista de transportes...
+                                                                <i class="fa fa-spinner fa-spin me-1"></i>Cargando lista
+                                                                de transportes...
                                                             </small>
                                                         </td>
                                                     </tr>
@@ -429,13 +445,12 @@
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <input type="text" 
-                                                                [(ngModel)]="numeroGuia"
-                                                                name="numeroGuia"
-                                                                class="form-control form-control-sm"
+                                                            <input type="text" [(ngModel)]="numeroGuia"
+                                                                name="numeroGuia" class="form-control form-control-sm"
                                                                 placeholder="Ingrese el número de guía">
                                                             <small class="text-muted" *ngIf="bodegas.length > 1">
-                                                                Este número de guía se aplicará a todas las bodegas ({{ bodegas.length }} bodegas)
+                                                                Este número de guía se aplicará a todas las bodegas ({{
+                                                                bodegas.length }} bodegas)
                                                             </small>
                                                         </td>
                                                     </tr>
@@ -445,12 +460,9 @@
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <input type="number" 
-                                                                [(ngModel)]="numeroBultos"
-                                                                name="numeroBultos"
-                                                                class="form-control form-control-sm"
-                                                                placeholder="Número de bultos"
-                                                                min="1">
+                                                            <input type="number" [(ngModel)]="numeroBultos"
+                                                                name="numeroBultos" class="form-control form-control-sm"
+                                                                placeholder="Número de bultos" min="1">
                                                         </td>
                                                     </tr>
 
@@ -473,30 +485,26 @@
                                                 <tbody>
                                                     <tr style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1" style="width: 35%;">
-                                                            <i
-                                                                class="fa fa-warehouse text-info me-1"></i>Peso:
+                                                            <i class="fa fa-warehouse text-info me-1"></i>Peso:
                                                         </td>
                                                         <td class="py-1">
-                                                           <input type="text" 
-                                                               [(ngModel)]="pesoEnvio"
-                                                               name="pesoEnvio"
-                                                               class="form-control form-control-sm"
-                                                               placeholder="Peso del paquete (kg)">
+                                                            <input type="text" [(ngModel)]="pesoEnvio" name="pesoEnvio"
+                                                                class="form-control form-control-sm"
+                                                                placeholder="Peso del paquete (kg)">
                                                         </td>
                                                     </tr>
                                                     <tr style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1">
-                                                            <i class="fa fa-address-book text-primary me-1"></i>Comentarios:
+                                                            <i
+                                                                class="fa fa-address-book text-primary me-1"></i>Comentarios:
                                                         </td>
                                                         <td class="py-1">
-                                                          <textarea [(ngModel)]="comentariosEnvio" 
-                                                              name="comentarios" 
-                                                              class="form-control form-control-sm"
-                                                              rows="2"
-                                                              placeholder="Comentarios sobre el envío"></textarea>
+                                                            <textarea [(ngModel)]="comentariosEnvio" name="comentarios"
+                                                                class="form-control form-control-sm" rows="2"
+                                                                placeholder="Comentarios sobre el envío"></textarea>
                                                         </td>
                                                     </tr>
-                                                 
+
 
                                                 </tbody>
                                             </table>
@@ -523,7 +531,8 @@
         </div>
     </div>
 
-    <div *ngIf="showDetalleguiaComputronModal" class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3);">
+    <div *ngIf="showDetalleguiaComputronModal" class="modal fade show d-block" tabindex="-1"
+        style="background:rgba(0,0,0,0.3);">
         <div class="modal-dialog modal-xl" style="max-width: 80vw;">
             <div class="modal-content">
                 <div class="modal-header">
@@ -550,7 +559,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Datos de la Cabecera -->
                     <div class="row" *ngIf="facturaActual">
                         <div class="col-12 mb-1">
@@ -745,7 +754,8 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let item of detalleFactura; let i = index" class="align-middle">
+                                                <tr *ngFor="let item of detalleFactura; let i = index"
+                                                    class="align-middle">
                                                     <!-- Columna Tipo -->
                                                     <!-- <td class="text-center py-1">
                                                         <span *ngIf="item.RegistaSerie === '0'" 
@@ -791,31 +801,34 @@
                                 <div class="col-12">
                                     <div class="alert alert-primary py-2">
                                         <i class="fa fa-info-circle me-1"></i>
-                                        <strong>Factura Multibodega:</strong> Un solo número de guía se aplicará a todas las bodegas ({{ bodegas.length }} bodegas)
+                                        <strong>Factura Multibodega:</strong> Un solo número de guía se aplicará a todas
+                                        las bodegas ({{ bodegas.length }} bodegas)
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Alerta de consolidación -->
                             <div class="row mb-2" *ngIf="consolidar">
                                 <div class="col-12">
                                     <div class="alert alert-warning py-2">
                                         <i class="fa fa-boxes me-1"></i>
-                                        <strong>Consolidación Activada:</strong> Se ha activado la consolidación para este envío
+                                        <strong>Consolidación Activada:</strong> Se ha activado la consolidación para
+                                        este envío
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Alerta para centro consolidado -->
                             <div class="row mb-2" *ngIf="facturaRowData?.CENTRO_CONSOLIDADO == 1">
                                 <div class="col-12">
                                     <div class="alert alert-info py-2">
                                         <i class="fa fa-info-circle me-1"></i>
-                                        <strong>Centro Consolidado:</strong> Esta factura pertenece a un centro consolidado, no requiere consolidación adicional
+                                        <strong>Centro Consolidado:</strong> Esta factura pertenece a un centro
+                                        consolidado, no requiere consolidación adicional
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="card border-0 shadow-sm h-100">
@@ -829,25 +842,24 @@
                                                 style="line-height: 1.2;">
                                                 <tbody>
                                                     <!-- Checkbox Consolidar (solo para multibodega con consolidación y no centro consolidado) -->
-                                                    <tr *ngIf="facturaRowData?.MULTIBODEGA == 'SI' && facturaRowData?.CONSOLIDAR_FACTURA == 1 && facturaRowData?.CENTRO_CONSOLIDADO == '0'" style="height: 28px;">
+                                                    <tr *ngIf="facturaRowData?.MULTIBODEGA == 'SI' && facturaRowData?.CONSOLIDAR_FACTURA == 1 && facturaRowData?.CENTRO_CONSOLIDADO == '0'"
+                                                        style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1" style="width: 35%;">
                                                             <i class="fa fa-boxes text-warning me-1"></i>Consolidar:
                                                         </td>
                                                         <td class="py-1">
                                                             <div class="form-check">
-                                                                <input class="form-check-input" 
-                                                                    type="checkbox" 
-                                                                    [(ngModel)]="consolidar"
-                                                                    name="consolidar"
-                                                                    id="checkConsolidar"
-                                                                    [disabled]="true">
-                                                                <label class="form-check-label text-muted" for="checkConsolidar">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    [(ngModel)]="consolidar" name="consolidar"
+                                                                    id="checkConsolidar" [disabled]="true">
+                                                                <label class="form-check-label text-muted"
+                                                                    for="checkConsolidar">
                                                                     Consolidación obligatoria (no se puede cambiar)
                                                                 </label>
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                    
+
                                                     <!-- Tipo de Consolidación (oculto por el momento) -->
                                                     <!-- <tr *ngIf="consolidar && false" style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1">
@@ -866,7 +878,7 @@
                                                             </select>
                                                         </td>
                                                     </tr> -->
-                                                    
+
                                                     <!-- Guía de Consolidación (solo visible si consolidar está activado) -->
                                                     <tr *ngIf="consolidar" style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1">
@@ -874,33 +886,36 @@
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <input type="text" 
-                                                                [(ngModel)]="guiaConsolidacion"
+                                                            <input type="text" [(ngModel)]="guiaConsolidacion"
                                                                 name="guiaConsolidacion"
                                                                 class="form-control form-control-sm"
                                                                 placeholder="Número de guía de consolidación">
                                                         </td>
                                                     </tr>
-                                                    
+
                                                     <tr style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1" style="width: 35%;">
-                                                            <i class="fa fa-shopping-cart text-info me-1"></i>Transporte:
+                                                            <i
+                                                                class="fa fa-shopping-cart text-info me-1"></i>Transporte:
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <select [(ngModel)]="transporteSeleccionado" 
+                                                            <select [(ngModel)]="transporteSeleccionado"
                                                                 name="transporte"
                                                                 class="form-select form-select-solid form-select-sm"
                                                                 [disabled]="cargandoTransportes">
-                                                                <option value="" *ngIf="!cargandoTransportes">Seleccione transporte</option>
-                                                                <option value="" *ngIf="cargandoTransportes">Cargando transportes...</option>
-                                                                <option *ngFor="let transporte of listaTransportes" 
-                                                                        [value]="transporte.id">
+                                                                <option value="" *ngIf="!cargandoTransportes">Seleccione
+                                                                    transporte</option>
+                                                                <option value="" *ngIf="cargandoTransportes">Cargando
+                                                                    transportes...</option>
+                                                                <option *ngFor="let transporte of listaTransportes"
+                                                                    [value]="transporte.id">
                                                                     {{ transporte.Codigo }}
                                                                 </option>
                                                             </select>
                                                             <small class="text-muted" *ngIf="cargandoTransportes">
-                                                                <i class="fa fa-spinner fa-spin me-1"></i>Cargando lista de transportes...
+                                                                <i class="fa fa-spinner fa-spin me-1"></i>Cargando lista
+                                                                de transportes...
                                                             </small>
                                                         </td>
                                                     </tr>
@@ -912,13 +927,12 @@
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <input type="text" 
-                                                                [(ngModel)]="numeroGuia"
-                                                                name="numeroGuia"
-                                                                class="form-control form-control-sm"
+                                                            <input type="text" [(ngModel)]="numeroGuia"
+                                                                name="numeroGuia" class="form-control form-control-sm"
                                                                 placeholder="Ingrese el número de guía">
                                                             <small class="text-muted" *ngIf="bodegas.length > 1">
-                                                                Este número de guía se aplicará a todas las bodegas ({{ bodegas.length }} bodegas)
+                                                                Este número de guía se aplicará a todas las bodegas ({{
+                                                                bodegas.length }} bodegas)
                                                             </small>
                                                         </td>
                                                     </tr>
@@ -928,12 +942,9 @@
                                                             <span class="text-danger">*</span>
                                                         </td>
                                                         <td class="py-1">
-                                                            <input type="number" 
-                                                                [(ngModel)]="numeroBultos"
-                                                                name="numeroBultos"
-                                                                class="form-control form-control-sm"
-                                                                placeholder="Número de bultos"
-                                                                min="1">
+                                                            <input type="number" [(ngModel)]="numeroBultos"
+                                                                name="numeroBultos" class="form-control form-control-sm"
+                                                                placeholder="Número de bultos" min="1">
                                                         </td>
                                                     </tr>
 
@@ -956,30 +967,26 @@
                                                 <tbody>
                                                     <tr style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1" style="width: 35%;">
-                                                            <i
-                                                                class="fa fa-warehouse text-info me-1"></i>Peso:
+                                                            <i class="fa fa-warehouse text-info me-1"></i>Peso:
                                                         </td>
                                                         <td class="py-1">
-                                                           <input type="text" 
-                                                               [(ngModel)]="pesoEnvio"
-                                                               name="pesoEnvio"
-                                                               class="form-control form-control-sm"
-                                                               placeholder="Peso del paquete (kg)">
+                                                            <input type="text" [(ngModel)]="pesoEnvio" name="pesoEnvio"
+                                                                class="form-control form-control-sm"
+                                                                placeholder="Peso del paquete (kg)">
                                                         </td>
                                                     </tr>
                                                     <tr style="height: 28px;">
                                                         <td class="fw-bold text-muted py-1">
-                                                            <i class="fa fa-address-book text-primary me-1"></i>Comentarios:
+                                                            <i
+                                                                class="fa fa-address-book text-primary me-1"></i>Comentarios:
                                                         </td>
                                                         <td class="py-1">
-                                                          <textarea [(ngModel)]="comentariosEnvio" 
-                                                              name="comentarios" 
-                                                              class="form-control form-control-sm"
-                                                              rows="2"
-                                                              placeholder="Comentarios sobre el envío"></textarea>
+                                                            <textarea [(ngModel)]="comentariosEnvio" name="comentarios"
+                                                                class="form-control form-control-sm" rows="2"
+                                                                placeholder="Comentarios sobre el envío"></textarea>
                                                         </td>
                                                     </tr>
-                                                 
+
 
                                                 </tbody>
                                             </table>
@@ -1000,7 +1007,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-                    <button *ngIf="facturaRowData.ACTIVAR_LINK == 1" type="button" class="btn btn-primary" (click)="guardarCambios()">Guardar cambios</button>
+                    <button *ngIf="facturaRowData.ACTIVAR_LINK == 1" type="button" class="btn btn-primary"
+                        (click)="guardarCambios()">Guardar cambios</button>
                 </div>
             </div>
         </div>

@@ -56,9 +56,9 @@ export class UserProfileComponent {
     },
     {
       id: 6,
-      title: 'Datos Médicos',
-      value: 'medical',
-      icon: 'fa-solid fa-briefcase-medical'
+      title: 'Roles de Pago',
+      value: 'payroll',
+      icon: 'fa-solid fa-money-bill'
     },
     {
       id: 4,
@@ -102,6 +102,25 @@ export class UserProfileComponent {
     alergias: '',
     enfermedades: ''
   };
+  public tieneEnfermedades: boolean = false;
+
+  // Roles de Pago
+  public fechaConsultaRol: string = '';
+  public maxFechaRol: string = ''; // Fecha máxima permitida para selección
+  public rolesPago: any[] = [];
+
+  // Cambio de Contraseña
+  public passwordForm = {
+    current: '',
+    new: '',
+    confirm: ''
+  };
+
+  public mostrarPassword = {
+    actual: false,
+    nueva: false,
+    confirmar: false
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -113,6 +132,9 @@ export class UserProfileComponent {
     this.route.data.subscribe(data => {
       this.currentUser = data['user'];
     });
+
+    // Calcular fecha máxima permitida para roles de pago
+    this.calcularMaxFechaRol();
 
     // Obtener usuario actual del servicio
     this.userProfileService.userProfile$.subscribe((usuario: any) => {
@@ -207,6 +229,10 @@ export class UserProfileComponent {
             alergias: datos.alergias || '',
             enfermedades: datos.enfermedades || ''
           };
+          // Si hay datos médicos, marcar el checkbox
+          if (datos.alergias || datos.enfermedades || datos.contactoEmergenciaNombre) {
+            this.tieneEnfermedades = true;
+          }
           console.log('📋 Datos médicos cargados:', this.datosMedicos);
         }
       },
@@ -719,5 +745,270 @@ export class UserProfileComponent {
       }
     });
   }
+
+  /**
+   * Consultar roles de pago por fecha
+   */
+  consultarRolesPago() {
+    if (!this.fechaConsultaRol) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Fecha requerida',
+        text: 'Por favor seleccione una fecha para consultar',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
+    // Convertir fecha de YYYY-MM a YYYYMMDD (primer día del mes)
+    const fechaFormateada = this.fechaConsultaRol.replace('-', '') + '01';
+
+    const payload = {
+      empleadoId: this.usuarioActual.EmpleadoID,
+      fecha: fechaFormateada
+    };
+
+    console.log('📤 Consultando roles de pago:', payload);
+
+    this.userProfileService.consultarRolesPago(payload).subscribe({
+      next: (response) => {
+        console.log('✅ Roles de pago recibidos:', response);
+        if (response.success && response.data) {
+          this.rolesPago = response.data;
+          if (this.rolesPago.length === 0) {
+            Swal.fire({
+              icon: 'info',
+              title: 'Sin resultados',
+              text: 'No se encontraron roles de pago para la fecha seleccionada',
+              confirmButtonColor: '#3085d6'
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'No se pudieron obtener los roles de pago',
+            confirmButtonColor: '#d33'
+          });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error al consultar roles:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo conectar con el servidor',
+          confirmButtonColor: '#d33'
+        });
+      }
+    });
+  }
+
+  /**
+   * Calcular fecha máxima permitida para consultar roles
+   * El mes actual solo está disponible después del día 10
+   */
+  calcularMaxFechaRol() {
+    const hoy = new Date();
+    const diaActual = hoy.getDate();
+
+    let fechaMaxima: Date;
+
+    // Si estamos antes del día 10, el mes máximo es el anterior
+    if (diaActual < 10) {
+      fechaMaxima = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+    } else {
+      // Si estamos después del día 10, permitir el mes actual
+      fechaMaxima = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    }
+
+    // Formatear como YYYY-MM para el input type="month"
+    const year = fechaMaxima.getFullYear();
+    const month = String(fechaMaxima.getMonth() + 1).padStart(2, '0');
+    this.maxFechaRol = `${year}-${month}`;
+
+    console.log(`📅 Fecha máxima permitida para roles: ${this.maxFechaRol} (hoy es día ${diaActual})`);
+  }
+
+  /**
+   * Alternar visibilidad de contraseña
+   */
+  togglePasswordVisibility(campo: 'actual' | 'nueva' | 'confirmar') {
+    this.mostrarPassword[campo] = !this.mostrarPassword[campo];
+  }
+
+  /**
+   * Cambiar contraseña del usuario
+   */
+  cambiarContrasena() {
+    // Validaciones básicas
+    if (!this.passwordForm.current || !this.passwordForm.new || !this.passwordForm.confirm) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor complete todos los campos',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
+    if (this.passwordForm.new !== this.passwordForm.confirm) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Contraseñas no coinciden',
+        text: 'La nueva contraseña y su confirmación no coinciden',
+        confirmButtonColor: '#d33'
+      });
+      return;
+    }
+
+    if (this.passwordForm.new.length < 6) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Contraseña insegura',
+        text: 'La nueva contraseña debe tener al menos 6 caracteres',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
+    const payload = {
+      empleadoId: this.usuarioActual.EmpleadoID,
+      currentPassword: this.passwordForm.current,
+      newPassword: this.passwordForm.new
+    };
+
+    console.log('📤 Cambiando contraseña:', payload);
+
+    this.userProfileService.actualizarContrasena(payload).subscribe({
+      next: (response) => {
+        console.log('✅ Respuesta cambio contraseña:', response);
+        if (response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Contraseña Actualizada!',
+            text: 'Su contraseña ha sido modificada correctamente',
+            confirmButtonColor: '#3085d6'
+          });
+
+          // Limpiar formulario
+          this.passwordForm = {
+            current: '',
+            new: '',
+            confirm: ''
+          };
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.error || 'No se pudo actualizar la contraseña. Verifique su contraseña actual.',
+            confirmButtonColor: '#d33'
+          });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error al cambiar contraseña:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo conectar con el servidor',
+          confirmButtonColor: '#d33'
+        });
+      }
+    });
+  }
+
+  formatearFecha(fecha: string) {
+    return new Date(fecha).toLocaleDateString('es-EC', {
+      year: 'numeric',
+      month: 'long'
+    });
+  }
+
+
+  // abrirPDF(rol: any) {
+  //   console.log("Abrir PDF para:", rol);
+  //   // Aquí luego implementas la descarga del pdf
+  // }
+
+
+
+  abrirPDF(rol: any) {
+    console.log("📄 Abrir PDF para:", rol);
+
+    this.userProfileService.descargarRolPago(rol.RolID).subscribe({
+      next: (blob: Blob) => {
+        console.log("✅ PDF recibido, tamaño:", blob.size, "bytes");
+
+        // Crear URL del blob y abrirlo en nueva pestaña
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
+
+        // Liberar memoria después de un momento
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      },
+      error: (error) => {
+        console.error("❌ Error al pedir PDF:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo obtener el rol de pago"
+        });
+      }
+    });
+  }
+
+
+
+
+  // abrirPDF() {
+
+  //   if (this.roles.length === 0) {
+  //     Swal.fire({
+  //       icon: 'info',
+  //       title: 'Sin roles',
+  //       text: 'No hay roles para guardar',
+  //       confirmButtonColor: '#3085d6'
+  //     });
+  //     return;
+  //   }
+
+  //   const payload = {
+  //     empleadoId: this.usuarioActual.EmpleadoID,
+  //     roles: this.roles   // <<— AQUÍ ENVIAS LOS IDS O OBJETOS DE ROLES
+  //   };
+
+  //   console.log('📤 Guardando roles:', payload);
+
+  //   this.userProfileService.actualizarroles(payload).subscribe({
+  //     next: (response) => {
+  //       console.log('✅ Respuesta del backend:', response);
+  //       if (response.success) {
+  //         Swal.fire({
+  //           icon: 'success',
+  //           title: '¡Guardado!',
+  //           text: response.message || 'Roles guardados correctamente',
+  //           confirmButtonColor: '#3085d6'
+  //         });
+  //       } else {
+  //         Swal.fire({
+  //           icon: 'error',
+  //           title: 'Error',
+  //           text: response.error || 'No se pudieron guardar los roles',
+  //           confirmButtonColor: '#d33'
+  //         });
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('❌ Error al guardar roles:', error);
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Error de conexión',
+  //         text: 'No se pudo conectar con el servidor',
+  //         confirmButtonColor: '#d33'
+  //       });
+  //     }
+  //   });
+  // }
 
 }

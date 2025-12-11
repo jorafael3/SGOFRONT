@@ -21,6 +21,9 @@ export class FacturacionService extends BaseApiService {
     private readonly endpointverificar = environment.apiUrl + '/logistica/facturacion/verificarfacturas/';
     private readonly endpointguiaspickup = environment.apiUrl + '/logistica/facturacion/guiaspickup/';
     private readonly endpointtracking = environment.apiUrl + '/logistica/facturacion/tracking/';
+    private readonly endpointdropshipping = environment.apiUrl + '/logistica/facturacion/dropshipping/';
+    private readonly endpointmodificarseries = environment.apiUrl + '/logistica/facturacion/modificarseries/';
+
 
     constructor(http: HttpClient) {
         super(http);
@@ -114,6 +117,36 @@ export class FacturacionService extends BaseApiService {
 
     GetFacturasSeries(data: any): Observable<any> {
         return this.http.post<any>(this.endpointtracking + "GetFacturasSeries", data, { headers: this.headers });
+    }
+
+    //** DROPSHIPPING */
+
+    GetFacturasDropshipping(data: any): Observable<any> {
+        return this.http.post<any>(this.endpointdropshipping + "GetFacturasDropshipping", data, { headers: this.headers });
+    }
+
+    GetFacturasDatosDropshipping(data: any): Observable<any> {
+        return this.http.post<any>(this.endpointdropshipping + "GetFacturasDatosDropshipping", data, { headers: this.headers });
+    }
+
+    GetInfoDespacho(data: any): Observable<any> {
+        return this.http.post<any>(this.endpointdropshipping + "GetInfoDespacho", data, { headers: this.headers });
+    }
+
+    GuardarDropshipping(data: any): Observable<any> {
+        data.userdata = this.getUserSessionData();
+        return this.http.post<any>(this.endpointdropshipping + "GuardarDropshipping", data, { headers: this.headers });
+    }
+
+    //** MODIFICAR SERIES */
+
+    GetFacturasModificarSeries(data: any): Observable<any> {
+        return this.http.post<any>(this.endpointmodificarseries + "GetFacturasModificarSeries", data, { headers: this.headers });
+    }
+
+     SetModificarSeries(data: any): Observable<any> {
+        data.userdata = this.getUserSessionData();
+        return this.http.post<any>(this.endpointmodificarseries + "SetModificarSeries", data, { headers: this.headers });
     }
 
 }

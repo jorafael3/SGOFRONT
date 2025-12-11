@@ -1,0 +1,207 @@
+<div class="container-fluid customer-order-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <app-card [headerTitle]="'Buscar Tracking de Facturas'" [cardClass]="'mb-4'">
+                <div class="row mb-2">
+                    <div class="col-xl-4 col-md-6 mb-2">
+                        <label class="form-label fw-bold">Secuencia Factura:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-solid" placeholder="001-001-000000123"
+                                [(ngModel)]="secuenciafactura" name="secuenciafactura">
+                            <button class="btn btn-primary" (click)="onbuscarFactura()">Buscar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" *ngIf="MostrarDetalleFactura">
+                    <div class="col-12 mb-1">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-file-invoice text-primary me-2"></i>
+                                <h6 class="text-primary mb-0">Información de la Factura</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Primera columna -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-light py-2">
+                                <small class="fw-bold text-muted">
+                                    <i class="fa fa-info-circle me-1"></i>Datos Principales
+                                </small>
+                            </div>
+                            <div class="card-body py-2">
+                                <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                    <tbody>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1" style="width: 35%;">
+                                                <i class="fa fa-hashtag text-primary me-1"></i>Secuencia:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="fw-bold text-primary">
+                                                    {{ facturaActual?.Secuencia }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-file-alt text-secondary me-1"></i>Id:
+                                            </td>
+                                            <td class="py-1">
+                                                {{ facturaActual?.Id }}
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-user text-success me-1"></i>Cliente:
+                                            </td>
+                                            <td class="py-1">
+                                                {{ facturaActual?.Nombre?.trim() }}
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-calendar text-danger me-1"></i>Fecha:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-light text-dark fs-6">
+                                                    {{ facturaActual?.Fecha | date:'dd/MM/yyyy HH:mm' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;" *ngIf="facturaActual?.SRI_LNK">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-file-pdf text-danger me-1"></i>PDF Factura:
+                                            </td>
+                                            <td class="py-1">
+                                                <a [href]="'http://' + facturaActual?.SRI_LNK" target="_blank"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa fa-external-link-alt me-1"></i>Ver PDF
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Segunda columna -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-light py-2">
+                                <small class="fw-bold text-muted">
+                                    <i class="fa fa-address-book me-1"></i>Información de Contacto
+                                </small>
+                            </div>
+                            <div class="card-body py-2">
+                                <table class="table table-sm table-borderless mb-0" style="line-height: 1.2;">
+                                    <tbody>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-city text-info me-1"></i>Ciudad:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-info bg-opacity-10 text-light fw-bold fs-6">
+                                                    {{ facturaActual?.Ciudad?.trim() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-user-tie text-secondary me-1"></i>Vendedor:
+                                            </td>
+                                            <td class="py-1">{{ facturaActual?.Vendedor?.trim() }}</td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-shopping-cart text-warning me-1"></i>Tipo Pedido:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-primary bg-opacity-10 text-light fw-bold fs-6">
+                                                    {{ facturaActual?.TipoP?.trim() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-credit-card text-success me-1"></i>Forma Pago:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="badge bg-success bg-opacity-10 text-light fw-bold">
+                                                    {{ facturaActual?.FPago?.trim() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 28px;" *ngIf="facturaActual?.Ruc">
+                                            <td class="fw-bold text-muted py-1">
+                                                <i class="fa fa-id-card text-warning me-1"></i>RUC:
+                                            </td>
+                                            <td class="py-1">
+                                                <span class="font-monospace">{{ facturaActual?.Ruc?.trim() }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tablas de Detalle -->
+                <div class="row mt-3" *ngIf="MostrarDetalleFactura && detalleFactura.length > 0">
+                    <!-- Tabla de Productos y Series -->
+                    <div class="col-12 mb-3">
+                        <div class="card border-success">
+                            <div class="card-header">
+                                <h6 class="text-success mb-0">
+                                    <i class="fa fa-box-open me-1"></i>Detalle de Productos ({{ detalleFactura.length
+                                    }})
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover table-sm mb-0">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th class="text-center py-2" style="width: 15%;">
+                                                    <i class="fa fa-barcode me-1"></i>Código
+                                                </th>
+                                                <th class="text-center py-2" style="width: 50%;">
+                                                    <i class="fa fa-info-circle me-1"></i>Descripción
+                                                </th>
+                                                <th class="text-center py-2" style="width: 25%;">
+                                                    <i class="fa fa-hashtag me-1"></i>Serie
+                                                </th>
+                                                <th class="text-center py-2" style="width: 10%;">
+                                                    <i class="fa fa-eye me-1"></i>Acción
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let item of detalleFactura; let i = index" class="align-middle">
+                                                <td class="text-center fw-bold py-2">
+                                                    {{ item.CopProducto }}
+                                                </td>
+                                                <td class="py-2">
+                                                    <small>{{ item.Detalle }}</small>
+                                                </td>
+                                                <td class="py-2">
+                                                    <input type="text" class="form-control form-control-sm" 
+                                                        [(ngModel)]="item.serie" name="serie_{{ i }}"
+                                                        placeholder="Ingrese serie">
+                                                </td>
+                                                <td class="text-center py-2">
+                                                    <button class="btn btn-sm btn-info" (click)="onVerDetalleProducto(item, i)" title="Ver detalles">
+                                                        <i class="fa fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>
