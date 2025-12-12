@@ -147,7 +147,8 @@ export class TableComponent {
       this.handleDateFilter(this.selectedValue);
     }
 
-    if (changes['tableConfig'] && this.tableConfig && this.tableConfig.data) {
+    if (changes['tableConfig'] && this.tableConfig?.data) {
+      this.selectedIds = [];
       // Use `selectedRows` input to determine whether selection should be initialized
       if (this.selectedRows) {
         const preselected = this.tableConfig.data
@@ -164,15 +165,15 @@ export class TableComponent {
             const rid = this.getRowId(row);
             return rid != null && this.selectedIds.includes(String(rid));
           });
-          this.selectedRowsChange.emit(selectedRowsData);
+          setTimeout(() => this.selectedRowsChange.emit(selectedRowsData));
         }
       } else {
         // If selection disabled, ensure no selectedIds remain
-        this.selectedIds = [];
         // Also ensure rows do not have is_checked forced
         this.tableConfig.data.forEach((row: any) => {
           if (row) row.is_checked = false;
         });
+        setTimeout(() => this.selectedRowsChange.emit([]));
       }
       this.paginateData();
       this.cdr.detectChanges();

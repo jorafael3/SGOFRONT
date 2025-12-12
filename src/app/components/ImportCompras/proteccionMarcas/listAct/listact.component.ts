@@ -41,7 +41,7 @@ export class ListActComponent {
   asignGastosDocs: any = null;
   documentoPago: number = 0
   ARRAY_PAGOS_SELECCIONADOS: any[] = [];
-  SUMA_PAGOS_SELECCIONADOS: 0;
+  SUMA_PAGOS_SELECCIONADOS: number = 0;
 
   activeTab: 'actividades' | 'consolidados' = 'actividades';
 
@@ -299,6 +299,8 @@ export class ListActComponent {
     switch (action.action_to_perform) {
       case 'edit':
         this.nuevoConsolidado = 0;
+        this.Limpiar_campos();
+        this.limpiarSeleccionActividadesXConsolidar();
         this.llenarFormConsolidado(action.data);
         this.abrirModalAddConsolidado();
         console.log(this.consolidadoSeleccionada)
@@ -319,14 +321,15 @@ export class ListActComponent {
     switch (event.action) {
       case 'create':
         this.nuevoConsolidado = 1;
-        this.limpiarFormConsolidado();
+        this.Limpiar_campos();
         this.limpiarSeleccionActividadesXConsolidar();
         this.abrirModalAddConsolidado();
         console.log('Create')
         break;
       case 'pay':
+        this.Limpiar_campos();
+        this.limpiarSeleccionConsolidar();
         this.tooglePayConsolidado();
-        this.limpiarFormConsolidado();
         console.log('Pay')
         break;
       default:
@@ -336,6 +339,17 @@ export class ListActComponent {
   onRowsSelected(rows: any) {
     console.log(rows)
     this.seleccionados = rows;
+    this.recalcularSuma(rows);
+  }
+  recalcularSuma(filas: any[]) {
+    let suma = 0;
+    filas.forEach(row => {
+      const v = row?._SALDO ?? row?.ACTIVIDAD_PRESUPUESTO ?? 0;
+      const n = parseFloat((v ?? 0).toString());
+      if (!isNaN(n)) suma += n;
+    });
+    this.SUMA_PAGOS_SELECCIONADOS = suma;
+    this.formAsignPago.valor = suma;
   }
 
   abrirModalEditAct() {
@@ -357,6 +371,7 @@ export class ListActComponent {
   }
   cerrarModalAddConsolidado() {
     this.showModalAddConsolidado = false;
+    this.limpiarSeleccionActividadesXConsolidar();
     this.Limpiar_campos();
   }
   abrirModalVerActConsolidado() {
@@ -371,6 +386,7 @@ export class ListActComponent {
     this.showPayIngreso = false;
     this.showPayNotaCredito = false;
     this.Limpiar_campos();
+    this.limpiarSeleccionConsolidar();
   }
   tooglePayNotaCredito() {
     this.showPayNotaCredito = !this.showPayNotaCredito;
@@ -379,15 +395,16 @@ export class ListActComponent {
       this.showPayIngreso = false;
     }
     this.Limpiar_campos();
+    this.limpiarSeleccionConsolidar();
   }
   tooglePayIngreso() {
     this.showPayIngreso = !this.showPayIngreso;
     if (this.showPayIngreso) {
+      this.formAsignPago.pay = this.showPayIngreso ? 'INGRESO' : '';
       this.showPayNotaCredito = false;
     }
-    // Clear other fields then set payment type according to toggle
     this.Limpiar_campos();
-    this.formAsignPago.pay = this.showPayIngreso ? 'INGRESO' : '';
+    this.limpiarSeleccionConsolidar();
   }
 
   // Consolidado
@@ -412,7 +429,8 @@ export class ListActComponent {
     });
     const consolidadoRows = detalles.map(mapToRow);
     const disponibles = (this.ActividadesxConsolidarTableConfig?.data || []) as any[];
-    const disponiblesFiltradas = disponibles.filter(d => !detalles.some(c => c.ACTIVIDAD_ID === d.ACTIVIDAD_ID));
+    const disponiblesFiltradas = disponibles.filter(d => !detalles.some(c => c.ACTIVIDAD_ID === d.ACTIVIDAD_ID)).map(d => ({ ...d, is_checked: false }));
+    // const disponiblesFiltradas = disponibles.filter(d => !detalles.some(c => c.ACTIVIDAD_ID === d.ACTIVIDAD_ID));
     const combined = [...consolidadoRows, ...disponiblesFiltradas];
     this.ActividadesxConsolidarTableConfig = {
       ...this.ActividadesxConsolidarTableConfig,
@@ -440,12 +458,7 @@ export class ListActComponent {
     };
   }
   limpiarFormConsolidado() {
-    this.formAddCons = {
-      referencia: '',
-      descripcion: ''
-    };
-    this.consolidadoSeleccionada = null;
-    this.seleccionados = [];
+
   }
 
   // Limpia la selección de actividades en la tabla de ActividadesxConsolidar
@@ -465,6 +478,24 @@ export class ListActComponent {
       this.cdr.detectChanges();
     } catch (err) {
       console.error('Error limpiando selección ActividadesxConsolidar', err);
+    }
+  }
+  limpiarSeleccionConsolidar(): void {
+    try {
+      const rows = (this.ConsolidadosTableConfig?.data || []) as any[];
+      const cleaned = rows.map(r => {
+        const copy = { ...r };
+        if (copy.hasOwnProperty('is_checked')) copy.is_checked = false;
+        return copy;
+      });
+      this.ConsolidadosTableConfig = {
+        ...this.ConsolidadosTableConfig,
+        data: cleaned
+      };
+      this.seleccionados = [];
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error('Error limpiando selección Consolidar', err);
     }
   }
   crearConsolidado(data?: any) {
@@ -503,20 +534,38 @@ export class ListActComponent {
     console.log(param)
     // return;
     if (PG_NUMERO_DOCUMENTO == "") { Swal.fire("Debe ingresar un numero de documento", "", "error"); return; }
-    this.service.Validar_Pagos(param).subscribe({
-      next: (res: any) => {
-        console.log(res)
-        if (!res.success) { Swal.fire('Error', 'No se pudo Validar Documento', 'error'); return; }
-        if (res.data > 0) {
-          this.ARRAY_PAGOS_SELECCIONADOS = res.data;
-          this.formAsignPago.detalledt = res.data[0].DOC_DETALLE
-          this.formAsignPago.valordt = res.data[0].DOC_VALOR
-          this.formAsignPago.saldodt = res.data[0].SALDO
-        } else {
-          Swal.fire('No existe un Pago con ese numero de documento', '', 'error')
-        }
+    // Show loading modal until the request completes
+    Swal.fire({
+      title: 'Validando documento',
+      html: 'Espere por favor...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+        this.service.Validar_Pagos(param).subscribe({
+          next: (res: any) => {
+            Swal.close();
+            console.log(res)
+            if (!res.success) { Swal.fire('Error', 'No se pudo Validar Documento', 'error'); return; }
+            if (res.data && res.data.length > 0) {
+              this.ARRAY_PAGOS_SELECCIONADOS = res.data;
+              this.formAsignPago.detalledt = res.data[0].DOC_DETALLE
+              this.formAsignPago.valordt = res.data[0].DOC_VALOR
+              this.formAsignPago.saldodt = res.data[0].SALDO
+              console.log('Log ARRAY_PAGOS_SELECCIONADOS ', this.ARRAY_PAGOS_SELECCIONADOS);
+              console.log('Log FormAsignPago ', this.formAsignPago);
+              Swal.fire('Éxito', 'Pago validado correctamente', 'success');
+            } else {
+              Swal.fire('No existe un Pago con ese numero de documento', '', 'error')
+            }
+          },
+          error: (err: any) => {
+            Swal.close();
+            console.error('Validar_Pagos error', err);
+            Swal.fire('Error', 'Ocurrió un error al validar el documento', 'error');
+          }
+        });
       }
-    })
+    });
   }
   Agregar_Pago() {
     let Valor_Aplicar = this.SUMA_PAGOS_SELECCIONADOS || 0;
@@ -527,40 +576,40 @@ export class ListActComponent {
     }
     console.log('param: ', param);
     if (this.seleccionados.length == 0) {
-            Swal.fire("Debe seleccionar al menos un consolidado", "", "error");
-            return;
-        }
-        if (this.ARRAY_PAGOS_SELECCIONADOS.length == 0) {
-            Swal.fire("Debe buscar un pago antes de agregarlo", "", "error");
-            return;
-        }
-        if (Valor_Aplicar <= 0) {
-            Swal.fire("No se han ingresado valores a aplicar", "", "error");
-            return;
-        }
-        if (this.ARRAY_PAGOS_SELECCIONADOS[0].SALDO < Valor_Aplicar) {
-            Swal.fire("El valor a aplicar es mayor que el saldo disponible", "", "error");
-            return;
-        }
-        Swal.fire({
-          title: "Se agregará el pago?",
-            text: "No podrás revertir esto!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Sí, agregarlo!"
-        }).then((result)=> {
-          if(result.isConfirmed){
-            this.service.Agregar_Pago(param).subscribe({
-              next: (res:any) => {
-                if (!res.success) {Swal.fire('Error','No se pudo Agregar el Pago','error')}
-                Swal.fire('Éxito','Pago agregado Correctamente','success')
+      Swal.fire("Debe seleccionar al menos un consolidado", "", "error");
+      return;
+    }
+    if (this.ARRAY_PAGOS_SELECCIONADOS.length == 0) {
+      Swal.fire("Debe buscar un pago antes de agregarlo", "", "error");
+      return;
+    }
+    if (Valor_Aplicar <= 0) {
+      Swal.fire("No se han ingresado valores a aplicar", "", "error");
+      return;
+    }
+    if (this.ARRAY_PAGOS_SELECCIONADOS[0].SALDO < Valor_Aplicar) {
+      Swal.fire("El valor a aplicar es mayor que el saldo disponible", "", "error");
+      return;
+    }
+    Swal.fire({
+      title: "Se agregará el pago?",
+      text: "No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, agregarlo!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.service.Agregar_Pago(param).subscribe({
+          next: (res: any) => {
+            if (!res.success) { Swal.fire('Error', 'No se pudo Agregar el Pago', 'error') }
+            Swal.fire('Éxito', 'Pago agregado Correctamente', 'success')
 
-              }
-            })
           }
         })
+      }
+    })
   }
 
   /////////////// ACTIVIDADES
@@ -660,6 +709,8 @@ export class ListActComponent {
     });
   }
   Limpiar_campos(): void {
+    this.consolidadoSeleccionada = null;
+    this.seleccionados = [];
     this.formEdit = {
       tipo: '',
       marca: null,
@@ -689,10 +740,11 @@ export class ListActComponent {
       valordt: 0,
       saldodt: 0
     };
-    this.asignGastosDocs = ''
-    this.documentoPago = 0
-    this.seleccionados = [];
-
+    this.asignGastosDocs = '';
+    this.documentoPago = 0;
+    this.ARRAY_PAGOS_SELECCIONADOS = [];
+    this.SUMA_PAGOS_SELECCIONADOS = 0;
+    this.formAsignPago.valor = 0;
     this.cdr.detectChanges();
   }
   Cargar_Tipos_Marcas() {
@@ -731,40 +783,57 @@ export class ListActComponent {
       next: (res: any) => {
         console.log(res)//0400003216
         if (!res.success) { Swal.fire('Sin resultados', 'No se encontraron documentos que coincidan', 'info'); return; }
-        this.asignGastosDocs = res.data[0]
+        this.asignGastosDocs = Array.isArray(res.data) ? res.data : [res.data];
+        this.asignGastosDocs.forEach((d: any) => d.valorAplicar = 0);
         console.log('AsignGastosDocs', this.asignGastosDocs)
         Swal.fire('Éxito', `Se encontró documento`, 'success');
       }
     });
   }
-  Aplicar_Documento() {
-    let Valor_Aplicar = this.documentoPago;
-    // let Actividad_ID = this.actividadSeleccionada?.consolidado_id;
-    let Actividad_ID = this.actividadSeleccionada?.ACTIVIDAD_ID;
-    let Tipo_Documento = this.formAsignGasto.tipoDocumento
-    let Id_Documento = this.asignGastosDocs;
+  Aplicar_Documento(doc: any) {
+    const Valor_Aplicar = Number(doc?.valorAplicar) || 0;
+    const Actividad_ID = this.actividadSeleccionada?.ACTIVIDAD_ID;
+    const Tipo_Documento = this.formAsignGasto.tipoDocumento;
+    const Id_Documento = doc;
 
-    let ARRAY_DOCUMENTOS_SELECCIONADOS = [this.asignGastosDocs];
+    const ARRAY_DOCUMENTOS_SELECCIONADOS = [doc];
 
-    if (this.asignGastosDocs.SALDO < Valor_Aplicar) {
-      Swal.fire('Error', 'El valor a aplicar no puede ser mayor al saldo del documento')
+    if (doc?.SALDO < Valor_Aplicar) {
+      Swal.fire('Error', 'El valor a aplicar no puede ser mayor al saldo del documento');
       return;
     }
     if (Valor_Aplicar <= 0) {
-      Swal.fire('Error', 'El valor a aplicar no puede ser 0')
+      Swal.fire('Error', 'El valor a aplicar no puede ser 0');
       return;
     }
     const param = {
       Valor_Aplicar: Valor_Aplicar,
       Consolidado_id: Actividad_ID,
-      ARRAY_DOCUMENTOS_SELECCIONADOS: ARRAY_DOCUMENTOS_SELECCIONADOS
-    }
-    console.log(param)
-    this.service.GUARDAR_DATOS(param).subscribe({
-      next: (res: any) => {
-        console.log(res)
-        if (!res.success) { Swal.fire('Sin resultados', 'No se encontraron documentos que coincidan', 'info'); return; }
-        this.cerrarModalAsignGastoAct();
+      ARRAY_DOCUMENTOS_SELECCIONADOS: ARRAY_DOCUMENTOS_SELECCIONADOS,
+      Tipo_Documento: Tipo_Documento,
+      Id_Documento: Id_Documento
+    };
+    console.log('Aplicar_Documento param', param);
+
+    Swal.fire({
+      title: 'Se agregará el gasto?',
+      text: 'No podrás revertir esto!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, agregarlo!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.service.GUARDAR_DATOS(param).subscribe({
+          next: (res: any) => {
+            console.log(res);
+            if (!res.success) { Swal.fire('Error', 'No se pudo guardar el gasto', 'error'); return; }
+            if (res.success) { Swal.fire('Exito', 'Gasto Agregado Correctamente', 'success'); }
+            // this.cerrarModalAsignGastoAct();
+            this.Cargar_Datos_Actividades();
+          }
+        });
       }
     });
   }
